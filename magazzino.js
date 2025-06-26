@@ -4,7 +4,7 @@ function cerca() {
 
   console.log("Codice cercato:", codice);
 
-  fetch("data/magazzino.csv")
+  fetch("magazzino.csv")
     .then((res) => res.text())
     .then((text) => {
       const righe = text.trim().split("\n");
