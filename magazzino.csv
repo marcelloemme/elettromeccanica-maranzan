@@ -1,31 +1,101 @@
 codice,descrizione,scaffale
-101111-0,rele,U1
-128025-9,portaspazzole avvolgimento,G4
-194137-0,avvolgimento supporto,P5
-252611-4,rele puleggia,U6
-287561-3,carbone,L6
-290631-8,statore portaspazzole sede,T1
-306754-9,indotto avvolgimento,M10
-310240-2,ventola trasformatore gruppo spazzole,L6
-333928-6,portaspazzole,R10
-383513-5,sede,Q9
-384107-0,gruppo spazzole,F4
-387318-8,indotto rotore supporto,J6
-406573-1,statore sede carbone,E10
-418617-1,spazzola,H10
-480317-8,ventola carbone sede,Q7
-495065-3,rotore,M8
-506491-4,carbone,A6
-548543-4,supporto portaspazzole,B3
-561350-0,indotto,P6
-579494-5,trasformatore,M5
-587881-2,indotto avvolgimento statore,Y8
-629260-8,rele,X10
-657301-3,statore cuscinetto,Z8
-710212-5,ventola,U6
-719603-3,portaspazzole,I2
-769369-5,rele rele,R5
-782546-5,ventola,B1
-874335-7,statore,P10
-983668-8,rotore,J7
-999706-0,motore trasformatore trasformatore,U9
+444619-3,morsettiera,C5
+744741-9,flangia,F3
+421405-1,indotto,D1
+986161-9,bobina,C2
+605725-3,flangia,D2
+284497-0,morsettiera,D1
+176451-3,bobina,C3
+780570-3,ventola raffreddamento,E4
+978228-1,motore universale,B4
+596095-2,interruttore,F1
+148578-6,albero,F4
+991087-3,supporto motore,C3
+845413-4,bobina,A3
+373879-8,interruttore,B3
+126035-3,morsettiera,F4
+661820-3,isolante,A5
+222880-9,morsettiera,A1
+307578-0,indotto,E3
+136933-3,cuscinetto,B5
+112613-4,isolante,F4
+428557-8,bobina,B3
+275601-9,spazzole carbone,A3
+117864-4,copertura,A3
+680445-0,copertura,E4
+288750-3,spazzole carbone,E1
+520440-4,isolante,A1
+128609-9,albero,C1
+200532-8,ventola raffreddamento,E3
+220965-8,spazzole carbone,B1
+552146-4,ventola raffreddamento,C2
+347168-4,bobina,A3
+224287-2,indotto,B4
+136774-8,indotto,D3
+878186-2,cuscinetto,E3
+324064-3,isolante,B1
+958491-2,indotto,C1
+621527-9,anello di tenuta,A1
+833706-0,flangia,F1
+310642-8,indotto,F1
+163082-5,ventola raffreddamento,F1
+835241-1,calotta,E2
+513652-2,armatura,C4
+859081-6,morsettiera,B2
+307600-7,indotto,A5
+796490-5,rotore,D5
+362477-2,isolante,A4
+623143-1,supporto motore,E4
+484474-7,indotto,E3
+545594-1,resistenza,E2
+691639-4,armatura,F4
+716685-1,statore,F5
+465454-5,armatura,B3
+301426-9,statore,D1
+104369-4,spazzole carbone,A3
+662159-2,copertura,F2
+689266-8,isolante,C1
+638272-2,flangia,E2
+776064-5,bobina,C3
+119808-2,gruppo rotante,E1
+511306-4,rotore,A4
+932504-7,spazzole carbone,E3
+244465-5,motore universale,B5
+815128-8,supporto motore,D5
+522318-8,motore universale,B3
+253103-9,calotta,F1
+152848-0,isolante,B2
+780360-1,bobina,D4
+915329-3,statore,A3
+873968-3,bobina,F5
+935527-9,avvolgimento,B1
+385397-4,anello di tenuta,B3
+652123-1,interruttore,B5
+296301-0,interruttore,D2
+785375-4,avvolgimento,A5
+740626-6,calotta,E5
+959824-3,gruppo rotante,B3
+144754-1,indotto,B4
+791700-8,anello di tenuta,A5
+643971-5,spazzole carbone,F4
+123759-9,cuscinetto,C3
+804063-0,calotta,E5
+373622-8,albero,F4
+416534-9,armatura,D3
+648130-7,isolante,B2
+698219-4,indotto,B2
+744630-0,motore universale,E5
+733716-7,motore universale,E5
+285645-5,armatura,D2
+513629-8,isolante,B5
+968794-7,statore,C1
+549555-2,morsettiera,D1
+753133-7,ventola raffreddamento,F5
+748038-5,gruppo rotante,F5
+457624-0,interruttore,C5
+475778-2,motore universale,D2
+999569-1,avvolgimento,E2
+965958-9,copertura,D5
+170738-9,calotta,E5
+395342-0,morsettiera,A4
+418186-8,statore,A5
