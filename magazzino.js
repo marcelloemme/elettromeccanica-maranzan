@@ -1,117 +1,126 @@
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('codice-input').addEventListener('keypress', e => {
+    if (e.key === 'Enter') cerca();
+  });
+
+  document.getElementById('mostra-alfabetico').addEventListener('click', () => {
+    resetContenuto();
+    renderRisultati(datiGlobali.slice().sort((a, b) =>
+      a.descrizione.localeCompare(b.descrizione)), 'lista-tutti', 'Tutti i ricambi (A–Z)');
+  });
+
+  document.getElementById('mostra-scaffale').addEventListener('click', () => {
+    resetContenuto();
+    renderRisultati(datiGlobali.slice().sort((a, b) =>
+      a.scaffale.localeCompare(b.scaffale)), 'lista-scaffale', 'Tutti i ricambi per scaffale');
+  });
+});
+
+let datiGlobali = [];
+
 async function cerca() {
-  const codiceCercato = document.getElementById("codice-input").value.trim();
-  console.log("Codice cercato:", codiceCercato);
+  const codice = document.getElementById('codice-input').value.trim();
+  console.log("Codice cercato:", codice);
+  resetContenuto();
 
   try {
-    const dati = await caricaDatiCSV();
+    const res = await fetch('magazzino.csv');
+    const text = await res.text();
+    const rows = text.trim().split('\n').slice(1);
+    const dati = rows
+      .map(r => r.split(','))
+      .filter(campi => campi.length === 3)
+      .map(([codice, descrizione, scaffale]) => ({
+        codice: codice.trim(),
+        descrizione: descrizione.trim(),
+        scaffale: scaffale.trim()
+      }));
 
-    const risultato = dati.find(item => item.codice === codiceCercato);
+    datiGlobali = dati;
+    console.log("Dati letti:", dati.length);
 
-    const divRisultato = document.getElementById("risultato");
-    const divStessoScaffale = document.getElementById("stesso-scaffale");
-    const divForseCercavi = document.getElementById("forse-cercavi");
-    const divElenco = document.getElementById("elenco-completo");
+    const trovato = dati.find(d => d.codice === codice);
 
-    divRisultato.innerHTML = "";
-    divStessoScaffale.innerHTML = "";
-    divForseCercavi.innerHTML = "";
-    divElenco.innerHTML = "";
+    if (trovato) {
+      renderRisultati([trovato], 'risultato', 'Risultato');
 
-    if (risultato) {
-      divRisultato.innerHTML = `<h2>Risultato</h2><p><strong>${risultato.codice}</strong>: ${risultato.descrizione} — scaffale ${risultato.scaffale}</p>`;
+      const stessoScaffale = dati.filter(d =>
+        d.scaffale === trovato.scaffale && d.codice !== trovato.codice);
+      renderRisultati(stessoScaffale, 'stesso-scaffale', 'Nello stesso scaffale');
+
+      const forseCercavi = suggerisciCodiciSimili(codice, dati).filter(d => d.codice !== trovato.codice);
+      renderRisultati(forseCercavi, 'forse-cercavi', 'Forse cercavi');
+
     } else {
-      divRisultato.innerHTML = `<p>Nessun risultato esatto trovato.</p>`;
+      document.getElementById('risultato').innerHTML = '<p>Nessun risultato esatto trovato.</p>';
+
+      const suggeriti = suggerisciCodiciSimili(codice, dati);
+      renderRisultati(suggeriti, 'forse-cercavi', 'Forse cercavi');
     }
-
-    const suggeriti = dati.filter(item => {
-      if (item.codice === codiceCercato) return false;
-      if (codiceCercato.length >= 6 && item.codice.startsWith(codiceCercato)) return true;
-      if (item.codice.startsWith(codiceCercato + "-")) return true;
-      return distanzaCodici(item.codice, codiceCercato) <= 1;
-    });
-
-    if (suggeriti.length > 0) {
-      divForseCercavi.innerHTML = `<h2>Forse cercavi</h2><ul>` +
-        suggeriti.map(item => `<li>${item.codice}: ${item.descrizione}</li>`).join("") +
-        `</ul>`;
-    }
-
-    if (risultato) {
-      const stessi = dati.filter(item =>
-        item.scaffale === risultato.scaffale && item.codice !== risultato.codice
-      );
-      if (stessi.length > 0) {
-        divStessoScaffale.innerHTML = `<h2>Nello stesso scaffale</h2><ul>` +
-          stessi.map(item => `<li>${item.codice}: ${item.descrizione}</li>`).join("") +
-          `</ul>`;
-      }
-    }
-
-  } catch (errore) {
-    console.error("Errore nella ricerca:", errore);
+  } catch (e) {
+    console.error('Errore durante il fetch o il parsing del CSV:', e);
   }
 }
 
-function distanzaCodici(a, b) {
-  if (a.length !== b.length) return Infinity;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) diff++;
+function suggerisciCodiciSimili(codiceInserito, dati) {
+  return dati.filter(item => {
+    const codiceBase = codiceInserito.split('-')[0];
+    const itemBase = item.codice.split('-')[0];
+
+    const differenze = contaDifferenze(codiceInserito, item.codice);
+    const stessoPrefisso = itemBase === codiceBase && item.codice !== codiceInserito;
+
+    return differenze <= 2 || stessoPrefisso;
+  });
+}
+
+function contaDifferenze(a, b) {
+  const len = Math.max(a.length, b.length);
+  let count = 0;
+  for (let i = 0; i < len; i++) {
+    if (a[i] !== b[i]) count++;
   }
-  return diff;
+  return count;
 }
 
-async function caricaDatiCSV() {
-  const response = await fetch("magazzino.csv");
-  const testo = await response.text();
-  const righe = testo.trim().split("\n").slice(1); // rimuovi intestazione
-  return righe
-    .map(riga => riga.split(","))
-    .filter(campi => campi.length === 3)
-    .map(campi => ({
-      codice: campi[0].trim(),
-      descrizione: campi[1].trim(),
-      scaffale: campi[2].trim()
-    }));
+function renderRisultati(risultati, containerId, titolo) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+
+  if (risultati.length === 0) return;
+
+  const heading = document.createElement('h2');
+  heading.textContent = titolo;
+  container.appendChild(heading);
+
+  const table = document.createElement('table');
+
+  risultati.forEach(item => {
+    const row = document.createElement('tr');
+
+    const codiceCell = document.createElement('td');
+    codiceCell.className = 'codice';
+    codiceCell.textContent = item.codice;
+
+    const descrizioneCell = document.createElement('td');
+    descrizioneCell.className = 'descrizione';
+    descrizioneCell.textContent = item.descrizione;
+
+    const scaffaleCell = document.createElement('td');
+    scaffaleCell.className = 'scaffale';
+    scaffaleCell.textContent = `scaffale ${item.scaffale}`;
+
+    row.appendChild(codiceCell);
+    row.appendChild(descrizioneCell);
+    row.appendChild(scaffaleCell);
+    table.appendChild(row);
+  });
+
+  container.appendChild(table);
 }
 
-async function mostraTuttoAZ() {
-  const dati = await caricaDatiCSV();
-  const ordinati = dati.sort((a, b) => a.codice.localeCompare(b.codice));
-
-  // Pulisce i risultati precedenti
-  document.getElementById("risultato").innerHTML = "";
-  document.getElementById("forse-cercavi").innerHTML = "";
-  document.getElementById("stesso-scaffale").innerHTML = "";
-
-  mostraElenco(ordinati);
+function resetContenuto() {
+  ['risultato', 'forse-cercavi', 'stesso-scaffale', 'lista-tutti', 'lista-scaffale'].forEach(id => {
+    document.getElementById(id).innerHTML = '';
+  });
 }
-
-async function mostraPerScaffale() {
-  const dati = await caricaDatiCSV();
-  const ordinati = dati.sort((a, b) => a.scaffale.localeCompare(b.scaffale));
-
-  // Pulisce i risultati precedenti
-  document.getElementById("risultato").innerHTML = "";
-  document.getElementById("forse-cercavi").innerHTML = "";
-  document.getElementById("stesso-scaffale").innerHTML = "";
-
-  mostraElenco(ordinati);
-}
-
-// Attiva invio con tasto Enter
-document.getElementById("codice-input").addEventListener("keyup", function(event) {
-  if (event.key === "Enter") {
-    cerca();
-  }
-});
-
-// Ricerca automatica se c'è ?codice=... nell’URL
-window.addEventListener("DOMContentLoaded", () => {
-  const params = new URLSearchParams(window.location.search);
-  const codice = params.get("codice");
-  if (codice) {
-    document.getElementById("codice-input").value = codice;
-    cerca();
-  }
-});
