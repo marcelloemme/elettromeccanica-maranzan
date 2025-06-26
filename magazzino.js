@@ -7,14 +7,16 @@ function cerca() {
     .then((text) => {
       const righe = text.trim().split("\n");
       const intestazioni = righe[0].split(",");
-      const dati = righe.slice(1).map((r) => {
-        const valori = r.split(",");
-        return {
-          codice: valori[0].trim().replace(/^"|"$/g, ""),
-          descrizione: valori[1].trim().replace(/^"|"$/g, ""),
-          scaffale: valori[2].trim().replace(/^"|"$/g, ""),
-        };
-      });
+      const dati = righe.slice(1)
+        .map((r) => r.split(","))
+        .filter((v) => v.length >= 3)
+        .map((valori) => {
+          return {
+            codice: valori[0].trim().replace(/^"|"$/g, ""),
+            descrizione: valori[1].trim().replace(/^"|"$/g, ""),
+            scaffale: valori[2].trim().replace(/^"|"$/g, "")
+          };
+        });
 
       const risultati = dati.filter((r) => r.codice === codice);
       const suggeriti = dati
