@@ -3,38 +3,19 @@ async function cerca() {
   console.log("Codice cercato:", codiceCercato);
 
   try {
-    const response = await fetch("magazzino.csv");
-    const csvText = await response.text();
-
-    const righe = csvText.trim().split("\n");
-    righe.shift(); // rimuove intestazione
-
-    const dati = righe
-      .map(riga => {
-        const campi = riga.split(","); // <== USA LA VIRGOLA
-        if (campi.length !== 3) {
-          console.warn("Riga scartata (non 3 campi):", riga);
-          return null;
-        }
-        return {
-          codice: campi[0].trim(),
-          descrizione: campi[1].trim(),
-          scaffale: campi[2].trim()
-        };
-      })
-      .filter(Boolean);
-
-    console.log("Dati letti:", dati);
+    const dati = await caricaDatiCSV();
 
     const risultato = dati.find(item => item.codice === codiceCercato);
 
     const divRisultato = document.getElementById("risultato");
     const divStessoScaffale = document.getElementById("stesso-scaffale");
     const divForseCercavi = document.getElementById("forse-cercavi");
+    const divElenco = document.getElementById("elenco-completo");
 
     divRisultato.innerHTML = "";
     divStessoScaffale.innerHTML = "";
     divForseCercavi.innerHTML = "";
+    divElenco.innerHTML = "";
 
     if (risultato) {
       divRisultato.innerHTML = `<h2>Risultato</h2><p><strong>${risultato.codice}</strong>: ${risultato.descrizione} — scaffale ${risultato.scaffale}</p>`;
@@ -42,14 +23,11 @@ async function cerca() {
       divRisultato.innerHTML = `<p>Nessun risultato esatto trovato.</p>`;
     }
 
-    // Suggerimenti simili
     const suggeriti = dati.filter(item => {
       if (item.codice === codiceCercato) return false;
-      // stesse prime 6 cifre
       if (codiceCercato.length >= 6 && item.codice.startsWith(codiceCercato)) return true;
       if (item.codice.startsWith(codiceCercato + "-")) return true;
-      // distanza di 1 cifra
-      return distanzaCodici(item.codice, codiceCercato) === 1;
+      return distanzaCodici(item.codice, codiceCercato) <= 1;
     });
 
     if (suggeriti.length > 0) {
@@ -58,7 +36,6 @@ async function cerca() {
         `</ul>`;
     }
 
-    // Stesso scaffale
     if (risultato) {
       const stessi = dati.filter(item =>
         item.scaffale === risultato.scaffale && item.codice !== risultato.codice
@@ -71,7 +48,7 @@ async function cerca() {
     }
 
   } catch (errore) {
-    console.error("Errore durante il fetch o il parsing del CSV:", errore);
+    console.error("Errore nella ricerca:", errore);
   }
 }
 
@@ -83,3 +60,53 @@ function distanzaCodici(a, b) {
   }
   return diff;
 }
+
+async function caricaDatiCSV() {
+  const response = await fetch("magazzino.csv");
+  const testo = await response.text();
+  const righe = testo.trim().split("\n").slice(1); // rimuovi intestazione
+  return righe
+    .map(riga => riga.split(","))
+    .filter(campi => campi.length === 3)
+    .map(campi => ({
+      codice: campi[0].trim(),
+      descrizione: campi[1].trim(),
+      scaffale: campi[2].trim()
+    }));
+}
+
+async function mostraTuttoAZ() {
+  const dati = await caricaDatiCSV();
+  const ordinati = dati.sort((a, b) => a.codice.localeCompare(b.codice));
+  mostraElenco(ordinati);
+}
+
+async function mostraPerScaffale() {
+  const dati = await caricaDatiCSV();
+  const ordinati = dati.sort((a, b) => a.scaffale.localeCompare(b.scaffale));
+  mostraElenco(ordinati);
+}
+
+function mostraElenco(lista) {
+  const container = document.getElementById("elenco-completo");
+  container.innerHTML = "<h2>Elenco</h2><ul>" +
+    lista.map(item => `<li><strong>${item.codice}</strong>: ${item.descrizione} — scaffale ${item.scaffale}</li>`).join("") +
+    "</ul>";
+}
+
+// Attiva invio con tasto Enter
+document.getElementById("codice-input").addEventListener("keyup", function(event) {
+  if (event.key === "Enter") {
+    cerca();
+  }
+});
+
+// Ricerca automatica se c'è ?codice=... nell’URL
+window.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const codice = params.get("codice");
+  if (codice) {
+    document.getElementById("codice-input").value = codice;
+    cerca();
+  }
+});
