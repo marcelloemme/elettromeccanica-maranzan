@@ -15,7 +15,7 @@ jobs:
 
       - name: Scarica CSV da Google Drive
         run: |
-          curl -L "https://drive.google.com/uc?export=download&id=1AirX1Ae1D84HqRP1IDloDPvJgNBVpQNV" -o public/data/magazzino.csv
+          curl -L "https://drive.google.com/uc?export=download&id=1AirX1Ae1D84HqRP1IDloDPvJgNBVpQNV" -o public/magazzino.csv
 
       - name: Configura git
         run: |
@@ -24,6 +24,6 @@ jobs:
 
       - name: Commit e push se ci sono modifiche
         run: |
-          git add public/data/magazzino.csv
+          git add public/magazzino.csv
           git diff --cached --quiet || git commit -m "Aggiorna magazzino.csv da Google Drive"
           git push
