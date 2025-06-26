@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Magazzino | Elettromeccanica Maranzan</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="magazzino.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Magazzino</h1>
+    <p>Inserisci il codice del ricambio da cercare:</p>
+    <input type="text" id="codice-input" placeholder="es. 123456-7" />
+    <button onclick="cerca()">Cerca</button>
+
+    <div id="risultato"></div>
+    <div id="forse-cercavi"></div>
+    <div id="stesso-scaffale"></div>
+  </div>
+</body>
+</html>
