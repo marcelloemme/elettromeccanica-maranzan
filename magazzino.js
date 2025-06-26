@@ -2,20 +2,27 @@ function cerca() {
   const codice = document.getElementById("codice-input").value.trim();
   if (!codice) return;
 
-  fetch("magazzino.csv")
+  console.log("Codice cercato:", codice);
+
+  fetch("data/magazzino.csv")
     .then((res) => res.text())
     .then((text) => {
       const righe = text.trim().split("\n");
       const intestazioni = righe[0].split(",");
-      const dati = righe.slice(1).map((r) => {
-        const valori = r.split(",");
-        if (valori.length < 3) return null; // Salta righe incomplete
-        return {
-          codice: valori[0].trim().replace(/\r|\s/g, ""),
-          descrizione: valori[1].trim().replace(/\r|\s/g, " "),
-          scaffale: valori[2].trim().replace(/\r|\s/g, "")
-        };
-      }).filter(Boolean); // Rimuove i null
+
+      const dati = righe
+        .slice(1)
+        .map((r) => {
+          const valori = r.split(",");
+          if (valori.length < 3) return null;
+
+          return {
+            codice: valori[0].trim().replace(/\r|\s/g, ""),
+            descrizione: valori[1].trim().replace(/\r|\s/g, " "),
+            scaffale: valori[2].trim().replace(/\r|\s/g, "")
+          };
+        })
+        .filter(Boolean);
 
       console.log("Dati letti:", dati);
 
@@ -34,29 +41,34 @@ function cerca() {
 
       if (risultati.length > 0) {
         const r = risultati[0];
-        risultatoBox.innerHTML = `<h3>Risultato</h3><p><strong>${r.codice}</strong>: ${r.descrizione} — scaffale ${r.scaffale}</p>`;
+        risultatoBox.innerHTML =
+          `<h3>Risultato</h3><p><strong>${r.codice}</strong>: ${r.descrizione} — scaffale ${r.scaffale}</p>`;
 
         const altri = dati.filter(
           (d) => d.scaffale === r.scaffale && d.codice !== r.codice
         );
+
         if (altri.length > 0) {
           stessoBox.innerHTML =
-            "<h3>Nello stesso scaffale</h3><ul>" +
+            `<h3>Nello stesso scaffale</h3><ul>` +
             altri.map((a) => `<li>${a.codice}: ${a.descrizione}</li>`).join("") +
-            "</ul>";
+            `</ul>`;
         }
       } else {
-        risultatoBox.innerHTML = "<p>Nessun risultato esatto trovato.</p>";
+        risultatoBox.innerHTML = `<p>Nessun risultato esatto trovato.</p>`;
       }
 
       if (suggeriti.length > 0) {
         forseBox.innerHTML =
-          "<h3>Forse cercavi</h3><ul>" +
-          suggeriti.map((s) => `<li>${s.codice}: ${s.descrizione} (scaffale ${s.scaffale})</li>`).join("") +
-          "</ul>";
+          `<h3>Forse cercavi</h3><ul>` +
+          suggeriti
+            .map((s) => `<li>${s.codice}: ${s.descrizione} (scaffale ${s.scaffale})</li>`)
+            .join("") +
+          `</ul>`;
       }
     })
     .catch((err) => {
       console.error("Errore durante il fetch o il parsing del CSV:", err);
+      document.getElementById("risultato").innerHTML = "<p>Errore nel caricamento dati.</p>";
     });
 }
