@@ -10,19 +10,27 @@ async function cerca() {
 
   try {
     const response = await fetch('magazzino.csv');
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
     const csvText = await response.text();
+
+    console.log('CSV grezzo:', csvText.slice(0, 500)); // Mostra le prime righe
+
     const righe = csvText.split('\n').filter(r => r.trim() !== '');
+    console.log('Righe CSV:', righe.length);
 
     const dati = righe.map(r => r.split(';'))
-      .filter(campi => campi.length === 3)
+      .filter(campi => {
+        const valido = campi.length === 3;
+        if (!valido) console.warn('Riga scartata (non 3 campi):', campi);
+        return valido;
+      })
       .map(([codice, descrizione, scaffale]) => ({
         codice: codice.trim(),
         descrizione: descrizione.trim(),
         scaffale: scaffale.trim()
       }));
 
-    console.log('Codice cercato:', input);
-    console.log('Dati letti:', dati);
+    console.log('Dati letti:', dati.length, dati);
 
     const risultato = dati.find(r => r.codice === input);
 
@@ -32,11 +40,10 @@ async function cerca() {
       risultatoDiv.innerHTML = `<p>Nessun risultato esatto trovato.</p>`;
     }
 
-    // Forse cercavi: codici simili o con suffisso
     const codiciSimili = dati.filter(r => {
       return (
-        distanzaCodici(r.codice, input) <= 2 || // differenze minime
-        r.codice.startsWith(input + '-')        // suffissi tipo 123456-1
+        distanzaCodici(r.codice, input) <= 2 ||
+        r.codice.startsWith(input + '-')
       );
     }).filter(r => r.codice !== input);
 
@@ -46,7 +53,6 @@ async function cerca() {
         .join('') + '</ul>';
     }
 
-    // Nello stesso scaffale
     if (risultato) {
       const stessiScaffale = dati.filter(r =>
         r.scaffale === risultato.scaffale && r.codice !== risultato.codice
