@@ -1,4 +1,4 @@
-name: Sync magazzino.csv from Google Drive
+name: Sync magazzino.csv from Google Sheets
 
 on:
   schedule:
@@ -13,9 +13,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Scarica CSV da Google Drive nella root del repo
+      - name: Scarica CSV da Google Sheets pubblicato
         run: |
-          curl -L "https://drive.google.com/uc?export=download&id=1AirX1Ae1D84HqRP1IDloDPvJgNBVpQNV" -o magazzino.csv
+          curl -L "https://docs.google.com/spreadsheets/d/e/2PACX-1vTpSPcmdbazc326rjW5oKXyXzD5I0ODXDWOhRunphN9ZpPFhHmsOo7AqgSGELt7O2jXFL7XNznSJL6z/pub?gid=961942791&single=true&output=csv" -o magazzino.csv
 
       - name: Configura git
         run: |
@@ -25,5 +25,5 @@ jobs:
       - name: Commit e push se ci sono modifiche
         run: |
           git add magazzino.csv
-          git diff --cached --quiet || git commit -m "Aggiorna magazzino.csv da Google Drive"
+          git diff --cached --quiet || git commit -m "Aggiorna magazzino.csv da Google Sheets"
           git push
