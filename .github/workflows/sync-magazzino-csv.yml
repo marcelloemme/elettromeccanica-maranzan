@@ -3,7 +3,10 @@ name: Sync magazzino.csv from Google Sheets
 on:
   schedule:
     - cron: '0 * * * *' # ogni ora
-  workflow_dispatch: # consente anche l'esecuzione manuale
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   update-csv:
@@ -13,7 +16,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Scarica CSV da Google Sheets pubblicato
+      - name: Scarica CSV da Google Sheets
         run: |
           curl -L "https://docs.google.com/spreadsheets/d/e/2PACX-1vTpSPcmdbazc326rjW5oKXyXzD5I0ODXDWOhRunphN9ZpPFhHmsOo7AqgSGELt7O2jXFL7XNznSJL6z/pub?gid=961942791&single=true&output=csv" -o magazzino.csv
 
