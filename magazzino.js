@@ -9,7 +9,7 @@ function cerca() {
       const intestazioni = righe[0].split(",");
       const dati = righe.slice(1).map((r) => {
         const valori = r.split(",");
-          return {
+        return {
           codice: valori[0].trim().replace(/^"|"$/g, ""),
           descrizione: valori[1].trim().replace(/^"|"$/g, ""),
           scaffale: valori[2].trim().replace(/^"|"$/g, ""),
