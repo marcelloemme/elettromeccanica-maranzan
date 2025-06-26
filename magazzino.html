@@ -12,12 +12,10 @@
     <h1>Magazzino</h1>
     <p>Inserisci il codice del ricambio da cercare:</p>
     <input type="text" id="codice-input" placeholder="es. 123456-7" />
-    <button onclick="cerca()">Cerca</button>
-
-    <div style="margin-top: 1em;">
-      <button onclick="mostraTuttoAZ()">Mostra tutto (A-Z)</button>
-      <button onclick="mostraPerScaffale()">Mostra per scaffale</button>
-    </div>
+    <button id="cerca-btn">Cerca</button>
+    <br><br>
+    <button id="mostraAZ">Mostra tutto (A-Z)</button>
+    <button id="mostraScaffale">Mostra per scaffale</button>
 
     <div id="risultato"></div>
     <div id="forse-cercavi"></div>
