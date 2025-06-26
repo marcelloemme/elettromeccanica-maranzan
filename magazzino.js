@@ -1,78 +1,77 @@
-function cerca() {
-  const codice = document.getElementById("codice-input").value.trim();
-  if (!codice) return;
+async function cerca() {
+  const codiceInput = document.getElementById("codice-input").value.trim();
+  console.log("Codice cercato:", codiceInput);
 
-  fetch("magazzino.csv")
-    .then((res) => res.text())
-    .then((text) => {
-      const righe = text.trim().split("\n");
-      const intestazioni = righe[0].split(",");
-      const dati = righe.slice(1).map((r) => {
-        const valori = r.split(",");
-        return {
-          codice: valori[0]?.trim().replace(/"/g, ""),
-          descrizione: valori[1]?.trim().replace(/"/g, ""),
-          scaffale: valori[2]?.trim().replace(/"/g, ""),
-        };
+  try {
+    const response = await fetch("magazzino.csv");
+    const text = await response.text();
+
+    const righe = text.trim().split("\n");
+    const intestazioni = righe[0].split(",").map(h => h.trim().toLowerCase());
+    const dati = righe.slice(1).map(riga => {
+      const valori = riga.split(",").map(v => v.trim());
+      const oggetto = {};
+      intestazioni.forEach((intestazione, i) => {
+        oggetto[intestazione] = valori[i];
+      });
+      return oggetto;
+    });
+
+    console.log("Dati letti:", dati);
+
+    const risultato = dati.find(item => item.codice === codiceInput);
+    const risultatoDiv = document.getElementById("risultato");
+    const stessoScaffaleDiv = document.getElementById("stesso-scaffale");
+    const forseCercaviDiv = document.getElementById("forse-cercavi");
+
+    risultatoDiv.innerHTML = "";
+    stessoScaffaleDiv.innerHTML = "";
+    forseCercaviDiv.innerHTML = "";
+
+    if (risultato) {
+      risultatoDiv.innerHTML = `<h2>Risultato</h2><p><strong>${risultato.codice}</strong>: ${risultato.descrizione} — scaffale ${risultato.scaffale}</p>`;
+
+      // Mostra altri codici nello stesso scaffale
+      const stessi = dati.filter(item => item.scaffale === risultato.scaffale && item.codice !== risultato.codice);
+      if (stessi.length > 0) {
+        stessoScaffaleDiv.innerHTML = "<h2>Nello stesso scaffale</h2><ul>" +
+          stessi.map(item => `<li>${item.codice}: ${item.descrizione}</li>`).join('') +
+          "</ul>";
+      }
+
+      // Suggerimenti “forse cercavi”
+      const base = risultato.codice.split("-")[0];
+      const suggerimenti = dati.filter(item => {
+        const codiceBase = item.codice.split("-")[0];
+        return (
+          item.codice !== risultato.codice &&
+          (
+            codiceBase === base || distanzaHamming(item.codice, codiceInput) === 1
+          )
+        );
       });
 
-      console.log("Codice cercato:", codice);
-      console.log("Dati letti:", dati);
-
-      const risultati = dati.filter((r) => r.codice === codice);
-
-      const suggeriti = dati.filter(
-        (r) => suggerimentiCodice(codice).includes(r.codice) && r.codice !== codice
-      ).slice(0, 10);
-
-      const risultatoBox = document.getElementById("risultato");
-      const forseBox = document.getElementById("forse-cercavi");
-      const stessoBox = document.getElementById("stesso-scaffale");
-
-      risultatoBox.innerHTML = "";
-      forseBox.innerHTML = "";
-      stessoBox.innerHTML = "";
-
-      if (risultati.length > 0) {
-        const r = risultati[0];
-        risultatoBox.innerHTML = `<h3>Risultato</h3><p><strong>${r.codice}</strong>: ${r.descrizione} —  scaffale ${r.scaffale}</p>`;
-
-        const altri = dati.filter((d) => d.scaffale === r.scaffale && d.codice !== r.codice);
-        if (altri.length > 0) {
-          stessoBox.innerHTML = `<h3>Nello stesso scaffale</h3><ul>` +
-            altri.map((a) => `<li>${a.codice}: ${a.descrizione}</li>`).join("") + "</ul>";
-        }
-      } else {
-        risultatoBox.innerHTML = "<p>Nessun risultato esatto trovato.</p>";
+      if (suggerimenti.length > 0) {
+        forseCercaviDiv.innerHTML = "<h2>Forse cercavi</h2><ul>" +
+          suggerimenti.map(item => `<li>${item.codice}: ${item.descrizione}</li>`).join('') +
+          "</ul>";
       }
 
-      if (suggeriti.length > 0) {
-        forseBox.innerHTML = `<h3>Forse cercavi</h3><ul>` +
-          suggeriti.map((s) => `<li>${s.codice}: ${s.descrizione} (scaffale ${s.scaffale})</li>`).join("") + "</ul>";
-      }
-    })
-    .catch((err) => {
-      console.error("Errore durante il fetch o il parsing del CSV:", err);
-    });
+    } else {
+      risultatoDiv.innerHTML = "<p>Nessun risultato esatto trovato.</p>";
+    }
+
+  } catch (error) {
+    console.error("Errore durante il fetch o il parsing del CSV:", error);
+  }
 }
 
-function suggerimentiCodice(codiceBase) {
-  const varianti = new Set();
-  const base = codiceBase.split("-")[0];
-
-  // Una cifra diversa
-  for (let i = 0; i < base.length; i++) {
-    for (let d = 0; d <= 9; d++) {
-      if (base[i] !== d.toString()) {
-        varianti.add(base.slice(0, i) + d + base.slice(i + 1));
-      }
-    }
+// Distanza di Hamming: quanti caratteri sono diversi tra due stringhe
+function distanzaHamming(a, b) {
+  if (a.length !== b.length) return Infinity;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) diff++;
   }
-
-  // Aggiunta di suffissi -1, -2, ..., -9
-  for (let i = 1; i <= 9; i++) {
-    varianti.add(`${base}-${i}`);
-  }
-
-  return Array.from(varianti);
-} 
+  return diff;
+}
