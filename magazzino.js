@@ -1,125 +1,146 @@
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('codice-input').addEventListener('keypress', e => {
-    if (e.key === 'Enter') cerca();
-  });
+  const input = document.getElementById("codice-input");
+  const cercaBtn = document.getElementById("cerca-btn");
+  const mostraAZBtn = document.getElementById("mostraAZ");
+  const mostraScaffaleBtn = document.getElementById("mostraScaffale");
 
-  document.getElementById('mostra-alfabetico').addEventListener('click', () => {
+  cercaBtn.addEventListener("click", cerca);
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") cerca();
+  });
+  mostraAZBtn.addEventListener("click", mostraTuttoAZ);
+  mostraScaffaleBtn.addEventListener("click", mostraPerScaffale);
+
+  async function fetchCSV() {
+    const response = await fetch("magazzino.csv");
+    const text = await response.text();
+    const lines = text.trim().split("\n").slice(1); // rimuove intestazione
+
+    return lines.map(line => {
+      const fields = line.split(",");
+      if (fields.length !== 3) {
+        console.warn("Riga scartata (non 3 campi):", fields);
+        return null;
+      }
+      const [codice, descrizione, scaffale] = fields.map(f => f.trim());
+      return { codice, descrizione, scaffale };
+    }).filter(Boolean);
+  }
+
+  function resetContenuto() {
+    document.getElementById("risultato").innerHTML = "";
+    document.getElementById("forse-cercavi").innerHTML = "";
+    document.getElementById("stesso-scaffale").innerHTML = "";
+    document.getElementById("tutti-risultati").innerHTML = "";
+  }
+
+  function creaTabella(dati) {
+    const table = document.createElement("table");
+    table.style.margin = "1em auto";
+    table.style.borderCollapse = "collapse";
+
+    dati.forEach(item => {
+      const tr = document.createElement("tr");
+
+      const tdCodice = document.createElement("td");
+      tdCodice.textContent = item.codice;
+      tdCodice.style.textAlign = "left";
+      tdCodice.style.paddingRight = "1em";
+
+      const tdDescrizione = document.createElement("td");
+      tdDescrizione.textContent = `${item.descrizione} — scaffale ${item.scaffale}`;
+      tdDescrizione.style.textAlign = "right";
+
+      tr.appendChild(tdCodice);
+      tr.appendChild(tdDescrizione);
+      table.appendChild(tr);
+    });
+
+    return table;
+  }
+
+  function codiciSimili(inputCodice, dati) {
+    const base = inputCodice.replace(/-\d+$/, "");
+    return dati.filter(item => {
+      const baseItem = item.codice.replace(/-\d+$/, "");
+      if (base === item.codice) return false;
+      if (item.codice.startsWith(base + "-")) return true;
+
+      if (base.length !== baseItem.length) return false;
+      let differenze = 0;
+      for (let i = 0; i < base.length; i++) {
+        if (base[i] !== baseItem[i]) differenze++;
+        if (differenze > 2) return false;
+      }
+      return differenze > 0 && differenze <= 2;
+    });
+  }
+
+  async function cerca() {
     resetContenuto();
-    renderRisultati(datiGlobali.slice().sort((a, b) =>
-      a.descrizione.localeCompare(b.descrizione)), 'lista-tutti', 'Tutti i ricambi (A–Z)');
-  });
+    const codiceInput = document.getElementById("codice-input").value.trim();
+    console.log("Codice cercato:", codiceInput);
 
-  document.getElementById('mostra-scaffale').addEventListener('click', () => {
-    resetContenuto();
-    renderRisultati(datiGlobali.slice().sort((a, b) =>
-      a.scaffale.localeCompare(b.scaffale)), 'lista-scaffale', 'Tutti i ricambi per scaffale');
-  });
-});
+    const dati = await fetchCSV();
+    console.log("Dati letti:", dati);
 
-let datiGlobali = [];
+    const risultato = dati.find(item => item.codice === codiceInput);
 
-async function cerca() {
-  const codice = document.getElementById('codice-input').value.trim();
-  resetContenuto();
+    if (risultato) {
+      const div = document.getElementById("risultato");
+      const h2 = document.createElement("h2");
+      h2.textContent = "Risultato";
+      const p = document.createElement("p");
+      p.innerHTML = `<strong>${risultato.codice}</strong>: ${risultato.descrizione} — scaffale ${risultato.scaffale}`;
+      div.appendChild(h2);
+      div.appendChild(p);
 
-  try {
-    const res = await fetch('magazzino.csv');
-    const text = await res.text();
-    const rows = text.trim().split('\n').slice(1);
-    const dati = rows
-      .map(r => r.split(','))
-      .filter(campi => campi.length === 3)
-      .map(([codice, descrizione, scaffale]) => ({
-        codice: codice.trim(),
-        descrizione: descrizione.trim(),
-        scaffale: scaffale.trim()
-      }));
-
-    datiGlobali = dati;
-
-    const trovato = dati.find(d => d.codice === codice);
-
-    if (trovato) {
-      renderRisultati([trovato], 'risultato', 'Risultato');
-
-      const stessoScaffale = dati.filter(d =>
-        d.scaffale === trovato.scaffale && d.codice !== trovato.codice);
-      renderRisultati(stessoScaffale, 'stesso-scaffale', 'Nello stesso scaffale');
-
-      const forseCercavi = suggerisciCodiciSimili(codice, dati).filter(d => d.codice !== trovato.codice);
-      renderRisultati(forseCercavi, 'forse-cercavi', 'Forse cercavi');
-
+      const stesso = dati.filter(item => item.scaffale === risultato.scaffale && item.codice !== risultato.codice);
+      if (stesso.length > 0) {
+        const sezione = document.getElementById("stesso-scaffale");
+        const h3 = document.createElement("h3");
+        h3.textContent = "Nello stesso scaffale";
+        sezione.appendChild(h3);
+        sezione.appendChild(creaTabella(stesso));
+      }
     } else {
-      document.getElementById('risultato').innerHTML = '<p>Nessun risultato esatto trovato.</p>';
-      const suggeriti = suggerisciCodiciSimili(codice, dati);
-      renderRisultati(suggeriti, 'forse-cercavi', 'Forse cercavi');
+      document.getElementById("risultato").textContent = "Nessun risultato esatto trovato.";
     }
-  } catch (e) {
-    console.error('Errore durante il fetch o il parsing del CSV:', e);
+
+    const suggeriti = codiciSimili(codiceInput, dati);
+    if (suggeriti.length > 0) {
+      const sezione = document.getElementById("forse-cercavi");
+      const h3 = document.createElement("h3");
+      h3.textContent = "Forse cercavi";
+      sezione.appendChild(h3);
+      sezione.appendChild(creaTabella(suggeriti));
+    }
   }
-}
 
-function suggerisciCodiciSimili(codiceInserito, dati) {
-  return dati.filter(item => {
-    const codiceBase = codiceInserito.split('-')[0];
-    const itemBase = item.codice.split('-')[0];
+  async function mostraTuttoAZ() {
+    resetContenuto();
+    const dati = await fetchCSV();
+    const ordinati = [...dati].sort((a, b) => a.codice.localeCompare(b.codice));
 
-    const differenze = contaDifferenze(codiceInserito, item.codice);
-    const stessoPrefisso = itemBase === codiceBase && item.codice !== codiceInserito;
-
-    return differenze <= 2 || stessoPrefisso;
-  });
-}
-
-function contaDifferenze(a, b) {
-  const len = Math.max(a.length, b.length);
-  let count = 0;
-  for (let i = 0; i < len; i++) {
-    if (a[i] !== b[i]) count++;
+    const sezione = document.getElementById("tutti-risultati");
+    const h3 = document.createElement("h3");
+    h3.textContent = "Tutti i codici (A-Z)";
+    sezione.appendChild(h3);
+    sezione.appendChild(creaTabella(ordinati));
   }
-  return count;
-}
 
-function renderRisultati(risultati, containerId, titolo) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = '';
+  async function mostraPerScaffale() {
+    resetContenuto();
+    const dati = await fetchCSV();
+    const ordinati = [...dati].sort((a, b) => {
+      if (a.scaffale === b.scaffale) return a.codice.localeCompare(b.codice);
+      return a.scaffale.localeCompare(b.scaffale);
+    });
 
-  if (risultati.length === 0) return;
-
-  const heading = document.createElement('h2');
-  heading.textContent = titolo;
-  container.appendChild(heading);
-
-  const table = document.createElement('table');
-  table.classList.add('tabella-risultati');
-
-  risultati.forEach(item => {
-    const row = document.createElement('tr');
-
-    const codiceCell = document.createElement('td');
-    codiceCell.className = 'codice';
-    codiceCell.textContent = item.codice;
-
-    const descrizioneCell = document.createElement('td');
-    descrizioneCell.className = 'descrizione';
-    descrizioneCell.textContent = item.descrizione;
-
-    const scaffaleCell = document.createElement('td');
-    scaffaleCell.className = 'scaffale';
-    scaffaleCell.textContent = `scaffale ${item.scaffale}`;
-
-    row.appendChild(codiceCell);
-    row.appendChild(descrizioneCell);
-    row.appendChild(scaffaleCell);
-    table.appendChild(row);
-  });
-
-  container.appendChild(table);
-}
-
-function resetContenuto() {
-  ['risultato', 'forse-cercavi', 'stesso-scaffale', 'lista-tutti', 'lista-scaffale'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = '';
-  });
-}
+    const sezione = document.getElementById("tutti-risultati");
+    const h3 = document.createElement("h3");
+    h3.textContent = "Tutti i codici (per scaffale)";
+    sezione.appendChild(h3);
+    sezione.appendChild(creaTabella(ordinati));
+  }
+});
