@@ -2,6 +2,8 @@ function cerca() {
   const codice = document.getElementById("codice-input").value.trim();
   if (!codice) return;
 
+  console.log("Codice cercato:", codice);
+
   fetch("data/magazzino.csv")
     .then((res) => res.text())
     .then((text) => {
@@ -17,6 +19,8 @@ function cerca() {
             scaffale: valori[2].trim().replace(/^"|"$/g, "")
           };
         });
+
+      console.log("Dati letti:", dati.map(d => d.codice));
 
       const risultati = dati.filter((r) => r.codice === codice);
       const suggeriti = dati
