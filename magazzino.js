@@ -12,27 +12,31 @@ async function cerca() {
     const response = await fetch('magazzino.csv');
     const csvText = await response.text();
     const righe = csvText.split('\n').filter(r => r.trim() !== '');
-    const dati = righe.map(r => {
-      const [codice, descrizione, scaffale] = r.split(';');
-      return { codice: codice.trim(), descrizione: descrizione.trim(), scaffale: scaffale.trim() };
-    });
 
+    const dati = righe.map(r => r.split(';'))
+      .filter(campi => campi.length === 3)
+      .map(([codice, descrizione, scaffale]) => ({
+        codice: codice.trim(),
+        descrizione: descrizione.trim(),
+        scaffale: scaffale.trim()
+      }));
+
+    console.log('Codice cercato:', input);
     console.log('Dati letti:', dati);
 
     const risultato = dati.find(r => r.codice === input);
 
-    // Mostra risultato esatto
     if (risultato) {
       risultatoDiv.innerHTML = `<h2>Risultato</h2><p><strong>${risultato.codice}</strong>: ${risultato.descrizione} &mdash; scaffale ${risultato.scaffale}</p>`;
     } else {
       risultatoDiv.innerHTML = `<p>Nessun risultato esatto trovato.</p>`;
     }
 
-    // Forse cercavi: varianti e codici simili
+    // Forse cercavi: codici simili o con suffisso
     const codiciSimili = dati.filter(r => {
       return (
-        distanzaCodici(r.codice, input) <= 2 || // massimo 2 differenze tra cifre
-        r.codice.startsWith(input + '-')        // es. 123406 -> 123406-1
+        distanzaCodici(r.codice, input) <= 2 || // differenze minime
+        r.codice.startsWith(input + '-')        // suffissi tipo 123456-1
       );
     }).filter(r => r.codice !== input);
 
@@ -44,7 +48,9 @@ async function cerca() {
 
     // Nello stesso scaffale
     if (risultato) {
-      const stessiScaffale = dati.filter(r => r.scaffale === risultato.scaffale && r.codice !== risultato.codice);
+      const stessiScaffale = dati.filter(r =>
+        r.scaffale === risultato.scaffale && r.codice !== risultato.codice
+      );
       if (stessiScaffale.length > 0) {
         stessoScaffaleDiv.innerHTML = `<h2>Nello stesso scaffale</h2><ul>` + stessiScaffale
           .map(r => `<li><strong>${r.codice}</strong>: ${r.descrizione}</li>`)
@@ -58,7 +64,6 @@ async function cerca() {
   }
 }
 
-// Calcola quante cifre sono diverse (solo tra parti numeriche)
 function distanzaCodici(a, b) {
   const numA = a.replace(/[^0-9]/g, '');
   const numB = b.replace(/[^0-9]/g, '');
