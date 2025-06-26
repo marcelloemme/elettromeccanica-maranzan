@@ -59,12 +59,27 @@ td.descrizione, td.scaffale {
 table {
   width: 100%;
   table-layout: fixed;
-  word-wrap: break-word;
+  border-collapse: collapse;
+  font-size: clamp(12px, 2.5vw, 16px);
+  margin: 1em auto;
 }
 
 table td {
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: min(4vw, 16px); /* Si adatta allo schermo, ma non supera 16px */
+  text-overflow: clip;
+  padding-left: 0.1em;
+  padding-right: 0.1em;
+  vertical-align: top;
+}
+
+/* Allineamento specifico */
+table td:first-child {
+  text-align: left;
+  width: 35%;
+}
+
+table td:last-child {
+  text-align: right;
+  width: 65%;
 }
