@@ -78,20 +78,25 @@ async function caricaDatiCSV() {
 async function mostraTuttoAZ() {
   const dati = await caricaDatiCSV();
   const ordinati = dati.sort((a, b) => a.codice.localeCompare(b.codice));
+
+  // Pulisce i risultati precedenti
+  document.getElementById("risultato").innerHTML = "";
+  document.getElementById("forse-cercavi").innerHTML = "";
+  document.getElementById("stesso-scaffale").innerHTML = "";
+
   mostraElenco(ordinati);
 }
 
 async function mostraPerScaffale() {
   const dati = await caricaDatiCSV();
   const ordinati = dati.sort((a, b) => a.scaffale.localeCompare(b.scaffale));
-  mostraElenco(ordinati);
-}
 
-function mostraElenco(lista) {
-  const container = document.getElementById("elenco-completo");
-  container.innerHTML = "<h2>Elenco</h2><ul>" +
-    lista.map(item => `<li><strong>${item.codice}</strong>: ${item.descrizione} — scaffale ${item.scaffale}</li>`).join("") +
-    "</ul>";
+  // Pulisce i risultati precedenti
+  document.getElementById("risultato").innerHTML = "";
+  document.getElementById("forse-cercavi").innerHTML = "";
+  document.getElementById("stesso-scaffale").innerHTML = "";
+
+  mostraElenco(ordinati);
 }
 
 // Attiva invio con tasto Enter
