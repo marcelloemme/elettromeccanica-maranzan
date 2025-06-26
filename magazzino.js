@@ -14,14 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
   async function fetchCSV() {
     const response = await fetch("magazzino.csv");
     const text = await response.text();
-    const lines = text.trim().split("\n").slice(1); // rimuove intestazione
+    const lines = text.trim().split("\n").slice(1);
 
     return lines.map(line => {
       const fields = line.split(",");
-      if (fields.length !== 3) {
-        console.warn("Riga scartata (non 3 campi):", fields);
-        return null;
-      }
+      if (fields.length !== 3) return null;
       const [codice, descrizione, scaffale] = fields.map(f => f.trim());
       return { codice, descrizione, scaffale };
     }).filter(Boolean);
@@ -79,11 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
   async function cerca() {
     resetContenuto();
     const codiceInput = document.getElementById("codice-input").value.trim();
-    console.log("Codice cercato:", codiceInput);
 
     const dati = await fetchCSV();
-    console.log("Dati letti:", dati);
-
     const risultato = dati.find(item => item.codice === codiceInput);
 
     if (risultato) {
@@ -95,7 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
       div.appendChild(h2);
       div.appendChild(p);
 
-      const stesso = dati.filter(item => item.scaffale === risultato.scaffale && item.codice !== risultato.codice);
+      const stesso = dati
+        .filter(item => item.scaffale === risultato.scaffale && item.codice !== risultato.codice)
+        .slice(0, 10);
+
       if (stesso.length > 0) {
         const sezione = document.getElementById("stesso-scaffale");
         const h3 = document.createElement("h3");
@@ -107,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById("risultato").textContent = "Nessun risultato esatto trovato.";
     }
 
-    const suggeriti = codiciSimili(codiceInput, dati);
+    const suggeriti = codiciSimili(codiceInput, dati).slice(0, 10);
     if (suggeriti.length > 0) {
       const sezione = document.getElementById("forse-cercavi");
       const h3 = document.createElement("h3");
