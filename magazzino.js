@@ -20,7 +20,6 @@ let datiGlobali = [];
 
 async function cerca() {
   const codice = document.getElementById('codice-input').value.trim();
-  console.log("Codice cercato:", codice);
   resetContenuto();
 
   try {
@@ -37,7 +36,6 @@ async function cerca() {
       }));
 
     datiGlobali = dati;
-    console.log("Dati letti:", dati.length);
 
     const trovato = dati.find(d => d.codice === codice);
 
@@ -53,7 +51,6 @@ async function cerca() {
 
     } else {
       document.getElementById('risultato').innerHTML = '<p>Nessun risultato esatto trovato.</p>';
-
       const suggeriti = suggerisciCodiciSimili(codice, dati);
       renderRisultati(suggeriti, 'forse-cercavi', 'Forse cercavi');
     }
@@ -94,6 +91,7 @@ function renderRisultati(risultati, containerId, titolo) {
   container.appendChild(heading);
 
   const table = document.createElement('table');
+  table.classList.add('tabella-risultati');
 
   risultati.forEach(item => {
     const row = document.createElement('tr');
@@ -121,6 +119,7 @@ function renderRisultati(risultati, containerId, titolo) {
 
 function resetContenuto() {
   ['risultato', 'forse-cercavi', 'stesso-scaffale', 'lista-tutti', 'lista-scaffale'].forEach(id => {
-    document.getElementById(id).innerHTML = '';
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '';
   });
 }
