@@ -3,7 +3,7 @@ name: Sync magazzino.csv from Google Drive
 on:
   schedule:
     - cron: '0 * * * *' # ogni ora
-  workflow_dispatch: # permette anche l'avvio manuale
+  workflow_dispatch: # consente anche l'esecuzione manuale
 
 jobs:
   update-csv:
@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+
+      - name: Crea directory public
+        run: mkdir -p public
 
       - name: Scarica CSV da Google Drive
         run: |
