@@ -55,3 +55,16 @@ td.codice {
 td.descrizione, td.scaffale {
   text-align: right;
 }
+
+table {
+  width: 100%;
+  table-layout: fixed;
+  word-wrap: break-word;
+}
+
+table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: min(4vw, 16px); /* Si adatta allo schermo, ma non supera 16px */
+}
