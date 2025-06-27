@@ -1,81 +1,259 @@
 codice,descrizione,scaffale
-108725-7,spazzola,Q3
-119521-6,interruttore,O3
-123400-0,interruttore,B2
-123400-1,albero,B2
-123401-0,interruttore,B2
-123401-1,albero,B2
-123402-0,cuscinetto,B2
-123402-1,ventola,B2
-123403-0,albero,B2
-123403-1,bobina,B2
-123404-0,ventola,B2
-123404-1,rotore,B2
-123405-0,ventola,B2
-123405-1,rotore,B2
-123406-0,cuscinetto,B2
-123406-1,ventola,B2
-123407-0,cuscinetto,B2
-123407-1,ventola,B2
-123408-0,indotto,B2
-123408-1,albero,B2
-123409-0,indotto,B2
-123409-1,interruttore,B2
-144071-5,spazzola,Q5
-170489-2,gruppo spazzole,J2
-174247-0,ventola,B5
-200527-5,spazzola,I2
-215656-1,albero,I2
-250898-8,spazzola,T3
-280643-0,gruppo spazzole,C2
-284547-7,cuscinetto,P6
-288159-4,ventola,B2
-317742-7,albero,B3
-327023-1,cuscinetto,N5
-338086-5,rotore,P6
-364615-6,albero,Z4
-419387-4,ventola,D2
-448308-8,albero,B6
-550144-3,spazzola,P3
-550194-3,albero,P4
-567834-9,albero,D5
-578347-1,statore,M5
-583697-0,interruttore,A3
-606201-2,interruttore,O1
-607882-7,statore,K6
-608350-9,ventola,R4
-608601-7,cuscinetto,M1
-636704-0,rotore,A3
-666689-5,ventola,B1
-672927-5,cuscinetto,K5
-682643-2,rotore,B6
-718566-4,indotto,R2
-727576-4,albero,K6
-730800-4,rotore,V3
-736875-9,statore,G5
-743614-4,bobina,X2
-751730-7,rotore,V5
-773135-9,cuscinetto,A4
-785857-5,rotore,B1
-786202-5,bobina,G1
-795751-9,bobina,U1
-802196-6,bobina,B4
-807148-5,cuscinetto,D4
-825372-4,spazzola,T1
-840146-1,spazzola,I4
-844023-3,cuscinetto,Q6
-847520-1,spazzola,W1
-848242-5,bobina,W1
-848475-8,cuscinetto,H1
-848811-6,cuscinetto,F3
-868877-0,ventola,J3
-873490-0,rotore,L6
-876693-2,indotto,A4
-883053-8,interruttore,R6
-887421-6,interruttore,P3
-937116-8,ventola,K5
-940089-9,spazzola,P3
-950804-9,statore,P3
-959844-8,cuscinetto,Q3
-971598-7,cuscinetto,H1
-978233-6,rotore,F1
+101111-0,rele,U1
+128025-9,portaspazzole avvolgimento,G4
+194137-0,avvolgimento supporto,P5
+252611-4,rele puleggia,U6
+287561-3,carbone,L6
+290631-8,statore portaspazzole sede,T1
+306754-9,indotto avvolgimento,M10
+310240-2,ventola trasformatore gruppo spazzole,L6
+333928-6,portaspazzole,R10
+383513-5,sede,Q9
+384107-0,gruppo spazzole,F4
+387318-8,indotto rotore supporto,J6
+406573-1,statore sede carbone,E10
+418617-1,spazzola,H10
+480317-8,ventola carbone sede,Q7
+495065-3,rotore,M8
+506491-4,carbone,A6
+548543-4,supporto portaspazzole,B3
+561350-0,indotto,P6
+579494-5,trasformatore,M5
+587881-2,indotto avvolgimento statore,Y8
+629260-8,rele,X10
+657301-3,statore cuscinetto,Z8
+710212-5,ventola,U6
+719603-3,portaspazzole,I2
+769369-5,rele rele,R5
+782546-5,ventola,B1
+874335-7,statore,P10
+983668-8,rotore,J7
+983668-9,rotore,J8
+983668-10,rotore,J9
+983668-11,rotore,J10
+983668-12,rotore,J11
+983668-13,rotore,J12
+983668-14,rotore,J13
+983668-15,rotore,J14
+983668-16,rotore,J15
+983668-17,rotore,J16
+983668-18,rotore,J17
+983668-19,rotore,J18
+983668-20,rotore,J19
+983668-21,rotore,J20
+983668-22,rotore,J21
+983668-23,rotore,J22
+983668-24,rotore,J23
+983668-25,rotore,J24
+983668-26,rotore,J25
+983668-27,rotore,J26
+983668-28,rotore,J27
+983668-29,rotore,J28
+983668-30,rotore,J29
+983668-31,rotore,J30
+983668-32,rotore,J31
+983668-33,rotore,J32
+983668-34,rotore,J33
+983668-35,rotore,J34
+983668-36,rotore,J35
+983668-37,rotore,J36
+983668-38,rotore,J37
+983668-39,rotore,J38
+983668-40,rotore,J39
+983668-41,rotore,J40
+983668-42,rotore,J41
+983668-43,rotore,J42
+983668-44,rotore,J43
+983668-45,rotore,J44
+983668-46,rotore,J45
+983668-47,rotore,J46
+983668-48,rotore,J47
+983668-49,rotore,J48
+983668-50,rotore,J49
+983668-51,rotore,J50
+983668-52,rotore,J51
+983668-53,rotore,J52
+983668-54,rotore,J53
+983668-55,rotore,J54
+983668-56,rotore,J55
+983668-57,rotore,J56
+983668-58,rotore,J57
+983668-59,rotore,J58
+983668-60,rotore,J59
+983668-61,rotore,J60
+983668-62,rotore,J61
+983668-63,rotore,J62
+983668-64,rotore,J63
+983668-65,rotore,J64
+983668-66,rotore,J65
+983668-67,rotore,J66
+983668-68,rotore,J67
+983668-69,rotore,J68
+983668-70,rotore,J69
+983668-71,rotore,J70
+983668-72,rotore,J71
+983668-73,rotore,J72
+983668-74,rotore,J73
+983668-75,rotore,J74
+983668-76,rotore,J75
+983668-77,rotore,J76
+983668-78,rotore,J77
+983668-79,rotore,J78
+983668-80,rotore,J79
+983668-81,rotore,J80
+983668-82,rotore,J81
+983668-83,rotore,J82
+983668-84,rotore,J83
+983668-85,rotore,J84
+983668-86,rotore,J85
+983668-87,rotore,J86
+983668-88,rotore,J87
+999706-80,motore trasformatore trasformatore,U89
+999706-81,motore trasformatore trasformatore,U90
+999706-82,motore trasformatore trasformatore,U91
+999706-83,motore trasformatore trasformatore,U92
+999706-84,motore trasformatore trasformatore,U93
+999706-85,motore trasformatore trasformatore,U94
+999706-86,motore trasformatore trasformatore,U95
+999706-87,motore trasformatore trasformatore,U96
+999706-88,motore trasformatore trasformatore,U97
+999706-89,motore trasformatore trasformatore,U98
+999706-90,motore trasformatore trasformatore,U99
+999706-91,motore trasformatore trasformatore,U100
+999706-92,motore trasformatore trasformatore,U101
+999706-93,motore trasformatore trasformatore,U102
+999706-94,motore trasformatore trasformatore,U103
+999706-95,motore trasformatore trasformatore,U104
+999706-96,motore trasformatore trasformatore,U105
+999706-97,motore trasformatore trasformatore,U106
+999706-98,motore trasformatore trasformatore,U107
+999706-99,motore trasformatore trasformatore,U108
+999706-100,motore trasformatore trasformatore,U109
+999706-101,motore trasformatore trasformatore,U110
+999706-102,motore trasformatore trasformatore,U111
+999706-103,motore trasformatore trasformatore,U112
+999706-104,motore trasformatore trasformatore,U113
+999706-105,motore trasformatore trasformatore,U114
+999706-106,motore trasformatore trasformatore,U115
+999706-107,motore trasformatore trasformatore,U116
+999706-108,motore trasformatore trasformatore,U117
+999706-109,motore trasformatore trasformatore,U118
+999706-110,motore trasformatore trasformatore,U119
+999706-111,motore trasformatore trasformatore,U120
+999706-112,motore trasformatore trasformatore,U121
+999706-113,motore trasformatore trasformatore,U122
+999706-114,motore trasformatore trasformatore,U123
+999706-115,motore trasformatore trasformatore,U124
+999706-116,motore trasformatore trasformatore,U125
+999706-117,motore trasformatore trasformatore,U126
+999706-118,motore trasformatore trasformatore,U127
+999706-119,motore trasformatore trasformatore,U128
+999706-120,motore trasformatore trasformatore,U129
+999706-121,motore trasformatore trasformatore,U130
+999706-122,motore trasformatore trasformatore,U131
+999706-123,motore trasformatore trasformatore,U132
+999706-124,motore trasformatore trasformatore,U133
+999706-125,motore trasformatore trasformatore,U134
+999706-126,motore trasformatore trasformatore,U135
+999706-127,motore trasformatore trasformatore,U136
+999706-128,motore trasformatore trasformatore,U137
+999706-129,motore trasformatore trasformatore,U138
+999706-130,motore trasformatore trasformatore,U139
+999706-131,motore trasformatore trasformatore,U140
+999706-132,motore trasformatore trasformatore,U141
+999706-133,motore trasformatore trasformatore,U142
+999706-134,motore trasformatore trasformatore,U143
+999706-135,motore trasformatore trasformatore,U144
+999706-136,motore trasformatore trasformatore,U145
+999706-137,motore trasformatore trasformatore,U146
+999706-138,motore trasformatore trasformatore,U147
+999706-139,motore trasformatore trasformatore,U148
+999706-140,motore trasformatore trasformatore,U149
+999706-141,motore trasformatore trasformatore,U150
+999706-142,motore trasformatore trasformatore,U151
+999706-143,motore trasformatore trasformatore,U152
+999706-144,motore trasformatore trasformatore,U153
+999706-145,motore trasformatore trasformatore,U154
+999706-146,motore trasformatore trasformatore,U155
+999706-147,motore trasformatore trasformatore,U156
+999706-148,motore trasformatore trasformatore,U157
+999706-149,motore trasformatore trasformatore,U158
+999706-150,motore trasformatore trasformatore,U159
+999706-151,motore trasformatore trasformatore,U160
+999706-152,motore trasformatore trasformatore,U161
+999706-153,motore trasformatore trasformatore,U162
+999706-154,motore trasformatore trasformatore,U163
+999706-155,motore trasformatore trasformatore,U164
+999706-156,motore trasformatore trasformatore,U165
+999706-157,motore trasformatore trasformatore,U166
+999706-158,motore trasformatore trasformatore,U167
+999706-159,motore trasformatore trasformatore,U168
+999706-160,motore trasformatore trasformatore,U169
+999706-161,motore trasformatore trasformatore,U170
+999706-162,motore trasformatore trasformatore,U171
+999706-163,motore trasformatore trasformatore,U172
+999706-164,motore trasformatore trasformatore,U173
+999706-165,motore trasformatore trasformatore,U174
+999706-166,motore trasformatore trasformatore,U175
+999706-167,motore trasformatore trasformatore,U176
+999706-168,motore trasformatore trasformatore,U177
+999706-169,motore trasformatore trasformatore,U178
+999706-170,motore trasformatore trasformatore,U179
+999706-171,motore trasformatore trasformatore,U180
+999706-172,motore trasformatore trasformatore,U181
+999706-173,motore trasformatore trasformatore,U182
+999706-174,motore trasformatore trasformatore,U183
+999706-175,motore trasformatore trasformatore,U184
+999706-176,motore trasformatore trasformatore,U185
+999706-177,motore trasformatore trasformatore,U186
+999706-178,motore trasformatore trasformatore,U187
+999706-179,motore trasformatore trasformatore,U188
+999706-180,motore trasformatore trasformatore,U189
+999706-181,motore trasformatore trasformatore,U190
+999706-182,motore trasformatore trasformatore,U191
+999706-183,motore trasformatore trasformatore,U192
+999706-184,motore trasformatore trasformatore,U193
+999706-185,motore trasformatore trasformatore,U194
+999706-186,motore trasformatore trasformatore,U195
+999706-187,motore trasformatore trasformatore,U196
+999706-188,motore trasformatore trasformatore,U197
+999706-189,motore trasformatore trasformatore,U198
+999706-190,motore trasformatore trasformatore,U199
+999706-191,motore trasformatore trasformatore,U200
+999706-192,motore trasformatore trasformatore,U201
+999706-193,motore trasformatore trasformatore,U202
+999706-194,motore trasformatore trasformatore,U203
+999706-195,motore trasformatore trasformatore,U204
+999706-196,motore trasformatore trasformatore,U205
+999706-197,motore trasformatore trasformatore,U206
+999706-198,motore trasformatore trasformatore,U207
+999706-199,motore trasformatore trasformatore,U208
+999706-200,motore trasformatore trasformatore,U209
+999706-201,motore trasformatore trasformatore,U210
+999706-202,motore trasformatore trasformatore,U211
+999706-203,motore trasformatore trasformatore,U212
+999706-204,motore trasformatore trasformatore,U213
+999706-205,motore trasformatore trasformatore,U214
+999706-206,motore trasformatore trasformatore,U215
+999706-207,motore trasformatore trasformatore,U216
+999706-208,motore trasformatore trasformatore,U217
+999706-209,motore trasformatore trasformatore,U218
+999706-210,motore trasformatore trasformatore,U219
+999706-211,motore trasformatore trasformatore,U220
+999706-212,motore trasformatore trasformatore,U221
+999706-213,motore trasformatore trasformatore,U222
+999706-214,motore trasformatore trasformatore,U223
+999706-215,motore trasformatore trasformatore,U224
+999706-216,motore trasformatore trasformatore,U225
+999706-217,motore trasformatore trasformatore,U226
+999706-218,motore trasformatore trasformatore,U227
+999706-219,motore trasformatore trasformatore,U228
+999706-220,motore trasformatore trasformatore,U229
+999706-221,motore trasformatore trasformatore,U230
+999706-222,motore trasformatore trasformatore,U231
+999706-223,motore trasformatore trasformatore,U232
+999706-224,motore trasformatore trasformatore,U233
+999706-225,motore trasformatore trasformatore,U234
+999706-226,motore trasformatore trasformatore,U235
+999706-227,motore trasformatore trasformatore,U236
+999706-228,motore trasformatore trasformatore,U237
