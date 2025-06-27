@@ -1,8 +1,10 @@
 /* RESET GLOBALE */
+/* RESET GLOBALE */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
 html, body {

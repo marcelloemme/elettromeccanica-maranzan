@@ -3,27 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Magazzino</title>
+  <title>Elettromeccanica Maranzan_Magazzino</title>
   <link rel="stylesheet" href="css/magazzino.css" />
 </head>
 <body>
-  <p>Elettromeccanica Maranzan_Magazzino</p>
-  <p>
-    Inserisci il codice del ricambio da cercare, oppure visualizza il catalogo
-    <a href="#" id="mostra-tutti">in ordine</a>,
-    o <a href="#" id="mostra-scaffale">per scaffale</a>.
-  </p>
+  <div class="magazzino">
+    <p>Elettromeccanica Maranzan_Magazzino</p>
+    <p>
+      Inserisci il codice del ricambio da cercare, oppure visualizza il catalogo 
+      <a href="#" id="mostra-ordine">in ordine</a>, o 
+      <a href="#" id="mostra-scaffale">per scaffale</a>.
+    </p>
 
-  <input type="text" id="codice" placeholder="Codice ricambio" />
-  <button onclick="cerca()">Cerca</button>
-  <button onclick="aggiornaDati()">Aggiorna dati ora</button>
+    <input type="text" id="codice" placeholder="Codice ricambio" />
+    <button onclick="cerca()">Cerca</button>
+    <button onclick="aggiornaDati()">Aggiorna dati ora</button>
 
-  <div id="risultato"></div>
-  <div id="forse-cercavi"></div>
-  <div id="stesso-scaffale"></div>
-  <div id="lista-tutti"></div>
-  <div id="lista-scaffale"></div>
-  <div id="tutti-risultati"></div>
+    <div id="risultato"></div>
+    <div id="forse-cercavi"></div>
+    <div id="stesso-scaffale"></div>
+    <div id="lista-tutti"></div>
+    <div id="lista-scaffale"></div>
+    <div id="tutti-risultati"></div>
+  </div>
 
   <script src="js/magazzino.js"></script>
 </body>
