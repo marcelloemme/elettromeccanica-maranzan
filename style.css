@@ -52,7 +52,6 @@ html, body {
 }
 
 .homepage .intestazione {
-  font-size: clamp(14px, 4.5vw, 18px);
   white-space: nowrap;
   overflow: visible;
   margin-bottom: 0.5em;
