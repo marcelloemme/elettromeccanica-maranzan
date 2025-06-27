@@ -2,29 +2,41 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Magazzino | Elettromeccanica Maranzan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elettromeccanica Maranzan_Magazzino</title>
   <link rel="stylesheet" href="css/magazzino.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Magazzino</h1>
-    <p>Inserisci il codice del ricambio da cercare:</p>
+  <div class="magazzino">
+    <div class="contenitore">
+      <h1>Elettromeccanica Maranzan_Magazzino</h1>
+      <p>
+        Inserisci il codice del ricambio da cercare, oppure visualizza il catalogo
+        <a href="#" id="link-az">in ordine</a>, o
+        <a href="#" id="link-scaffale">per scaffale</a>.
+      </p>
+      <input type="text" id="codice-input" placeholder="es. 123456-7" />
+      <button id="cerca-btn">Cerca</button>
+      <button id="aggiorna-btn">Aggiorna</button>
 
-    <input type="text" id="codice-input" placeholder="es. 123456-7" />
-    <button id="cerca-btn">Cerca</button>
-    <button id="aggiorna-btn">Aggiorna</button>
-
-    <br><br>
-    <button id="mostraAZ">Mostra tutto (A-Z)</button>
-    <button id="mostraScaffale">Mostra per scaffale</button>
-
-    <div id="risultato"></div>
-    <div id="forse-cercavi"></div>
-    <div id="stesso-scaffale"></div>
-    <div id="tutti-risultati"></div>
+      <div id="risultato"></div>
+      <div id="forse-cercavi"></div>
+      <div id="stesso-scaffale"></div>
+      <div id="tutti-risultati"></div>
+    </div>
   </div>
 
   <script src="js/magazzino.js"></script>
+  <script>
+    document.getElementById("link-az").addEventListener("click", (e) => {
+      e.preventDefault();
+      if (typeof mostraTuttoAZ === "function") mostraTuttoAZ();
+    });
+
+    document.getElementById("link-scaffale").addEventListener("click", (e) => {
+      e.preventDefault();
+      if (typeof mostraPerScaffale === "function") mostraPerScaffale();
+    });
+  </script>
 </body>
 </html>
