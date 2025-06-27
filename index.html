@@ -9,72 +9,48 @@
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
       background: #fafafa;
       margin: 0;
-      padding: 0;
-      height: 100vh;
+      padding: 0.5em;
+      color: #222;
+      min-height: 100dvh;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
     }
 
     .contenitore {
       max-width: 90vw;
       width: 500px;
+      margin: 0 auto;
       text-align: left;
-      color: #222;
-      font-size: clamp(14px, 2.5vw, 18px);
+      font-size: clamp(14px, 3.5vw, 18px);
       line-height: 1.6;
     }
 
-    .contenitore a {
-      color: #222;
+    a {
       text-decoration: underline;
+      color: inherit;
+    }
+
+    .copiabile {
       cursor: pointer;
-    }
-
-    .contenitore a:visited {
-      color: #222;
-    }
-
-    .etichetta {
-      text-decoration: none;
-      font-weight: normal;
-    }
-
-    #copiato-msg {
-      display: none;
-      font-size: 0.9em;
-      color: green;
-      margin-left: 8px;
     }
   </style>
 </head>
 <body>
   <div class="contenitore">
-    Elettromeccanica Maranzan snc di Maranzan Gianpio & C.<br>
-    <span class="etichetta">I.</span>
-    <a href="https://maps.app.goo.gl/wWfxYwCuXjoXo9c38" target="_blank" rel="noopener noreferrer">
-      Via Cadore 12, 33080 Fiume Veneto PN
-    </a><br>
-    <span class="etichetta">P.IVA/CF</span> 
-    <a onclick="copiaPartitaIVA()">01328390933</a><span id="copiato-msg"> Copiata!</span><br><br>
-
-    <span class="etichetta">T.</span>
-    <a href="tel:+390434958182">0434 958182</a><br>
-    <span class="etichetta">M.</span>
-    <a href="mailto:maranzan.pn@virgilio.it">maranzan.pn@virgilio.it</a><br>
-    <span class="etichetta">PEC</span>
-    <a href="mailto:maranzanelettromeccanica@pec.it">maranzanelettromeccanica@pec.it</a>
+    <div>Elettromeccanica Maranzan snc di Maranzan Gianpio & C.</div>
+    <div>I. <a href="https://maps.app.goo.gl/wWfxYwCuXjoXo9c38" target="_blank">Via Cadore 12, 33080 Fiume Veneto PN</a></div>
+    <div>P.IVA/CF <a href="#" class="copiabile" onclick="copiaPIVA()">01328390933</a></div>
+    <br />
+    <div>T. <a href="tel:0434958182">0434 958182</a></div>
+    <div>M. <a href="mailto:maranzan.pn@virgilio.it">maranzan.pn@virgilio.it</a></div>
+    <div>PEC <a href="mailto:maranzanelettromeccanica@pec.it">maranzanelettromeccanica@pec.it</a></div>
   </div>
 
   <script>
-    function copiaPartitaIVA() {
-      const text = "01328390933";
-      navigator.clipboard.writeText(text).then(() => {
-        const msg = document.getElementById("copiato-msg");
-        msg.style.display = "inline";
-        setTimeout(() => {
-          msg.style.display = "none";
-        }, 1500);
+    function copiaPIVA() {
+      navigator.clipboard.writeText("01328390933").then(() => {
+        alert("P.IVA copiata negli appunti");
       });
     }
   </script>
