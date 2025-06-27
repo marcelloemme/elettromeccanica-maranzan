@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const h2 = document.createElement("h2");
       h2.textContent = "Risultato";
       const p = document.createElement("p");
-      p.innerHTML = `<strong>${risultato.codice}</strong>: ${risultato.descrizione} — scaffale ${risultato.scaffale}`;
+      p.innerHTML = `<u>${risultato.codice}</u>: ${risultato.descrizione} — scaffale ${risultato.scaffale}`;
       div.appendChild(p);
       div.appendChild(p);
 
