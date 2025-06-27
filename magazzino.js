@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   mostraScaffaleBtn.addEventListener("click", mostraPerScaffale);
 
   async function fetchCSV() {
-    const response = await fetch("magazzino.csv");
+    const response = await fetch(`magazzino.csv?t=${Date.now()}`);
     const text = await response.text();
     const lines = text.trim().split("\n").slice(1);
 
@@ -140,4 +140,21 @@ document.addEventListener('DOMContentLoaded', () => {
     sezione.appendChild(h3);
     sezione.appendChild(creaTabella(ordinati));
   }
+
+  async function avviaAggiornamento() {
+  const btn = document.getElementById("aggiorna-btn");
+  btn.disabled = true;
+  btn.textContent = "Aggiornamento in corso...";
+
+  try {
+    const res = await fetch("https://tuo-worker-url.workers.dev/");
+    const text = await res.text();
+    alert(text);
+  } catch (err) {
+    alert("Errore durante l'aggiornamento.");
+  }
+
+  btn.disabled = false;
+  btn.textContent = "Aggiorna dati ora";
+}
 });
