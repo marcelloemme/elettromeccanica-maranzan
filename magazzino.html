@@ -6,27 +6,25 @@
   <title>Elettromeccanica Maranzan_Magazzino</title>
   <link rel="stylesheet" href="css/magazzino.css" />
 </head>
-<body>
-  <div class="homepage">
-    <div class="contenitore">
-      <p>Elettromeccanica Maranzan_Magazzino</p>
-      <p>
-        Inserisci il codice del ricambio da cercare, oppure visualizza il catalogo 
-        <a href="#" id="mostraAZ">in ordine</a>, o 
-        <a href="#" id="mostraScaffale">per scaffale</a>.
-      </p>
+<body class="homepage">
+  <div class="contenitore">
+    <p>Elettromeccanica Maranzan_Magazzino</p>
+    <p>
+      Inserisci il codice del ricambio da cercare, oppure visualizza il catalogo 
+      <a href="#" id="link-ordine">in ordine</a>, o 
+      <a href="#" id="link-scaffale">per scaffale</a>.
+    </p>
 
-      <input type="text" id="codice-input" placeholder="Codice ricambio" />
-      <button id="cerca-btn">Cerca</button>
-      <button id="aggiorna-btn">Aggiorna dati ora</button>
+    <input type="text" id="codice" placeholder="Codice ricambio" />
+    <button id="cerca">Cerca</button>
+    <button id="aggiorna">Aggiorna dati ora</button>
 
-      <div id="risultato"></div>
-      <div id="forse-cercavi"></div>
-      <div id="stesso-scaffale"></div>
-      <div id="lista-tutti"></div>
-      <div id="lista-scaffale"></div>
-      <div id="tutti-risultati"></div>
-    </div>
+    <div id="risultato"></div>
+    <div id="forse-cercavi"></div>
+    <div id="stesso-scaffale"></div>
+    <div id="lista-tutti"></div>
+    <div id="lista-scaffale"></div>
+    <div id="tutti-risultati"></div>
   </div>
 
   <footer class="footer">© 1980–2025</footer>
