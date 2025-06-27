@@ -1,17 +1,82 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elettromeccanica Maranzan</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Elettromeccanica Maranzan</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #fafafa;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .contenitore {
+      max-width: 90vw;
+      width: 500px;
+      text-align: left;
+      color: #222;
+      font-size: clamp(14px, 2.5vw, 18px);
+      line-height: 1.6;
+    }
+
+    .contenitore a {
+      color: #222;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .contenitore a:visited {
+      color: #222;
+    }
+
+    .etichetta {
+      text-decoration: none;
+      font-weight: normal;
+    }
+
+    #copiato-msg {
+      display: none;
+      font-size: 0.9em;
+      color: green;
+      margin-left: 8px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Elettromeccanica Maranzan</h1>
-        <p>Da oltre 40 anni ci occupiamo della riparazione e vendita di motori ed elettroutensili. Fondata nel 1980, la nostra azienda è specializzata nella riparazione di tutti i principali brand: Makita, Bosch, DeWalt, Fein, Black & Decker, Festool, e molti altri.
-Siamo rivenditori ufficiali Makita e Festool, garantendo prodotti originali e assistenza qualificata.
-La nostra esperienza e competenza tecnica sono al servizio di professionisti e appassionati del fai-da-te.</p>
-    </div>
+  <div class="contenitore">
+    Elettromeccanica Maranzan snc di Maranzan Gianpio & C.<br>
+    <span class="etichetta">I.</span>
+    <a href="https://maps.app.goo.gl/wWfxYwCuXjoXo9c38" target="_blank" rel="noopener noreferrer">
+      Via Cadore 12, 33080 Fiume Veneto PN
+    </a><br>
+    <span class="etichetta">P.IVA/CF</span> 
+    <a onclick="copiaPartitaIVA()">01328390933</a><span id="copiato-msg"> Copiata!</span><br><br>
+
+    <span class="etichetta">T.</span>
+    <a href="tel:+390434958182">0434 958182</a><br>
+    <span class="etichetta">M.</span>
+    <a href="mailto:maranzan.pn@virgilio.it">maranzan.pn@virgilio.it</a><br>
+    <span class="etichetta">PEC</span>
+    <a href="mailto:maranzanelettromeccanica@pec.it">maranzanelettromeccanica@pec.it</a>
+  </div>
+
+  <script>
+    function copiaPartitaIVA() {
+      const text = "01328390933";
+      navigator.clipboard.writeText(text).then(() => {
+        const msg = document.getElementById("copiato-msg");
+        msg.style.display = "inline";
+        setTimeout(() => {
+          msg.style.display = "none";
+        }, 1500);
+      });
+    }
+  </script>
 </body>
 </html>
