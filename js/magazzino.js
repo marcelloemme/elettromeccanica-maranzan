@@ -35,7 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function creaTabella(dati) {
     const table = document.createElement("table");
-    table.style.margin = "1em auto";
+    table.style.marginTop = "1em";
+    table.style.marginBottom = "1em";
+    table.style.marginLeft = "0.2em";
+    table.style.marginRight = "0.2em";
     table.style.borderCollapse = "collapse";
 
     dati.forEach(item => {
@@ -88,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
       h2.textContent = "Risultato";
       const p = document.createElement("p");
       p.innerHTML = `<strong>${risultato.codice}</strong>: ${risultato.descrizione} — scaffale ${risultato.scaffale}`;
-      div.appendChild(h2);
+      div.appendChild(p);
       div.appendChild(p);
 
       const stesso = dati
