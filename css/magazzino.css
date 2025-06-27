@@ -26,8 +26,6 @@ html, body {
   font-size: clamp(12px, 3.5vw, 18px);
   margin: 0;
   line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 
@@ -35,8 +33,6 @@ h2, h3 {
   font-size: clamp(12px, 3.5vw, 18px);
   margin: 0;
   line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 
