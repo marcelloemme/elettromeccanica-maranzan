@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Elettromeccanica Maranzan_Magazzino</title>
   <link rel="stylesheet" href="css/magazzino.css" />
 </head>
@@ -12,13 +12,12 @@
       <p>Elettromeccanica Maranzan_Magazzino</p>
       <p>
         Inserisci il codice del ricambio da cercare, oppure visualizza il catalogo 
-        <span id="link-ordine" class="link-nero">in ordine</span>, 
-        o <span id="link-scaffale" class="link-nero">per scaffale</span>.
+        <a href="#" id="link-ordine">in ordine</a>, o 
+        <a href="#" id="link-scaffale">per scaffale</a>.
       </p>
-
-      <input type="text" id="codice-input" placeholder="Codice ricambio" />
-      <button id="btn-cerca">Cerca</button>
-      <button id="btn-aggiorna">Aggiorna dati ora</button>
+      <input type="text" id="codice" placeholder="Codice ricambio" />
+      <button id="cerca">Cerca</button>
+      <button id="aggiorna">Aggiorna dati ora</button>
 
       <div id="risultato"></div>
       <div id="forse-cercavi"></div>
