@@ -33,6 +33,17 @@ html, body {
 .homepage {
   text-align: left;
   padding-top: 1em;
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .homepage {
+    max-width: 600px;
+    margin: 0 auto;
+    padding-top: 2em;
+  }
 }
 
 .homepage a {
@@ -41,10 +52,9 @@ html, body {
 }
 
 .homepage .intestazione {
-  font-size: clamp(12px, 5vw, 22px);
+  font-size: clamp(14px, 4.5vw, 18px);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
   margin-bottom: 0.5em;
 }
 
