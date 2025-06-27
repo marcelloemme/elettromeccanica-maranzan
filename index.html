@@ -4,15 +4,67 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Elettromeccanica Maranzan</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* RESET GLOBALE */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #fafafa;
+      color: #222;
+    }
+
+    .homepage {
+      text-align: left;
+      padding: 0.5em;
+    }
+
+    .contenitore {
+      max-width: 90vw;
+      width: 500px;
+      margin: 0 auto;
+    }
+
+    .homepage a {
+      color: inherit;
+      text-decoration: underline;
+    }
+
+    .intestazione {
+      white-space: nowrap;
+      overflow: hidden;
+      margin-bottom: 0.4em;
+    }
+
+    .homepage p {
+      font-size: 16px;
+      line-height: 1.3; /* simula Shift+Enter */
+      margin: 0;
+    }
+
+    .spazio {
+      margin-top: 1em; /* simula doppio Shift+Enter */
+    }
+
+    .copiabile {
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body class="homepage">
-  <div class="container">
-    <div class="intestazione">Elettromeccanica Maranzan snc di Maranzan Gianpio & C.</div>
-    <p>I. <a href="https://maps.app.goo.gl/wWfxYwCuXjoXo9c38" target="_blank" rel="noopener noreferrer">Via Cadore 12, 33080 Fiume Veneto PN</a></p>
+  <div class="contenitore">
+    <p class="intestazione">Elettromeccanica Maranzan snc di Maranzan Gianpio & C.</p>
+    <p>I. <a href="https://maps.app.goo.gl/wWfxYwCuXjoXo9c38" target="_blank">Via Cadore 12, 33080 Fiume Veneto PN</a></p>
     <p>P.IVA/CF <a href="#" class="copiabile" onclick="copiaPIVA()">01328390933</a></p>
-    <br />
-    <p>T. <a href="tel:0434958182">0434 958182</a></p>
+<br />
+<p>T. <a href="tel:0434958182">0434 958182</a></p>
     <p>M. <a href="mailto:maranzan.pn@virgilio.it">maranzan.pn@virgilio.it</a></p>
     <p>PEC <a href="mailto:maranzanelettromeccanica@pec.it">maranzanelettromeccanica@pec.it</a></p>
   </div>
