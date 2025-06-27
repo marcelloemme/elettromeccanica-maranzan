@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const cercaBtn = document.getElementById("cerca-btn");
   const mostraAZBtn = document.getElementById("mostraAZ");
   const mostraScaffaleBtn = document.getElementById("mostraScaffale");
+  const aggiornaBtn = document.getElementById("aggiorna-btn");
 
   cercaBtn.addEventListener("click", cerca);
   input.addEventListener("keypress", (e) => {
@@ -10,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   mostraAZBtn.addEventListener("click", mostraTuttoAZ);
   mostraScaffaleBtn.addEventListener("click", mostraPerScaffale);
+  aggiornaBtn.addEventListener("click", avviaAggiornamento);
 
   async function fetchCSV() {
     const response = await fetch(`magazzino.csv?t=${Date.now()}`);
@@ -151,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const text = await res.text();
       alert(text);
     } catch (err) {
-      alert("❌ Errore durante l'aggiornamento.");
+      alert("Errore durante l'aggiornamento.");
     }
 
     btn.disabled = false;
