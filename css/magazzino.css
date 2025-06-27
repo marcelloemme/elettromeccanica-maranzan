@@ -84,7 +84,23 @@ table td:last-child {
   width: 65%;
 }
 
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #fafafa;
+  color: #222;
+  margin: 0;
+  padding: 0.5em;
+  text-align: left;
+}
+
+.contenitore {
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
 a.link {
-  color: inherit;
   text-decoration: underline;
+  color: inherit;
+  cursor: pointer;
 }
