@@ -142,19 +142,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function avviaAggiornamento() {
-  const btn = document.getElementById("aggiorna-btn");
-  btn.disabled = true;
-  btn.textContent = "Aggiornamento in corso...";
+    const btn = document.getElementById("aggiorna-btn");
+    btn.disabled = true;
+    btn.textContent = "Aggiornamento in corso...";
 
-  try {
-    const res = await fetch("https://tuo-worker-url.workers.dev/");
-    const text = await res.text();
-    alert(text);
-  } catch (err) {
-    alert("Errore durante l'aggiornamento.");
+    try {
+      const res = await fetch("https://aggiorna.marcellomaranzan.workers.dev/");
+      const text = await res.text();
+      alert(text);
+    } catch (err) {
+      alert("❌ Errore durante l'aggiornamento.");
+    }
+
+    btn.disabled = false;
+    btn.textContent = "Aggiorna";
   }
-
-  btn.disabled = false;
-  btn.textContent = "Aggiorna dati ora";
-}
 });
