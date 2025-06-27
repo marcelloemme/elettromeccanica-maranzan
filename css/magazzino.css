@@ -1,3 +1,4 @@
+
 /* RESET GLOBALE */
 * {
   box-sizing: border-box;
@@ -6,23 +7,28 @@
 }
 
 html, body {
-  height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   background: #fafafa;
   color: #222;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.contenitore {
-  width: 100%;
-  padding: 1em 0.5em;
-  line-height: 1.4;
+  padding: 0.5em;
+  line-height: 1.3;
   text-align: left;
 }
 
+/* CONTENITORE */
+.contenitore {
+  max-width: 100vw;
+  padding: 0;
+  line-height: 1.3;
+}
+
+/* LINK */
+a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* CAMPI E PULSANTI */
 input, button {
   font-size: 16px;
   padding: 6px 10px;
@@ -35,23 +41,19 @@ button {
   cursor: pointer;
 }
 
-#risultato, #forse-cercavi, #stesso-scaffale, #lista-tutti, #lista-scaffale, #tutti-risultati {
+/* SEZIONI RISULTATO */
+#risultato,
+#forse-cercavi,
+#stesso-scaffale,
+#lista-tutti,
+#lista-scaffale,
+#tutti-risultati {
   margin-top: 20px;
 }
 
-a {
-  color: #000;
-  text-decoration: underline;
-}
-
-.homepage {
-  flex: 1;
-  padding: 0.4em 0.4em 0;
-  text-align: left;
-}
-
+/* FOOTER */
 .footer {
   font-size: 16px;
-  text-align: left;
-  padding: 0 0.2em 0.2em;
+  padding: 0.2em;
+  margin-top: auto;
 }
