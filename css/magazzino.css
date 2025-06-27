@@ -83,3 +83,8 @@ table td:last-child {
   text-align: right;
   width: 65%;
 }
+
+a.link {
+  color: inherit;
+  text-decoration: underline;
+}

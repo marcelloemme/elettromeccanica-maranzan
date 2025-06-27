@@ -2,41 +2,29 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Elettromeccanica Maranzan_Magazzino</title>
-  <link rel="stylesheet" href="css/magazzino.css" />
+  <link rel="stylesheet" href="magazzino.css" />
 </head>
 <body>
-  <div class="magazzino">
-    <div class="contenitore">
-      <h1>Elettromeccanica Maranzan_Magazzino</h1>
-      <p>
-        Inserisci il codice del ricambio da cercare, oppure visualizza il catalogo
-        <a href="#" id="link-az">in ordine</a>, o
-        <a href="#" id="link-scaffale">per scaffale</a>.
-      </p>
-      <input type="text" id="codice-input" placeholder="es. 123456-7" />
-      <button id="cerca-btn">Cerca</button>
-      <button id="aggiorna-btn">Aggiorna</button>
+  <div class="contenitore">
+    <p>Elettromeccanica Maranzan_Magazzino</p>
+    <p>
+      Inserisci il codice del ricambio da cercare, oppure visualizza il catalogo
+      <a href="#" id="mostraAZ" class="link">in ordine</a>, o
+      <a href="#" id="mostraScaffale" class="link">per scaffale</a>.
+    </p>
 
-      <div id="risultato"></div>
-      <div id="forse-cercavi"></div>
-      <div id="stesso-scaffale"></div>
-      <div id="tutti-risultati"></div>
-    </div>
+    <input type="text" id="codice-input" placeholder="Codice ricambio" />
+    <button id="cerca-btn">Cerca</button>
+    <button id="aggiorna-btn">Aggiorna dati ora</button>
+
+    <div id="risultato"></div>
+    <div id="forse-cercavi"></div>
+    <div id="stesso-scaffale"></div>
+    <div id="tutti-risultati"></div>
   </div>
 
-  <script src="js/magazzino.js"></script>
-  <script>
-    document.getElementById("link-az").addEventListener("click", (e) => {
-      e.preventDefault();
-      if (typeof mostraTuttoAZ === "function") mostraTuttoAZ();
-    });
-
-    document.getElementById("link-scaffale").addEventListener("click", (e) => {
-      e.preventDefault();
-      if (typeof mostraPerScaffale === "function") mostraPerScaffale();
-    });
-  </script>
+  <script src="magazzino.js"></script>
 </body>
 </html>
