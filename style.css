@@ -25,7 +25,9 @@ html, body {
   .container {
     max-width: 600px;
     margin: 0 auto;
-    padding: 1em;
+    padding-top: 2em;
+    padding-left: 0.2em;
+    padding-right: 0.2em;
   }
 }
 
@@ -33,8 +35,8 @@ html, body {
 .homepage {
   text-align: left;
   padding-top: 1em;
-  padding-left: 0.4em;
-  padding-right: 0.4em;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
   line-height: 1.6;
 }
 
@@ -43,6 +45,8 @@ html, body {
     max-width: 600px;
     margin: 0 auto;
     padding-top: 2em;
+    padding-left: 0.2em;
+    padding-right: 0.2em;
   }
 }
 
