@@ -6,26 +6,19 @@
 }
 
 html, body {
+  padding: 0;
+  margin: 0;
   width: 100%;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   background: #fafafa;
   color: #222;
-  text-align: center;
-
-  /* Aggiunti per Safari iOS */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: 100vh;
 }
 
-/* CONTENITORE */
+/* CONTENITORE GENERICO */
 .container {
   width: 100%;
   padding-left: 0.2em;
   padding-right: 0.2em;
-  margin-top: 1em;
 }
 
 @media (min-width: 768px) {
@@ -36,7 +29,31 @@ html, body {
   }
 }
 
-/* ELEMENTI INTERATTIVI */
+/* HOMEPAGE */
+.homepage {
+  text-align: left;
+  padding-top: 1em;
+}
+
+.homepage a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.homepage .intestazione {
+  font-size: clamp(12px, 5vw, 22px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.5em;
+}
+
+.homepage p {
+  font-size: 16px;
+  margin-bottom: 0.4em;
+}
+
+/* ELEMENTI INTERATTIVI (MAGAZZINO) */
 input, button {
   font-size: 16px;
   padding: 6px 10px;
@@ -47,21 +64,23 @@ button {
   cursor: pointer;
 }
 
-/* TITOLI E SEZIONI */
+/* TITOLI E SEZIONI (MAGAZZINO) */
 h1 {
   margin: 40px 0 5px 0;
+  text-align: center;
 }
 
 h2 {
   margin-top: 40px;
   font-size: 20px;
+  text-align: center;
 }
 
 #risultato, #forse-cercavi, #stesso-scaffale, #lista-tutti, #lista-scaffale, #tutti-risultati {
   margin-top: 20px;
 }
 
-/* TABELLA */
+/* TABELLA (MAGAZZINO) */
 table {
   width: 100%;
   table-layout: fixed;
@@ -80,7 +99,6 @@ table td {
   border-bottom: 1px solid #ccc;
 }
 
-/* Allineamento colonne */
 table td:first-child {
   text-align: left;
   font-family: monospace;
