@@ -13,22 +13,25 @@
     }
 
     html, body {
-      padding: 0;
+      height: 100%;
       margin: 0;
+      padding: 0;
       width: 100%;
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
       background: #fafafa;
       color: #222;
+      display: flex;
+      flex-direction: column;
     }
 
     .homepage {
+      flex: 1;
       text-align: left;
-      padding: 0.5em;
+      padding: 0.4em 0.4em 0;
     }
 
     .contenitore {
       max-width: 100vw;
-      width: 500px;
       margin: 0 auto;
     }
 
@@ -49,25 +52,33 @@
       margin: 0;
     }
 
-    .spazio {
-      margin-top: 1em; /* simula doppio Shift+Enter */
-    }
-
     .copiabile {
       cursor: pointer;
     }
+
+    .footer {
+      font-size: 16px;
+      text-align: left;
+      padding: 0 0.2em 0.2em;
+    }
   </style>
 </head>
-<body class="homepage">
-  <div class="contenitore">
-    <p class="intestazione">Elettromeccanica Maranzan snc di Maranzan Gianpio & C.</p>
-    <p>I. <a href="https://maps.app.goo.gl/wWfxYwCuXjoXo9c38" target="_blank">Via Cadore 12, 33080 Fiume Veneto PN</a></p>
-    <p>P.IVA/CF <a href="#" class="copiabile" onclick="copiaPIVA()">01328390933</a></p>
-<br />
-<p>T. <a href="tel:0434958182">0434 958182</a></p>
-    <p>M. <a href="mailto:maranzan.pn@virgilio.it">maranzan.pn@virgilio.it</a></p>
-    <p>PEC <a href="mailto:maranzanelettromeccanica@pec.it">maranzanelettromeccanica@pec.it</a></p>
+<body>
+  <div class="homepage">
+    <div class="contenitore">
+      <p class="intestazione">Elettromeccanica Maranzan snc di Maranzan Gianpio & C.</p>
+      <p>I. <a href="https://maps.app.goo.gl/wWfxYwCuXjoXo9c38" target="_blank">Via Cadore 12, 33080 Fiume Veneto PN</a></p>
+      <p>P.IVA/CF <a href="#" class="copiabile" onclick="copiaPIVA()">01328390933</a></p>
+      <br />
+      <p>T. <a href="tel:0434958182">0434 958182</a></p>
+      <p>M. <a href="mailto:maranzan.pn@virgilio.it">maranzan.pn@virgilio.it</a></p>
+      <p>PEC <a href="mailto:maranzanelettromeccanica@pec.it">maranzanelettromeccanica@pec.it</a></p>
+    </div>
   </div>
+
+  <footer class="footer">
+    © 1980–2025
+  </footer>
 
   <script>
     function copiaPIVA() {
