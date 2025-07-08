@@ -18,10 +18,6 @@ html, body {
   text-align: left;
 }
 
-.homepage {
-  padding: 0.3em;
-  flex: 1;
-}
 
 .homepage p {
   font-size: clamp(11px, 3.5vw, 18px);
@@ -113,9 +109,10 @@ button {
 }
 
 .homepage {
-    padding-right: 0.3em; /* oppure il valore che vuoi usare */
-    padding-left: 0.3em;
-  }
+  padding-right: 0.3em;
+  padding-left: 0.3em;
+  flex: 1;
+}
 
   /* Linee orizzontali tra le righe della tabella */
 table tr:not(:last-child) {
