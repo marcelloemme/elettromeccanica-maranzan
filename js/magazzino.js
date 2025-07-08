@@ -95,12 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (risultato) {
       const div = document.getElementById("risultato");
-      const h2 = document.createElement("h2");
-      h2.textContent = "Risultato";
-      const p = document.createElement("p");
-      p.innerHTML = `<u>${risultato.codice}</u>: ${risultato.descrizione} — <span class="colonna-scaffale">${risultato.scaffale}</span>`;
-      div.appendChild(p);
-      div.appendChild(p);
+      const h3 = document.createElement("h3");
+      h3.textContent = "Risultato esatto";
+      div.appendChild(h3);
+      div.appendChild(creaTabella([risultato]));
 
       const stesso = dati
         .filter(item => item.scaffale === risultato.scaffale && item.codice !== risultato.codice)
