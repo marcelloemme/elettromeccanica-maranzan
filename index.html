@@ -6,34 +6,6 @@
   <title>Elettromeccanica Maranzan</title>
   <link rel="stylesheet" href="css/home.css" />
 </head>
-<script>
-function adattaFontMobile() {
-  const larghezza = window.innerWidth;
-  const elementi = document.querySelectorAll('.homepage p');
-  
-  let fontSize;
-  if (larghezza <= 320) {
-    fontSize = '6px';
-  } else if (larghezza <= 375) {
-    fontSize = '7px';
-  } else if (larghezza <= 480) {
-    fontSize = '9px';
-  } else {
-    fontSize = ''; // Lascia il CSS gestire le dimensioni desktop
-  }
-  
-  elementi.forEach(elemento => {
-    if (fontSize) {
-      elemento.style.fontSize = fontSize;
-    }
-  });
-}
-
-// Esegui al caricamento della pagina
-window.addEventListener('load', adattaFontMobile);
-// Esegui quando si ruota il dispositivo
-window.addEventListener('resize', adattaFontMobile);
-</script>
 <body>
   <div class="homepage">
     <div class="contenitore">

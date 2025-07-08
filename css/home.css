@@ -20,9 +20,9 @@ body {
   padding: 0 0.2em;
 }
 
-/* Paragrafi */
-.homepage p {
-  font-size: clamp(10px, 2.8vw, 18px);
+/* Paragrafi - selettore più specifico */
+body .homepage p {
+  font-size: clamp(10px, 2.8vw, 18px) !important;
   margin: 0;
   line-height: 1.2;
   white-space: nowrap;
@@ -38,7 +38,7 @@ body {
 
 /* Conferma copia PIVA */
 #conferma-piva {
-  font-size: clamp(8px, 2.4vw, 16px);
+  font-size: clamp(8px, 2.4vw, 16px) !important;
   color: green;
   margin-left: 0.5em;
   display: none;
@@ -52,10 +52,14 @@ body {
   text-align: left;
 }
 
-/* Media query per mobile - più specifiche */
+/* Media query per mobile - selettori più specifici */
 @media (max-width: 480px) {
-  .homepage p {
+  body .homepage p {
     font-size: 9px !important;
+  }
+  
+  body #conferma-piva {
+    font-size: 7px !important;
   }
   
   .contenitore {
@@ -73,8 +77,12 @@ body {
 
 /* Per iPhone molto piccoli */
 @media (max-width: 375px) {
-  .homepage p {
+  body .homepage p {
     font-size: 7px !important;
+  }
+  
+  body #conferma-piva {
+    font-size: 6px !important;
   }
   
   .footer {
@@ -88,8 +96,12 @@ body {
 
 /* Per iPhone molto piccoli - anche più specifico */
 @media (max-width: 320px) {
-  .homepage p {
+  body .homepage p {
     font-size: 6px !important;
+  }
+  
+  body #conferma-piva {
+    font-size: 5px !important;
   }
   
   .footer {
