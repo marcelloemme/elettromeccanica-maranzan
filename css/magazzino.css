@@ -42,6 +42,7 @@ h2, h3 {
   padding: 0 0.2em;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  font-size: clamp(8px, 2.5vw, 18px);
 }
 
 /* LINK */
