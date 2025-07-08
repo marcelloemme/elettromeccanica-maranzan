@@ -1,4 +1,5 @@
 /* RESET GLOBALE */
+/* Disabilita zoom automatico su Safari mobile */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -68,22 +69,10 @@ input, button {
   background: #fff;
 }
 
-input:focus {
-  font-size: 16px;
-  transform: scale(0.875);
-  transform-origin: left center;
-}
-
 button {
   cursor: pointer;
   color: #000;
   text-decoration: none;
-}
-
-input, button {
-  font-size: clamp(11px, 3.5vw, 18px);
-  transform: scale(0.999); /* workaround Safari zoom */
-  transform-origin: left center;
 }
 
 /* SEZIONI RISULTATO */
