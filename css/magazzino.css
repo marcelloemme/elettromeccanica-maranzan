@@ -116,3 +116,8 @@ button {
     padding-right: 0.3em; /* oppure il valore che vuoi usare */
     padding-left: 0.3em;
   }
+
+  /* Linee orizzontali tra le righe della tabella */
+table tr:not(:last-child) {
+  border-bottom: 1px solid #ccc;
+}
