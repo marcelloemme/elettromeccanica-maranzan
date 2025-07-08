@@ -22,7 +22,7 @@ body {
 
 /* Paragrafi */
 .homepage p {
-  font-size: clamp(10px, 2.8vw, 18px); /* Ridotto solo il minimo da 12px a 10px */
+  font-size: clamp(10px, 2.8vw, 18px);
   margin: 0;
   line-height: 1.2;
   white-space: nowrap;
@@ -38,7 +38,7 @@ body {
 
 /* Conferma copia PIVA */
 #conferma-piva {
-  font-size: clamp(8px, 2.4vw, 16px); /* Ridotto proporzionalmente */
+  font-size: clamp(8px, 2.4vw, 16px);
   color: green;
   margin-left: 0.5em;
   display: none;
@@ -47,29 +47,52 @@ body {
 
 /* Footer */
 .footer {
-  font-size: clamp(10px, 2.8vw, 18px); /* Ridotto solo il minimo da 12px a 10px */
+  font-size: clamp(10px, 2.8vw, 18px);
   padding: 0.2em;
   text-align: left;
 }
 
-/* Media query per mobile - per essere sicuri */
+/* Media query per mobile - più specifiche */
 @media (max-width: 480px) {
   .homepage p {
-    font-size: 9px;
+    font-size: 9px !important;
   }
   
   .contenitore {
-    padding: 0 0.1em;
+    padding: 0 0.05em;
   }
   
   .homepage {
-    padding: 0.3em;
+    padding: 0.2em;
+  }
+  
+  .footer {
+    font-size: 9px !important;
   }
 }
 
 /* Per iPhone molto piccoli */
 @media (max-width: 375px) {
   .homepage p {
-    font-size: 8px;
+    font-size: 7px !important;
+  }
+  
+  .footer {
+    font-size: 7px !important;
+  }
+  
+  .contenitore {
+    padding: 0 0.02em;
+  }
+}
+
+/* Per iPhone molto piccoli - anche più specifico */
+@media (max-width: 320px) {
+  .homepage p {
+    font-size: 6px !important;
+  }
+  
+  .footer {
+    font-size: 6px !important;
   }
 }
