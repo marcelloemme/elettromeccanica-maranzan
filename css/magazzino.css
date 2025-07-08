@@ -66,7 +66,7 @@ p {
 input, button {
   font-size: clamp(11px, 3.5vw, 18px);
   -webkit-text-size-adjust: 100%;
-  padding: 6px 10px;
+  padding: 3px 5px;
   margin: 5px 5px 10px 0;
   border: 1px solid #000;
   background: #fff;
