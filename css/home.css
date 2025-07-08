@@ -52,4 +52,7 @@ body {
   font-size: clamp(8px, 2.5vw, 18px);
   padding: 0.2em;
   text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
