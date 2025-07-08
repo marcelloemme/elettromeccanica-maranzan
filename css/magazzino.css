@@ -93,3 +93,14 @@ button {
   padding: 0.2em;
   margin-top: 2em;
 }
+
+@media (max-width: 768px) {
+  #risultato table,
+  #forse-cercavi table,
+  #stesso-scaffale table,
+  #tutti-risultati table {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
