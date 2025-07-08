@@ -22,7 +22,7 @@ body {
 
 /* Paragrafi */
 .homepage p {
-  font-size: clamp(12px, 3.5vw, 18px);
+  font-size: clamp(10px, 2.8vw, 18px); /* Ridotto solo il minimo da 12px a 10px */
   margin: 0;
   line-height: 1.2;
   white-space: nowrap;
@@ -38,7 +38,7 @@ body {
 
 /* Conferma copia PIVA */
 #conferma-piva {
-  font-size: clamp(10px, 3vw, 16px);
+  font-size: clamp(8px, 2.4vw, 16px); /* Ridotto proporzionalmente */
   color: green;
   margin-left: 0.5em;
   display: none;
@@ -47,7 +47,7 @@ body {
 
 /* Footer */
 .footer {
-  font-size: clamp(12px, 3.5vw, 18px);
+  font-size: clamp(10px, 2.8vw, 18px); /* Ridotto solo il minimo da 12px a 10px */
   padding: 0.2em;
   text-align: left;
 }

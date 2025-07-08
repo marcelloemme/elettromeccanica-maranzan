@@ -10,7 +10,7 @@ html, body {
   margin: 0;
   width: 100%;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: clamp(12px, 3.5vw, 18px);
+  font-size: clamp(10px, 2.8vw, 18px); /* Ridotto solo il minimo da 12px a 10px */
   line-height: 1.2;
   background: #fafafa;
   color: #222;
@@ -23,14 +23,14 @@ html, body {
 }
 
 .homepage p {
-  font-size: clamp(12px, 3.5vw, 18px);
+  font-size: clamp(10px, 2.8vw, 18px); /* Ridotto solo il minimo da 12px a 10px */
   margin: 0;
   line-height: 1.2;
   text-overflow: ellipsis;
 }
 
 h2, h3 {
-  font-size: clamp(12px, 3.5vw, 18px);
+  font-size: clamp(10px, 2.8vw, 18px); /* Ridotto solo il minimo da 12px a 10px */
   margin: 0;
   line-height: 1.2;
   text-overflow: ellipsis;
