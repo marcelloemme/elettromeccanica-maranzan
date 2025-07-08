@@ -10,7 +10,7 @@ html, body {
   margin: 0;
   width: 100%;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: clamp(10px, 2.8vw, 18px);
+  font-size: clamp(9px, 2.8vw, 18px);
   line-height: 1.2;
   background: #fafafa;
   color: #222;
@@ -23,14 +23,14 @@ html, body {
 }
 
 .homepage p {
-  font-size: clamp(10px, 2.8vw, 18px);
+  font-size: clamp(9px, 2.8vw, 18px);
   margin: 0;
   line-height: 1.2;
   text-overflow: ellipsis;
 }
 
 h2, h3 {
-  font-size: clamp(10px, 2.8vw, 18px);
+  font-size: clamp(9px, 2.8vw, 18px);
   margin: 0;
   line-height: 1.2;
   text-overflow: ellipsis;
@@ -84,83 +84,4 @@ button {
   font-size: 16px;
   padding: 0.2em;
   margin-top: 2em;
-}
-
-/* Media query per mobile - più specifiche */
-@media (max-width: 480px) {
-  html, body {
-    font-size: 9px !important;
-  }
-  
-  .homepage p {
-    font-size: 9px !important;
-  }
-  
-  h2, h3 {
-    font-size: 9px !important;
-  }
-  
-  p {
-    font-size: 9px !important;
-  }
-  
-  input, button {
-    font-size: 9px !important;
-  }
-  
-  .footer {
-    font-size: 9px !important;
-  }
-}
-
-@media (max-width: 375px) {
-  html, body {
-    font-size: 7px !important;
-  }
-  
-  .homepage p {
-    font-size: 7px !important;
-  }
-  
-  h2, h3 {
-    font-size: 7px !important;
-  }
-  
-  p {
-    font-size: 7px !important;
-  }
-  
-  input, button {
-    font-size: 7px !important;
-  }
-  
-  .footer {
-    font-size: 7px !important;
-  }
-}
-
-@media (max-width: 320px) {
-  html, body {
-    font-size: 6px !important;
-  }
-  
-  .homepage p {
-    font-size: 6px !important;
-  }
-  
-  h2, h3 {
-    font-size: 6px !important;
-  }
-  
-  p {
-    font-size: 6px !important;
-  }
-  
-  input, button {
-    font-size: 6px !important;
-  }
-  
-  .footer {
-    font-size: 6px !important;
-  }
 }
