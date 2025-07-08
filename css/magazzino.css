@@ -106,8 +106,13 @@ button {
   #stesso-scaffale table,
   #tutti-risultati table {
     width: 100%;
+    box-sizing: border-box;
     margin-left: 0;
     margin-right: 0;
   }
 }
 
+.homepage {
+    padding-right: 0.3em; /* oppure il valore che vuoi usare */
+    padding-left: 0.3em;
+  }
