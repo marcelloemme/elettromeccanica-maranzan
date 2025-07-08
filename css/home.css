@@ -8,7 +8,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  font-size: clamp(8px, 2.5vw, 18px)
+  font-size: clamp(8px, 2.5vw, 18px);
 }
 
 .homepage {
