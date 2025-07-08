@@ -10,7 +10,7 @@ html, body {
   margin: 0;
   width: 100%;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: clamp(9px, 2vw, 18px);
+  font-size: clamp(8px, 2vw, 18px);
   line-height: 1.2;
   background: #fafafa;
   color: #222;
@@ -23,14 +23,14 @@ html, body {
 }
 
 .homepage p {
-  font-size: clamp(9px, 2vw, 18px);
+  font-size: clamp(8px, 2vw, 18px);
   margin: 0;
   line-height: 1.2;
   text-overflow: ellipsis;
 }
 
 h2, h3 {
-  font-size: clamp(9px, 2vw, 18px);
+  font-size: clamp(8px, 2vw, 18px);
   margin: 0;
   line-height: 1.2;
   text-overflow: ellipsis;
@@ -52,13 +52,13 @@ a {
 
 /* TESTO */
 p {
-  font-size: 16px;
+  font-size: clamp(8px, 2vw, 18px);
   margin: 0;
 }
 
 /* CAMPI E PULSANTI */
 input, button {
-  font-size: 16px;
+  font-size: clamp(8px, 2vw, 18px);
   padding: 6px 10px;
   margin: 5px 5px 10px 0;
   border: 1px solid #000;
@@ -81,7 +81,7 @@ button {
 
 /* FOOTER */
 .footer {
-  font-size: 16px;
+  font-size: clamp(8px, 2vw, 18px);
   padding: 0.2em;
   margin-top: 2em;
 }
