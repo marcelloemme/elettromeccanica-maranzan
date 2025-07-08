@@ -94,12 +94,9 @@ button {
   margin-top: 2em;
 }
 
-/* Forza larghezza fissa alla colonna scaffale */
-#risultato table td:last-child,
-#forse-cercavi table td:last-child,
-#stesso-scaffale table td:last-child,
-#tutti-risultati table td:last-child {
-  width: 4ch; /* oppure usa 80px, o 20% se preferisci */
+.colonna-scaffale {
+  width: 4ch; /* oppure 50px */
+  text-align: right;
   white-space: nowrap;
 }
 

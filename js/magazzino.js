@@ -50,11 +50,19 @@ document.addEventListener('DOMContentLoaded', () => {
       tdCodice.style.paddingRight = "1em";
 
       const tdDescrizione = document.createElement("td");
-      tdDescrizione.textContent = `${item.descrizione} — ${item.scaffale}`;
-      tdDescrizione.style.textAlign = "right";
+      tdDescrizione.textContent = item.descrizione;
+      tdDescrizione.style.textAlign = "left";
+      tdDescrizione.style.paddingRight = "1em";
+
+      const tdScaffale = document.createElement("td");
+      tdScaffale.textContent = item.scaffale;
+      tdScaffale.style.textAlign = "right";
+      tdScaffale.style.whiteSpace = "nowrap";
+      tdScaffale.classList.add("colonna-scaffale");
 
       tr.appendChild(tdCodice);
       tr.appendChild(tdDescrizione);
+      tr.appendChild(tdScaffale);
       table.appendChild(tr);
     });
 
@@ -90,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const h2 = document.createElement("h2");
       h2.textContent = "Risultato";
       const p = document.createElement("p");
-      p.innerHTML = `<u>${risultato.codice}</u>: ${risultato.descrizione} — ${risultato.scaffale}`;
+      p.innerHTML = `<u>${risultato.codice}</u>: ${risultato.descrizione} — <span class="colonna-scaffale">${risultato.scaffale}</span>`;
       div.appendChild(p);
       div.appendChild(p);
 
