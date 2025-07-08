@@ -98,7 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const h3 = document.createElement("h3");
       h3.textContent = "Risultato esatto";
       div.appendChild(h3);
-      div.appendChild(creaTabella([risultato]));
+      const tabellaEsatto = creaTabella([risultato]);
+      div.appendChild(tabellaEsatto);
 
       const stesso = dati
         .filter(item => item.scaffale === risultato.scaffale && item.codice !== risultato.codice)
