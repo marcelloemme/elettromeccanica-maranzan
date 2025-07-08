@@ -8,7 +8,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  font-size: clamp(8px, 2.8vw, 18px);
+  font-size: clamp(8px, 3vw, 18px);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -20,12 +20,12 @@ body {
 .contenitore {
   max-width: 100vw;
   padding: 0 0.2em;
-  font-size: clamp(8px, 2.8vw, 18px);
+  font-size: clamp(8px, 3vw, 18px);
 }
 
 /* Paragrafi */
 .homepage p {
-  font-size: clamp(8px, 2.8vw, 18px);
+  font-size: clamp(8px, 3vw, 18px);
   margin: 0;
   line-height: 1.2;
   white-space: nowrap;
@@ -41,7 +41,7 @@ body {
 
 /* Conferma copia PIVA */
 #conferma-piva {
-  font-size: clamp(8px, 2.8vw, 18px);
+  font-size: clamp(8px, 3vw, 18px);
   color: green;
   margin-left: 0.5em;
   display: none;
@@ -50,7 +50,7 @@ body {
 
 /* Footer */
 .footer {
-  font-size: clamp(8px, 2.8vw, 18px);
+  font-size: clamp(8px, 3vw, 18px);
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.2;
   font-weight: normal;
