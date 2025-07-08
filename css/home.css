@@ -20,9 +20,9 @@ body {
   padding: 0 0.2em;
 }
 
-/* Paragrafi - selettore più specifico */
-body .homepage p {
-  font-size: clamp(10px, 2.8vw, 18px) !important;
+/* Paragrafi */
+.homepage p {
+  font-size: clamp(10px, 2.8vw, 18px);
   margin: 0;
   line-height: 1.2;
   white-space: nowrap;
@@ -38,7 +38,7 @@ body .homepage p {
 
 /* Conferma copia PIVA */
 #conferma-piva {
-  font-size: clamp(8px, 2.4vw, 16px) !important;
+  font-size: clamp(8px, 2.4vw, 16px);
   color: green;
   margin-left: 0.5em;
   display: none;
@@ -50,61 +50,4 @@ body .homepage p {
   font-size: clamp(10px, 2.8vw, 18px);
   padding: 0.2em;
   text-align: left;
-}
-
-/* Media query per mobile - selettori più specifici */
-@media (max-width: 480px) {
-  body .homepage p {
-    font-size: 9px !important;
-  }
-  
-  body #conferma-piva {
-    font-size: 7px !important;
-  }
-  
-  .contenitore {
-    padding: 0 0.05em;
-  }
-  
-  .homepage {
-    padding: 0.2em;
-  }
-  
-  .footer {
-    font-size: 9px !important;
-  }
-}
-
-/* Per iPhone molto piccoli */
-@media (max-width: 375px) {
-  body .homepage p {
-    font-size: 7px !important;
-  }
-  
-  body #conferma-piva {
-    font-size: 6px !important;
-  }
-  
-  .footer {
-    font-size: 7px !important;
-  }
-  
-  .contenitore {
-    padding: 0 0.02em;
-  }
-}
-
-/* Per iPhone molto piccoli - anche più specifico */
-@media (max-width: 320px) {
-  body .homepage p {
-    font-size: 6px !important;
-  }
-  
-  body #conferma-piva {
-    font-size: 5px !important;
-  }
-  
-  .footer {
-    font-size: 6px !important;
-  }
 }

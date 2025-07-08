@@ -3,31 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Elettromeccanica Maranzan_Magazzino</title>
-  <link rel="stylesheet" href="css/magazzino.css" />
+  <title>Elettromeccanica Maranzan</title>
+  <link rel="stylesheet" href="css/home.css" />
 </head>
-<body class="homepage">
-  <div class="contenitore">
-    <p>Elettromeccanica Maranzan_Magazzino</p>
-    <br>
-    <p>
-      Inserisci il codice del ricambio da cercare, oppure visualizza il catalogo 
-      <a href="#" id="mostraAZ">in ordine</a>, o 
-      <a href="#" id="mostraScaffale">per scaffale</a>.
-    </p>
-
-    <input type="text" id="codice-input" placeholder="Codice ricambio" />
-    <button id="cerca-btn">Cerca</button>
-    <button id="aggiorna-btn">Aggiorna dati ora</button>
-
-    <div id="risultato"></div>
-    <div id="forse-cercavi"></div>
-    <div id="stesso-scaffale"></div>
-    <div id="lista-tutti"></div>
-    <div id="lista-scaffale"></div>
-    <div id="tutti-risultati"></div>
+<body>
+  <div class="homepage">
+    <div class="contenitore">
+      <p>Elettromeccanica Maranzan snc di Maranzan Gianpio & C.</p>
+      <p>I. <a href="https://maps.app.goo.gl/wWfxYwCuXjoXo9c38" target="_blank">Via Cadore 12, 33080 Fiume Veneto PN</a></p>
+      <p>
+  P.IVA/CF 
+  <a href="#" class="copiabile" onclick="copiaPIVA()">01328390933</a>
+  <span id="conferma-piva" style="font-size: 14px; color: green; display: none; margin-left: 0.5em;">P.IVA copiata</span>
+</p>
+      <br />
+      <p>T. <a href="tel:0434958182">0434 958182</a></p>
+      <p>M. <a href="mailto:maranzan.pn@virgilio.it">maranzan.pn@virgilio.it</a></p>
+      <p>PEC <a href="mailto:maranzanelettromeccanica@pec.it">maranzanelettromeccanica@pec.it</a></p>
+    </div>
   </div>
 
-  <script src="js/magazzino.js"></script>
+  <footer class="footer">© 1980–2025</footer>
+
+  <script>
+function copiaPIVA() {
+  navigator.clipboard.writeText("01328390933").then(() => {
+    const conferma = document.getElementById("conferma-piva");
+    conferma.style.display = "inline";
+    setTimeout(() => {
+      conferma.style.display = "none";
+    }, 2000);
+  });
+}
+
+function forzaFontMobile() {
+  if (window.innerWidth <= 480) {
+    // Forza il font direttamente con stile inline
+    const paragrafи = document.querySelectorAll('.homepage p');
+    paragrafи.forEach(p => {
+      if (window.innerWidth <= 320) {
+        p.style.setProperty('font-size', '6px', 'important');
+      } else if (window.innerWidth <= 375) {
+        p.style.setProperty('font-size', '7px', 'important');
+      } else {
+        p.style.setProperty('font-size', '9px', 'important');
+      }
+    });
+    
+    const conferma = document.getElementById('conferma-piva');
+    if (conferma) {
+      if (window.innerWidth <= 320) {
+        conferma.style.setProperty('font-size', '5px', 'important');
+      } else if (window.innerWidth <= 375) {
+        conferma.style.setProperty('font-size', '6px', 'important');
+      } else {
+        conferma.style.setProperty('font-size', '7px', 'important');
+      }
+    }
+  }
+}
+
+// Esegui immediatamente
+forzaFontMobile();
+
+// Esegui quando la pagina è caricata
+document.addEventListener('DOMContentLoaded', forzaFontMobile);
+
+// Esegui quando si ruota il dispositivo
+window.addEventListener('resize', forzaFontMobile);
+</script>
 </body>
 </html>
