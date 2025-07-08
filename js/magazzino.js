@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const tdDescrizione = document.createElement("td");
       tdDescrizione.textContent = item.descrizione;
       tdDescrizione.style.textAlign = "left";
+      tdDescrizione.style.width = "100%";
       tdDescrizione.style.paddingRight = "1em";
 
       const tdScaffale = document.createElement("td");
