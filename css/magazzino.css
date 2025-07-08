@@ -105,12 +105,10 @@ button {
   #forse-cercavi table,
   #stesso-scaffale table,
   #tutti-risultati table {
-    width: 100%;
+    width: calc(100% - 0.6em);
     box-sizing: border-box;
-    margin-left: 0;
-    margin-right: 0;
-    padding-left: 0.3em;
-    padding-right: 0.8em;
+    margin-left: 0.3em;
+    margin-right: 0.3em;
   }
 }
 
