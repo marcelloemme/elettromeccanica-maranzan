@@ -68,6 +68,12 @@ input, button {
   background: #fff;
 }
 
+input:focus {
+  font-size: 16px;
+  transform: scale(0.875);
+  transform-origin: left center;
+}
+
 button {
   cursor: pointer;
   color: #000;
