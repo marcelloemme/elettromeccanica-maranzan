@@ -70,6 +70,8 @@ input, button {
 
 button {
   cursor: pointer;
+  color: #000;
+  text-decoration: none;
 }
 
 /* SEZIONI RISULTATO */
