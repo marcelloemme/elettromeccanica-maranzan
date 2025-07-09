@@ -23,7 +23,8 @@ html, body {
 .homepage p {
   font-size: clamp(11px, 3.5vw, 18px);
   -webkit-text-size-adjust: 100%;
-  margin: 0.2em;
+  margin: 0;
+  padding-top: 0.2em;
   line-height: 1.2;
   text-overflow: ellipsis;
 }
