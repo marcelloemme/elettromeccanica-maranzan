@@ -17,7 +17,13 @@
     </p>
     <br>
 
-    <input type="text" id="codice-input" placeholder="Codice ricambio" />
+    <input
+      type="text"
+      id="codice-input"
+      inputmode="numeric"
+      pattern="[0-9A-Za-z\-]*"
+      placeholder="Codice ricambio"
+    />
     <button id="cerca-btn">Cerca</button>
     <button id="aggiorna-btn">Aggiorna dati ora</button>
 
