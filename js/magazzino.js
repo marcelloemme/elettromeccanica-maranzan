@@ -30,17 +30,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const reader = new FileReader();
       reader.onload = async function(event) {
-        const imageBitmap = await createImageBitmap(file);
-        const canvas = document.createElement("canvas");
-        canvas.width = imageBitmap.width;
-        canvas.height = imageBitmap.height;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(imageBitmap, 0, 0);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
+        console.log("File caricato:", file.name);
+        console.log("Tipo MIME:", file.type);
         try {
+          const imageBitmap = await createImageBitmap(file);
+          console.log("Bitmap creata:", imageBitmap);
+
+          const canvas = document.createElement("canvas");
+          canvas.width = imageBitmap.width;
+          canvas.height = imageBitmap.height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(imageBitmap, 0, 0);
+          console.log("Disegnato su canvas");
+
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          console.log("ImageData estratto:", imageData);
+
           const { scanImageData } = await import("https://cdn.jsdelivr.net/npm/@undecaf/zbar-wasm@0.9.1/dist/index.min.js");
+          console.log("Modulo zbar importato");
+
           const results = scanImageData(imageData);
+          console.log("Risultati scansione:", results);
+
           if (results.length > 0) {
             const decodedText = results[0].decode();
             console.log("Codice QR rilevato:", decodedText);
@@ -48,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             input.value = decodedText;
             cerca();
           } else {
+            console.warn("QR non riconosciuto");
             alert("Codice QR non riconosciuto.");
           }
         } catch (err) {
