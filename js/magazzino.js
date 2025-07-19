@@ -1,7 +1,12 @@
-import { BrowserQRCodeReader } from "https://esm.sh/@zxing/browser";
-
 // Assicurati che jsQR sia incluso via script HTML esterno oppure già disponibile globalmente
 document.addEventListener('DOMContentLoaded', () => {
+  if (!document.getElementById("qr-reader-temp")) {
+    const div = document.createElement("div");
+    div.id = "qr-reader-temp";
+    div.style.display = "none";
+    document.body.appendChild(div);
+  }
+
   const input = document.getElementById("codice-input");
   const cercaBtn = document.getElementById("cerca-btn");
   const mostraAZBtn = document.getElementById("mostraAZ");
@@ -30,32 +35,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const file = e.target.files[0];
       if (!file) return;
 
-      const img = new Image();
       const reader = new FileReader();
+      reader.onload = function(event) {
+        const imageDataUrl = event.target.result;
+        const html5QrCode = new Html5Qrcode("qr-reader-temp");
 
-      reader.onload = async function(event) {
-        img.onload = async function() {
-          const canvas = document.createElement("canvas");
-          canvas.width = img.width;
-          canvas.height = img.height;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0);
-
-          const codeReader = new BrowserQRCodeReader();
-          try {
-            const result = await codeReader.decodeFromCanvas(canvas);
-            console.log("Codice QR rilevato:", result.text);
+        html5QrCode
+          .scanFile(file, true)
+          .then(decodedText => {
+            console.log("Codice QR rilevato:", decodedText);
             const input = document.getElementById("codice-input");
-            input.value = result.text;
+            input.value = decodedText;
             cerca();
-          } catch (error) {
-            console.error("Errore durante la scansione del QR:", error);
+          })
+          .catch(err => {
+            console.error("Errore durante la scansione:", err);
             alert("Codice QR non riconosciuto.");
-          }
-        };
-        img.src = event.target.result;
+          });
       };
-
       reader.readAsDataURL(file);
     });
   }
