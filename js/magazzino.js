@@ -6,8 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
   opencvScript.src = 'https://docs.opencv.org/4.5.5/opencv.js';
   opencvScript.onload = () => {
     cv['onRuntimeInitialized'] = () => {
-      console.log("OpenCV.js pronto");
-      cvReady = true;
+      console.log("✅ OpenCV pronto");
+
+      const qrFileInput = document.getElementById("qr-file-input");
+      if (qrFileInput) {
+        qrFileInput.addEventListener("change", handleQRScan);
+      }
     };
   };
   document.body.appendChild(opencvScript);
@@ -31,61 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     scanBtn.addEventListener("click", () => {
       const fileInput = document.getElementById("qr-file-input");
       fileInput.click();
-    });
-  }
-
-  const qrFileInput = document.getElementById("qr-file-input");
-  if (qrFileInput) {
-    qrFileInput.addEventListener("change", async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async function(event) {
-        console.log("File caricato:", file.name);
-        console.log("Tipo MIME:", file.type);
-        try {
-          const imageBitmap = await createImageBitmap(file);
-          console.log("Bitmap creata:", imageBitmap);
-
-          const canvas = document.createElement("canvas");
-          canvas.width = imageBitmap.width;
-          canvas.height = imageBitmap.height;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(imageBitmap, 0, 0);
-          console.log("Disegnato su canvas");
-
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          console.log("ImageData estratto");
-
-          // Conversione a Mat per OpenCV
-          const mat = cv.matFromImageData(imageData);
-          const gray = new cv.Mat();
-          cv.cvtColor(mat, gray, cv.COLOR_RGBA2GRAY);
-
-          const qrDetector = new cv.QRCodeDetector();
-          const decodedText = new cv.String();
-          const points = new cv.Mat();
-          const straightQR = new cv.Mat();
-
-          const success = qrDetector.detectAndDecode(gray, decodedText, points, straightQR);
-          if (success) {
-            console.log("Codice QR rilevato:", decodedText.string);
-            input.value = decodedText.string;
-            cerca();
-          } else {
-            console.warn("QR non riconosciuto");
-            alert("Codice QR non riconosciuto.");
-          }
-
-          // cleanup
-          mat.delete(); gray.delete(); qrDetector.delete(); points.delete(); straightQR.delete(); decodedText.delete();
-        } catch (err) {
-          console.error("Errore durante la scansione:", err);
-          alert("Errore durante la scansione.");
-        }
-      };
-      reader.readAsDataURL(file);
     });
   }
 
@@ -245,5 +194,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btn.disabled = false;
     btn.textContent = "Aggiorna dati";
+  }
+
+  async function handleQRScan(e) {
+    const input = document.getElementById("codice-input");
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async function(event) {
+      console.log("File caricato:", file.name);
+      console.log("Tipo MIME:", file.type);
+      try {
+        const imageBitmap = await createImageBitmap(file);
+        console.log("Bitmap creata:", imageBitmap);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = imageBitmap.width;
+        canvas.height = imageBitmap.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(imageBitmap, 0, 0);
+        console.log("Disegnato su canvas");
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        console.log("ImageData estratto");
+
+        // Conversione a Mat per OpenCV
+        const mat = cv.matFromImageData(imageData);
+        const gray = new cv.Mat();
+        cv.cvtColor(mat, gray, cv.COLOR_RGBA2GRAY);
+
+        const qrDetector = new cv.QRCodeDetector();
+        const decodedText = new cv.String();
+        const points = new cv.Mat();
+        const straightQR = new cv.Mat();
+
+        const success = qrDetector.detectAndDecode(gray, decodedText, points, straightQR);
+        if (success) {
+          console.log("Codice QR rilevato:", decodedText.string);
+          input.value = decodedText.string;
+          cerca();
+        } else {
+          console.warn("QR non riconosciuto");
+          alert("Codice QR non riconosciuto.");
+        }
+
+        // cleanup
+        mat.delete(); gray.delete(); qrDetector.delete(); points.delete(); straightQR.delete(); decodedText.delete();
+      } catch (err) {
+        console.error("Errore durante la scansione:", err);
+        alert("Errore durante la scansione.");
+      }
+    };
+    reader.readAsDataURL(file);
   }
 });
