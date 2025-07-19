@@ -5,28 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Elettromeccanica Maranzan_Magazzino</title>
   <link rel="stylesheet" href="css/magazzino.css" />
-  <style>
-    .input-wrapper {
-      display: inline-block;
-      position: relative;
-    }
-
-    .input-wrapper input {
-      padding-right: 2em;
-    }
-
-    .input-wrapper button {
-      position: absolute;
-      top: 0.25em;
-      right: 0.4em;
-      background: none;
-      border: none;
-      font-size: 1.1em;
-      cursor: pointer;
-      padding: 0;
-      line-height: 1;
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 </head>
 <body class="homepage">
   <div class="contenitore">
@@ -64,30 +43,8 @@
     <div id="tutti-risultati"></div>
   </div>
 
-</script>
-  <!-- Il file input per selezionare immagini QR viene spostato qui prima degli script JS -->
-  <input type="file" accept="image/*" id="qr-file-input" style="display:none" onchange="decodeFromFile(this.files[0])" />
+  <!-- Il file input per selezionare immagini QR -->
+  <input type="file" accept="image/*" id="qr-file-input" style="display:none" />
   <script src="js/magazzino.js"></script>
-<script>
-
-  async function decodeFromFile(file) {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async function () {
-      const image = new Image();
-      image.onload = async function () {
-        const codeReader = new ZXing.BrowserMultiFormatReader();
-        try {
-          const result = await codeReader.decodeFromImageElement(image);
-          document.getElementById("codice-input").value = result.text;
-        } catch (e) {
-          alert("QR non rilevato nell'immagine.");
-        }
-      };
-      image.src = reader.result;
-    };
-    reader.readAsDataURL(file);
-  }
-</script>
 </body>
 </html>
