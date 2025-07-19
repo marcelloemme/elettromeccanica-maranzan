@@ -28,23 +28,31 @@ document.addEventListener('DOMContentLoaded', () => {
       const file = e.target.files[0];
       if (!file) return;
 
-      const img = document.createElement("img");
-      img.src = URL.createObjectURL(file);
-      img.onload = async () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, img.width, img.height);
+      const reader = new FileReader();
+      reader.onload = async function () {
+        const imageDataUrl = reader.result;
 
-        const code = jsQR(ctx.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height);
-        if (code) {
-          document.getElementById("codice-input").value = code.data;
-          cerca();
-        } else {
-          alert("Nessun codice QR rilevato.");
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+          const response = await fetch("https://qr.marcellomaranzan.workers.dev/", {
+            method: "POST",
+            body: formData
+          });
+
+          const result = await response.text();
+          if (result && result.trim()) {
+            document.getElementById("codice-input").value = result.trim();
+            cerca();
+          } else {
+            alert("Nessun codice QR riconosciuto.");
+          }
+        } catch (error) {
+          alert("Errore durante la scansione del QR code.");
         }
       };
+      reader.readAsDataURL(file);
     });
   }
 
@@ -203,6 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     btn.disabled = false;
-    btn.textContent = "Aggiorna";
+    btn.textContent = "Aggiorna dati";
   }
 });

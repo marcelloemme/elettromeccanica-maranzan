@@ -46,5 +46,35 @@
   <!-- Il file input per selezionare immagini QR -->
   <input type="file" accept="image/*" id="qr-file-input" style="display:none" />
   <script src="js/magazzino.js"></script>
+<script>
+  document.getElementById('qr-file-input').addEventListener('change', async function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+
+    img.onload = async () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, canvas.width, canvas.height);
+
+      if (code) {
+        const input = document.getElementById('codice-input');
+        input.value = code.data;
+        document.getElementById('cerca-btn').click();
+      } else {
+        alert("QR non riconosciuto.");
+      }
+
+      URL.revokeObjectURL(img.src);
+    };
+  });
+</script>
 </body>
 </html>
