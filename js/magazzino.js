@@ -1,5 +1,17 @@
 // Assicurati che jsQR sia incluso via script HTML esterno oppure già disponibile globalmente
 document.addEventListener('DOMContentLoaded', () => {
+  let cvReady = false;
+  console.log("Caricamento di OpenCV.js...");
+  const opencvScript = document.createElement('script');
+  opencvScript.src = 'https://docs.opencv.org/4.5.5/opencv.js';
+  opencvScript.onload = () => {
+    cv['onRuntimeInitialized'] = () => {
+      console.log("OpenCV.js pronto");
+      cvReady = true;
+    };
+  };
+  document.body.appendChild(opencvScript);
+
   const input = document.getElementById("codice-input");
   const cercaBtn = document.getElementById("cerca-btn");
   const mostraAZBtn = document.getElementById("mostraAZ");
@@ -23,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const qrFileInput = document.getElementById("qr-file-input");
-  let cvReady = false;
   if (qrFileInput) {
     qrFileInput.addEventListener("change", async (e) => {
       const file = e.target.files[0];
@@ -34,23 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("File caricato:", file.name);
         console.log("Tipo MIME:", file.type);
         try {
-          if (!cvReady) {
-            console.log("Caricamento di OpenCV.js...");
-            await new Promise((resolve, reject) => {
-              const script = document.createElement('script');
-              script.src = 'https://docs.opencv.org/4.5.5/opencv.js';
-              script.onload = () => {
-                cv['onRuntimeInitialized'] = () => {
-                  console.log("OpenCV.js pronto");
-                  cvReady = true;
-                  resolve();
-                };
-              };
-              script.onerror = reject;
-              document.body.appendChild(script);
-            });
-          }
-
           const imageBitmap = await createImageBitmap(file);
           console.log("Bitmap creata:", imageBitmap);
 
