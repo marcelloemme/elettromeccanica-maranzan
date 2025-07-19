@@ -70,40 +70,8 @@
   <script src="js/magazzino.js"></script>
 <script src="https://unpkg.com/@zxing/browser@latest"></script>
 <script>
-  async function scanCamera() {
-    const codiceInput = document.getElementById("codice-input");
-
-    // Verifica se getUserMedia è supportato e se il contesto è sicuro
-    if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      alert("Scansione live non supportata dal browser. Carica un'immagine del codice QR.");
-      document.getElementById("qr-file-input").click();
-      return;
-    }
-
-    const codeReader = new ZXing.BrowserMultiFormatReader();
-    const previewElem = document.createElement("video");
-    previewElem.setAttribute("autoplay", true);
-    previewElem.setAttribute("playsinline", true);
-    previewElem.style.position = "fixed";
-    previewElem.style.top = "0";
-    previewElem.style.left = "0";
-    previewElem.style.width = "100vw";
-    previewElem.style.height = "100vh";
-    previewElem.style.objectFit = "cover";
-    previewElem.style.zIndex = "9999";
-    previewElem.style.background = "#000";
-
-    document.body.appendChild(previewElem);
-
-    try {
-      const result = await codeReader.decodeOnceFromVideoDevice(undefined, previewElem);
-      codiceInput.value = result.text;
-    } catch (err) {
-      alert("Errore nella scansione: " + err.message);
-    } finally {
-      codeReader.reset();
-      document.body.removeChild(previewElem);
-    }
+  function scanCamera() {
+    document.getElementById("qr-file-input").click();
   }
 
   async function decodeFromFile(file) {
