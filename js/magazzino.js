@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
   mostraScaffaleBtn.addEventListener("click", mostraPerScaffale);
   aggiornaBtn.addEventListener("click", avviaAggiornamento);
 
+  const scanBtn = document.getElementById("scan-btn");
+  if (scanBtn) {
+    scanBtn.addEventListener("click", avviaScansioneQRCode);
+  }
+
   async function fetchCSV() {
     const response = await fetch(`magazzino.csv?t=${Date.now()}`);
     const text = await response.text();
@@ -169,5 +174,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btn.disabled = false;
     btn.textContent = "Aggiorna";
+  }
+
+  async function avviaScansioneQRCode() {
+    if (!('BarcodeDetector' in window)) {
+      alert("Il tuo browser non supporta la scansione di codici QR.");
+      return;
+    }
+
+    const input = document.getElementById("codice-input");
+
+    const constraints = {
+      video: {
+        facingMode: "environment"
+      }
+    };
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      const video = document.createElement("video");
+      video.style.display = "none";
+      document.body.appendChild(video);
+      video.srcObject = stream;
+      await video.play();
+
+      const barcodeDetector = new BarcodeDetector({ formats: ["qr_code", "code_128", "ean_13", "code_39"] });
+
+      const rileva = () => {
+        barcodeDetector.detect(video).then(barcodes => {
+          if (barcodes.length > 0) {
+            input.value = barcodes[0].rawValue;
+            cerca();
+            stream.getTracks().forEach(track => track.stop());
+            video.remove();
+          } else {
+            requestAnimationFrame(rileva);
+          }
+        }).catch(err => {
+          console.error(err);
+          stream.getTracks().forEach(track => track.stop());
+          video.remove();
+          alert("Errore nella scansione.");
+        });
+      };
+
+      rileva();
+    } catch (err) {
+      alert("Accesso alla fotocamera negato o non disponibile.");
+    }
   }
 });
