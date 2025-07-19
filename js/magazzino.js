@@ -1,20 +1,30 @@
 // Assicurati che jsQR sia incluso via script HTML esterno oppure già disponibile globalmente
 document.addEventListener('DOMContentLoaded', () => {
-  let cvReady = false;
-  console.log("Caricamento di OpenCV.js...");
-  const opencvScript = document.createElement('script');
-  opencvScript.src = 'https://docs.opencv.org/4.x/opencv.js';
-  opencvScript.onload = () => {
-    cv['onRuntimeInitialized'] = () => {
-      console.log("✅ OpenCV pronto");
+  function initQRScanner() {
+    if (typeof cv === 'undefined' || !cv || !cv.QRCodeDetector) {
+      console.error("❌ OpenCV.js non è disponibile o non è stato caricato correttamente.");
+      return;
+    }
 
-      const qrFileInput = document.getElementById("qr-file-input");
-      if (qrFileInput) {
-        qrFileInput.addEventListener("change", handleQRScan);
-      }
-    };
-  };
-  document.body.appendChild(opencvScript);
+    if (cv.getBuildInformation) {
+      console.log("✅ OpenCV pronto");
+    }
+
+    const qrFileInput = document.getElementById("qr-file-input");
+    if (qrFileInput) {
+      qrFileInput.addEventListener("change", handleQRScan);
+    }
+  }
+
+  if (typeof cv !== 'undefined' && cv['onRuntimeInitialized']) {
+    // Se già inizializzato
+    initQRScanner();
+  } else if (typeof cv !== 'undefined') {
+    // Se non ancora inizializzato
+    cv['onRuntimeInitialized'] = initQRScanner;
+  } else {
+    console.error("❌ cv non definito: assicurati che OpenCV sia incluso da HTML");
+  }
 
   const input = document.getElementById("codice-input");
   const cercaBtn = document.getElementById("cerca-btn");
