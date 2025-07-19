@@ -118,7 +118,32 @@ button {
   flex: 1;
 }
 
+.barra-ricerca {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4em;
+}
+
   /* Linee orizzontali tra le righe della tabella */
 table tr:not(:last-child) {
   border-bottom: 1px solid #ccc;
+}
+
+.input-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+#codice-input {
+  padding-right: 2em; /* spazio per emoji */
+}
+
+.camera-icon {
+  position: absolute;
+  right: 0.5em;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  pointer-events: auto;
 }
