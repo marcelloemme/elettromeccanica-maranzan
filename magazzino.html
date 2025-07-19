@@ -65,14 +65,16 @@
   </div>
 
 </script>
+  <!-- Il file input per selezionare immagini QR viene spostato qui prima degli script JS -->
+  <input type="file" accept="image/*" id="qr-file-input" style="display:none" onchange="decodeFromFile(this.files[0])" />
   <script src="js/magazzino.js"></script>
 <script src="https://unpkg.com/@zxing/browser@latest"></script>
 <script>
   async function scanCamera() {
     const codiceInput = document.getElementById("codice-input");
 
-    // Verifica se getUserMedia è supportato
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    // Verifica se getUserMedia è supportato e se il contesto è sicuro
+    if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       alert("Scansione live non supportata dal browser. Carica un'immagine del codice QR.");
       document.getElementById("qr-file-input").click();
       return;
@@ -123,6 +125,5 @@
     reader.readAsDataURL(file);
   }
 </script>
-<input type="file" accept="image/*" id="qr-file-input" style="display:none" onchange="decodeFromFile(this.files[0])" />
 </body>
 </html>
