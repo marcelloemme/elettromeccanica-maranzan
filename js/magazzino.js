@@ -30,19 +30,33 @@ document.addEventListener('DOMContentLoaded', () => {
       const file = e.target.files[0];
       if (!file) return;
 
-      const imageUrl = URL.createObjectURL(file);
-      const codeReader = new BrowserQRCodeReader();
+      const img = new Image();
+      const reader = new FileReader();
 
-      try {
-        const result = await codeReader.decodeFromImageUrl(imageUrl);
-        console.log("Codice QR rilevato:", result.text);
-        const input = document.getElementById("codice-input");
-        input.value = result.text;
-        cerca(); // chiama direttamente la funzione di ricerca
-      } catch (error) {
-        console.error("Errore durante la scansione del QR:", error);
-        alert("Codice QR non riconosciuto.");
-      }
+      reader.onload = async function(event) {
+        img.onload = async function() {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+
+          const codeReader = new BrowserQRCodeReader();
+          try {
+            const result = await codeReader.decodeFromCanvas(canvas);
+            console.log("Codice QR rilevato:", result.text);
+            const input = document.getElementById("codice-input");
+            input.value = result.text;
+            cerca();
+          } catch (error) {
+            console.error("Errore durante la scansione del QR:", error);
+            alert("Codice QR non riconosciuto.");
+          }
+        };
+        img.src = event.target.result;
+      };
+
+      reader.readAsDataURL(file);
     });
   }
 
