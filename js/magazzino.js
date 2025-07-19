@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let cvReady = false;
   console.log("Caricamento di OpenCV.js...");
   const opencvScript = document.createElement('script');
-  opencvScript.src = 'https://docs.opencv.org/4.5.5/opencv.js';
+  opencvScript.src = 'https://docs.opencv.org/4.5.1/opencv.js';
   opencvScript.onload = () => {
     cv['onRuntimeInitialized'] = () => {
       console.log("✅ OpenCV pronto");
