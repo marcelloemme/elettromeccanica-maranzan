@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let cvReady = false;
   console.log("Caricamento di OpenCV.js...");
   const opencvScript = document.createElement('script');
-  opencvScript.src = 'https://docs.opencv.org/4.5.1/opencv.js';
+  opencvScript.src = 'https://cdn.jsdelivr.net/npm/@techstark/opencv-js@4.5.5/opencv.js';
   opencvScript.onload = () => {
     cv['onRuntimeInitialized'] = () => {
       console.log("✅ OpenCV pronto");
@@ -225,14 +225,13 @@ document.addEventListener('DOMContentLoaded', () => {
         cv.cvtColor(mat, gray, cv.COLOR_RGBA2GRAY);
 
         const qrDetector = new cv.QRCodeDetector();
-        const decodedText = new cv.String();
         const points = new cv.Mat();
         const straightQR = new cv.Mat();
 
-        const success = qrDetector.detectAndDecode(gray, decodedText, points, straightQR);
-        if (success) {
-          console.log("Codice QR rilevato:", decodedText.string);
-          input.value = decodedText.string;
+        const result = qrDetector.detectAndDecode(gray);
+        if (result) {
+          console.log("Codice QR rilevato:", result);
+          input.value = result;
           cerca();
         } else {
           console.warn("QR non riconosciuto");
@@ -240,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // cleanup
-        mat.delete(); gray.delete(); qrDetector.delete(); points.delete(); straightQR.delete(); decodedText.delete();
+        mat.delete(); gray.delete(); qrDetector.delete(); points.delete(); straightQR.delete();
       } catch (err) {
         console.error("Errore durante la scansione:", err);
         alert("Errore durante la scansione.");
