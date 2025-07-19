@@ -49,7 +49,7 @@
           autocomplete="off"
           placeholder="Codice ricambio"
         />
-        <button id="scan-btn" aria-label="Scansiona codice" onclick="scanCamera()">📷</button>
+        <button id="scan-btn" aria-label="Scansiona codice" onclick="document.getElementById('qr-file-input').click()">📷</button>
       </div>
       <button id="cerca-btn">Cerca</button>
       <button id="aggiorna-btn">Aggiorna dati</button>
@@ -68,11 +68,7 @@
   <!-- Il file input per selezionare immagini QR viene spostato qui prima degli script JS -->
   <input type="file" accept="image/*" id="qr-file-input" style="display:none" onchange="decodeFromFile(this.files[0])" />
   <script src="js/magazzino.js"></script>
-<script src="https://unpkg.com/@zxing/browser@latest"></script>
 <script>
-  function scanCamera() {
-    document.getElementById("qr-file-input").click();
-  }
 
   async function decodeFromFile(file) {
     if (!file) return;
