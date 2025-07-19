@@ -69,6 +69,15 @@
 <script src="https://unpkg.com/@zxing/browser@latest"></script>
 <script>
   async function scanCamera() {
+    const codiceInput = document.getElementById("codice-input");
+
+    // Verifica se getUserMedia è supportato
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert("Scansione live non supportata dal browser. Carica un'immagine del codice QR.");
+      document.getElementById("qr-file-input").click();
+      return;
+    }
+
     const codeReader = new ZXing.BrowserMultiFormatReader();
     const previewElem = document.createElement("video");
     previewElem.setAttribute("autoplay", true);
@@ -86,7 +95,7 @@
 
     try {
       const result = await codeReader.decodeOnceFromVideoDevice(undefined, previewElem);
-      document.getElementById("codice-input").value = result.text;
+      codiceInput.value = result.text;
     } catch (err) {
       alert("Errore nella scansione: " + err.message);
     } finally {
@@ -94,6 +103,26 @@
       document.body.removeChild(previewElem);
     }
   }
+
+  async function decodeFromFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async function () {
+      const image = new Image();
+      image.onload = async function () {
+        const codeReader = new ZXing.BrowserMultiFormatReader();
+        try {
+          const result = await codeReader.decodeFromImageElement(image);
+          document.getElementById("codice-input").value = result.text;
+        } catch (e) {
+          alert("QR non rilevato nell'immagine.");
+        }
+      };
+      image.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
 </script>
+<input type="file" accept="image/*" id="qr-file-input" style="display:none" onchange="decodeFromFile(this.files[0])" />
 </body>
 </html>
