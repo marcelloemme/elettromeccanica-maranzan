@@ -37,9 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.drawImage(img, 0, 0);
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const code = jsQR(imageData.data, imageData.width, imageData.height);
+        console.log("Codice QR rilevato:", code?.data || "Nessun codice");
         if (code) {
-          document.getElementById("codice-input").value = code.data;
-          document.getElementById("cerca-btn").click();
+          const input = document.getElementById("codice-input");
+          input.value = code.data;
+          cerca(); // chiama direttamente la funzione di ricerca
+          // document.getElementById("cerca-btn").click();
         } else {
           alert("Codice QR non riconosciuto.");
         }
