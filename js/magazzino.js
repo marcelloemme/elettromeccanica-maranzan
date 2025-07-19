@@ -1,12 +1,5 @@
 // Assicurati che jsQR sia incluso via script HTML esterno oppure già disponibile globalmente
 document.addEventListener('DOMContentLoaded', () => {
-  if (!document.getElementById("qr-reader-temp")) {
-    const div = document.createElement("div");
-    div.id = "qr-reader-temp";
-    div.style.display = "none";
-    document.body.appendChild(div);
-  }
-
   const input = document.getElementById("codice-input");
   const cercaBtn = document.getElementById("cerca-btn");
   const mostraAZBtn = document.getElementById("mostraAZ");
@@ -36,22 +29,31 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function(event) {
-        const imageDataUrl = event.target.result;
-        const html5QrCode = new Html5Qrcode("qr-reader-temp");
+      reader.onload = async function(event) {
+        const imageBitmap = await createImageBitmap(file);
+        const canvas = document.createElement("canvas");
+        canvas.width = imageBitmap.width;
+        canvas.height = imageBitmap.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(imageBitmap, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-        html5QrCode
-          .scanFile(file, true)
-          .then(decodedText => {
+        try {
+          const { scanImageData } = await import("https://cdn.jsdelivr.net/npm/@undecaf/zbar-wasm@0.9.1/dist/index.min.js");
+          const results = scanImageData(imageData);
+          if (results.length > 0) {
+            const decodedText = results[0].decode();
             console.log("Codice QR rilevato:", decodedText);
             const input = document.getElementById("codice-input");
             input.value = decodedText;
             cerca();
-          })
-          .catch(err => {
-            console.error("Errore durante la scansione:", err);
+          } else {
             alert("Codice QR non riconosciuto.");
-          });
+          }
+        } catch (err) {
+          console.error("Errore durante la scansione:", err);
+          alert("Errore durante la scansione.");
+        }
       };
       reader.readAsDataURL(file);
     });
