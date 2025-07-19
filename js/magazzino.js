@@ -28,31 +28,23 @@ document.addEventListener('DOMContentLoaded', () => {
       const file = e.target.files[0];
       if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = async function () {
-        const imageDataUrl = reader.result;
-
-        const formData = new FormData();
-        formData.append("file", file);
-
-        try {
-          const response = await fetch("https://qr.marcellomaranzan.workers.dev/", {
-            method: "POST",
-            body: formData
-          });
-
-          const result = await response.text();
-          if (result && result.trim()) {
-            document.getElementById("codice-input").value = result.trim();
-            cerca();
-          } else {
-            alert("Nessun codice QR riconosciuto.");
-          }
-        } catch (error) {
-          alert("Errore durante la scansione del QR code.");
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+        if (code) {
+          document.getElementById("codice-input").value = code.data;
+          document.getElementById("cerca-btn").click();
+        } else {
+          alert("Codice QR non riconosciuto.");
         }
       };
-      reader.readAsDataURL(file);
+      img.src = URL.createObjectURL(file);
     });
   }
 
