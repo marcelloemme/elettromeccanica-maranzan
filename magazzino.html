@@ -5,6 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Elettromeccanica Maranzan_Magazzino</title>
   <link rel="stylesheet" href="css/magazzino.css" />
+  <style>
+    .input-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding-right: 2.5em;
+      box-sizing: border-box;
+    }
+
+    .input-wrapper button {
+      position: absolute;
+      top: 50%;
+      right: 0.4em;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 1.2em;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+  </style>
 </head>
 <body class="homepage">
   <div class="contenitore">
@@ -17,14 +43,19 @@
     </p>
     <br>
 
-    <input
-      type="text"
-      id="codice-input"
-      inputmode="text"
-      pattern="[0-9A-Za-z\-]*"
-      autocomplete="off"
-      placeholder="Codice ricambio"
-    />
+    <div class="input-wrapper">
+      <input
+        type="text"
+        id="codice-input"
+        inputmode="text"
+        pattern="[0-9A-Za-z\-]*"
+        autocomplete="off"
+        placeholder="Codice ricambio"
+      />
+      <button id="scan-btn" aria-label="Scansiona codice">
+        📷
+      </button>
+    </div>
     <button id="cerca-btn">Cerca</button>
     <button id="aggiorna-btn">Aggiorna dati ora</button>
 
