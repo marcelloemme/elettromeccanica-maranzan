@@ -132,11 +132,12 @@ table tr:not(:last-child) {
 
 .input-wrapper {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 }
 
 #codice-input {
-  padding-right: 2em; /* spazio per emoji */
+  padding-right: 2em;
 }
 
 .camera-icon {
@@ -146,4 +147,14 @@ table tr:not(:last-child) {
   transform: translateY(-50%);
   cursor: pointer;
   pointer-events: auto;
+  font-size: 1em; /* forza una dimensione coerente */
+  line-height: 1; /* elimina eredità verticali strane */
+}
+
+.nascosto-ma-cliccabile {
+  opacity: 0;
+  width: 0.1px;
+  height: 0.1px;
+  position: absolute;
+  z-index: -1;
 }

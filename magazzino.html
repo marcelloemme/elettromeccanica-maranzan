@@ -28,7 +28,7 @@
           autocomplete="off"
           placeholder="Codice ricambio"
         />
-        <button id="scan-btn" aria-label="Scansiona codice" onclick="document.getElementById('qr-file-input').click()">📷</button>
+        <label for="qr-file-input" class="camera-label" aria-label="Scansiona codice">📷</label>
       </div>
       <button id="cerca-btn">Cerca</button>
       <button id="aggiorna-btn">Aggiorna dati</button>
@@ -44,7 +44,7 @@
   </div>
 
   <!-- Il file input per selezionare immagini QR -->
-  <input type="file" accept="image/*" id="qr-file-input" style="display:none" />
+  <input type="file" accept="image/*" id="qr-file-input" class="nascosto-ma-cliccabile" />
   <script src="js/magazzino.js"></script>
 </body>
 </html>
