@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           console.log("ImageData estratto:", imageData);
 
-          const { scanImageData } = await import("https://cdn.jsdelivr.net/npm/@undecaf/zbar-wasm@0.9.1/dist/index.min.js");
+          const { scanImageData } = await import("https://cdn.jsdelivr.net/npm/@undecaf/zbar-wasm@0.9.1/dist/index.min.mjs");
           console.log("Modulo zbar importato");
 
           const results = scanImageData(imageData);
