@@ -1,3 +1,5 @@
+import { BrowserQRCodeReader } from "https://esm.sh/@zxing/browser";
+
 // Assicurati che jsQR sia incluso via script HTML esterno oppure già disponibile globalmente
 document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById("codice-input");
@@ -28,26 +30,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const file = e.target.files[0];
       if (!file) return;
 
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height);
-        console.log("Codice QR rilevato:", code?.data || "Nessun codice");
-        if (code) {
-          const input = document.getElementById("codice-input");
-          input.value = code.data;
-          cerca(); // chiama direttamente la funzione di ricerca
-          // document.getElementById("cerca-btn").click();
-        } else {
-          alert("Codice QR non riconosciuto.");
-        }
-      };
-      img.src = URL.createObjectURL(file);
+      const imageUrl = URL.createObjectURL(file);
+      const codeReader = new BrowserQRCodeReader();
+
+      try {
+        const result = await codeReader.decodeFromImageUrl(imageUrl);
+        console.log("Codice QR rilevato:", result.text);
+        const input = document.getElementById("codice-input");
+        input.value = result.text;
+        cerca(); // chiama direttamente la funzione di ricerca
+      } catch (error) {
+        console.error("Errore durante la scansione del QR:", error);
+        alert("Codice QR non riconosciuto.");
+      }
     });
   }
 
