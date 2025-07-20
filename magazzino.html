@@ -19,15 +19,17 @@
 
     <div class="barra-ricerca">
       <div class="input-wrapper">
-        <input
-          type="text"
-          id="codice-input"
-          inputmode="text"
-          pattern="[0-9A-Za-z\-]*"
-          autocomplete="off"
-          placeholder="Codice ricambio"
-        />
-        <label for="qr-file-input" class="camera-label" aria-label="Scansiona codice">📷</label>
+        <div class="input-container camera-wrapper">
+          <input
+            type="text"
+            id="codice-input"
+            inputmode="text"
+            pattern="[0-9A-Za-z\-]*"
+            autocomplete="off"
+            placeholder="Codice ricambio"
+          />
+          <label for="qr-file-input" class="camera-inside">📷</label>
+        </div>
       </div>
       <button id="cerca-btn">Cerca</button>
       <button id="aggiorna-btn">Aggiorna dati</button>

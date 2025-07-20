@@ -125,30 +125,43 @@ button {
   gap: 0.4em;
 }
 
-  /* Linee orizzontali tra le righe della tabella */
+/* Linee orizzontali tra le righe della tabella */
 table tr:not(:last-child) {
   border-bottom: 1px solid #ccc;
 }
 
-.input-wrapper {
+#codice-input {
+  padding-right: 2em;
+  width: fit-content;
+  min-width: 13ch;
+}
+
+.input-container {
   position: relative;
   display: inline-flex;
   align-items: center;
 }
 
-#codice-input {
+.input-container input {
   padding-right: 2em;
 }
 
-.camera-icon {
+.camera-label {
   position: absolute;
   right: 0.5em;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
   pointer-events: auto;
-  font-size: 1em; /* forza una dimensione coerente */
+  font-size: 1.3em; /* forza una dimensione coerente */
   line-height: 1; /* elimina eredità verticali strane */
+}
+
+.camera-inside {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .nascosto-ma-cliccabile {
