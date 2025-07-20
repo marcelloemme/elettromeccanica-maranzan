@@ -68,6 +68,8 @@ input, button {
   margin: 5px 5px 10px 0;
   border: 1px solid #000;
   background: #fff;
+  height: auto;
+  line-height: 1.2;
 }
 
 button {
@@ -123,6 +125,7 @@ button {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.4em;
+  position: relative;
 }
 
 /* Linee orizzontali tra le righe della tabella */
@@ -132,36 +135,56 @@ table tr:not(:last-child) {
 
 #codice-input {
   padding-right: 2em;
-  width: fit-content;
   min-width: 13ch;
 }
 
 .input-container {
   position: relative;
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
+  width: auto;
 }
 
 .input-container input {
-  padding-right: 2em;
+  padding-right: 2.4em;
+  padding-left: 0.5em;
+  width: 20ch;
+  height: auto;
+  line-height: 1.2;
+  vertical-align: middle;
+  font-size: 1em;
+  display: inline-block;
+  box-sizing: border-box;
 }
 
 .camera-label {
   position: absolute;
-  right: 0.5em;
+  right: 0.4em;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
   pointer-events: auto;
-  font-size: 1.3em; /* forza una dimensione coerente */
-  line-height: 1; /* elimina eredità verticali strane */
+  font-size: 1em;
+  vertical-align: middle;
+  display: flex;
+  align-items: baseline;
+  line-height: 1;
+  height: 100%;
+  padding: 0;
 }
 
 .camera-inside {
   position: absolute;
-  right: 6px;
+  right: 0.7em;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-56%);
+  cursor: pointer;
+  pointer-events: auto;
+  font-size: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0;
 }
 
 .nascosto-ma-cliccabile {
