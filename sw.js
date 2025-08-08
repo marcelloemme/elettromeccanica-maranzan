@@ -56,7 +56,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-first per i file locali dell’app
+  // Network-first per gli asset principali dell'app (HTML/CSS/JS) così vedi subito gli aggiornamenti
+  if (
+    isSameOrigin &&
+    (url.pathname === '/magazzino.html' ||
+     url.pathname === '/css/magazzino.css' ||
+     url.pathname === '/js/magazzino.js')
+  ) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  // Cache-first per gli altri file locali dell’app
   if (isSameOrigin) {
     event.respondWith(cacheFirst(request));
     return;
