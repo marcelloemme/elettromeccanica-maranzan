@@ -4,15 +4,15 @@ codice,descrizione,scaffale
 021245040,vite senza fine,V16
 028245272,pompa olio x des,A04
 050833,molla x tazza,Z3
-122211-8,coperchio guida lama,F3
-122331-8,porta mandrino,C8
+122211-8,coperchio guida lama,F03
+122331-8,porta mandrino,C08
 122428-3,impugnatura,P4
-122450-0,coperchio guida lama,H9
-123443-0,ingranaggio,E6
+122450-0,coperchio guida lama,H09
+123443-0,ingranaggio,E06
 123503-8,gruppo ingranaggi,Z9
-123868-9,ingranaggio,E6
+123868-9,ingranaggio,E06
 123886-6,frizione UC4030,F12
-125049-0,gruppo ingranaggi,B1
+125049-0,gruppo ingranaggi,B01
 125050-5,gruppo ingranaggi,A03
 125067-8,gruppo ingranaggi,P6
 125101-4,gruppo ingranaggi,V5
@@ -41,60 +41,60 @@ codice,descrizione,scaffale
 125848-0,gruppo ingranaggi,P16
 126148-1,gruppo ingranaggi,Y11
 126179-0,gruppo ingranaggi,T10
-126180-5,leva cambio,E6
-126188-9,ingranaggio,E6
+126180-5,leva cambio,E06
+126188-9,ingranaggio,E06
 126233-0,leva,P16
-126289-3,leva cambio,E6
-126354-8,ingranaggio,E7
+126289-3,leva cambio,E06
+126354-8,ingranaggio,E07
 126459-4,ing. x DDF456,Y6
-126460-9,gruppo ingranaggi,K3
+126460-9,gruppo ingranaggi,K03
 127099-1,gruppo ingranaggi,Z9
 130.426,interruttore,E10
-132311-6,incudine x 6905B,G6
-134273-4,guida lama,H4
+132311-6,incudine x 6905B,G06
+134273-4,guida lama,H04
 134374-8,cassetta olio,T5
-134435-4,albero,A5
+134435-4,albero,A05
 134436-2,albero,V6
 134564-3,guida lama,O9
 134777-6,impugnatura,T5
-134946-9,incudine x 6906B,C7
+134946-9,incudine x 6906B,C07
 135079-3,scatola ing.,N11
 135086-6,frizione,E11
 140441-9,base,Q10
 150067-9,soletta gomma,M5
 150272-8,serbatoio,M1
-150367-7,tappo grasso,G8
-150368-5,tappo grasso,G9
+150367-7,tappo grasso,G08
+150368-5,tappo grasso,G09
 150846-5,piastra di scorrimento,V9
 150980-1,piastra,S2
-151232-3,base x BO4510,I5
-151310-9,cannone,F2
-151364-6,guida lama,B1
+151232-3,base x BO4510,I05
+151310-9,cannone,F02
+151364-6,guida lama,B01
 151561-4,porta punte,V6
-151595-7,scatola ing.,E7
+151595-7,scatola ing.,E07
 151631-9,scatola ing.,R5
 151760-8,copri puntale,G15
 151781-0,base x BO3700,V9
 152103-7,rullo,V5
 152145-1,flangia,U8
-152229-5,scatola cuscinetto,E1
+152229-5,scatola cuscinetto,E01
 152338-0,cilindro,N2
 152362-3,supporto lat.,P8
 152368-1,supporto motore,N12
-152397-4,portapunte hilti,C2
+152397-4,portapunte hilti,C02
 152470-0,supporto anello,R7
 152478-4,base x BO4561,P1
-152483-1,copri guida lama,A7
+152483-1,copri guida lama,A07
 152529-3,camma x HP1500,L8
-152547-5,guida lama,E9
+152547-5,guida lama,E09
 152559-4,leva cambio,Q7
 152582-9,supporto spazzole,R8
 152585-3,rullo,P11
 152601-1,guida lama,V3
 152615-0,leva completa,Q6
-152927-1,guida lama,K1
+152927-1,guida lama,K01
 152947-5,guida lama completa,Q5
-153126-8,ingranaggio,F5
+153126-8,ingranaggio,F05
 153155-1,ingranaggio,T3
 153189-4,albero,L7
 153205-2,perno con ingranaggio,M5
@@ -109,31 +109,31 @@ codice,descrizione,scaffale
 153336-7,eccentrico,N13
 153338-3,scatola ing.,F11
 153389-6,scatola ing.,S9
-153488-4,carcassa ing.,K9
+153488-4,carcassa ing.,K09
 153622-6,ingranaggio x HP2071,N11
-153624-2,coperchio,K1
+153624-2,coperchio,K01
 153808-2,carcassa battente,G11
-154545-1,eccentrico,E7
+154545-1,eccentrico,E07
 154546-9,eccentrico x JR3070,Y3
 154549-3,limit. di coppia,T12
-154590-6,carcassa,E7
+154590-6,carcassa,E07
 154621-1,carcassa x HR4001,E13
-154657-0,base,I2
+154657-0,base,I02
 154769-9,supporto cuscinetto,Y1
 154870-0,tappo olio,V11
-155251-1,pompa olio,F7
-155307-0,coperchio cuscinetto,F5
+155251-1,pompa olio,F07
+155307-0,coperchio cuscinetto,F05
 155326-6,piastra di scorrimento,L2
-155811-9,cassetta olio,C4
-155812-7,cassetta olio x 5014B,C5
-155957-1,gancio x BO4540,I1
-156452-4,carcassa motore,E2
-156529-5,carcassa motore,E2
-156681-9,scatola ingranaggi,F8
-156916-8,scatola laterale x 5014B,E1
-157045-0,scatola ingranaggi,H1
-157633-3,scatola ingranaggi x HM1300,I5
-157727-4,scatola ingranaggi,C3
+155811-9,cassetta olio,C04
+155812-7,cassetta olio x 5014B,C05
+155957-1,gancio x BO4540,I01
+156452-4,carcassa motore,E02
+156529-5,carcassa motore,E02
+156681-9,scatola ingranaggi,F08
+156916-8,scatola laterale x 5014B,E01
+157045-0,scatola ingranaggi,H01
+157633-3,scatola ingranaggi x HM1300,I05
+157727-4,scatola ingranaggi,C03
 158145-9,ghiera,Y11
 158307-9,porta punte,X7
 158323-1,base x BO4555,E14
@@ -144,8 +144,8 @@ codice,descrizione,scaffale
 158574-6,porta punte,T10
 158670-0,carcassa battente,T11
 158671-8,scatola cuscinetto,T10
-158676-8,scatola ingranaggio,K4
-158881-7,scatola ingranaggio,K5
+158676-8,scatola ingranaggio,K04
+158881-7,scatola ingranaggio,K05
 158942-3,pompa olio,Q13
 159469-6,testa x 9029,M2
 159716-5,testa completa,P2
@@ -153,52 +153,52 @@ codice,descrizione,scaffale
 162245-9,leva cambio,K11
 162259-8,leva,X2
 163107-3,pinza fermacarta,L9
-163247-8,piastra,H8
+163247-8,piastra,H08
 163430-7,piastra,T16
 163467-4,gancio,E13
-164329-9,supporto manopola,I5
-164372-8,guida rullo,G9
+164329-9,supporto manopola,I05
+164372-8,guida rullo,G09
 164569-9,ritegno manopola,L4
-164572-0,supporto manopola,B6
+164572-0,supporto manopola,B06
 164617-4,ferma punte x HM1200,L5
-164840-1,slitta,I2
-164861-3,asta porta lama,I7
+164840-1,slitta,I02
+164861-3,asta porta lama,I07
 164886-7,protezione x SR1800,R3
-165007-4,molletta aggancio,C2
-165071-5,supporto punta,B3
+165007-4,molletta aggancio,C02
+165071-5,supporto punta,B03
 165256-3,protezione,V6
 165326-8,albero,V5
-165406-0,pattino,K3
+165406-0,pattino,K03
 165633-9,bussola di blocco,N10
 167088-8,carter,Q13
 168096-8,pomolino,M8
-168097-6,pomolino,G4
+168097-6,pomolino,G04
 168282-1,albero x 4304T,Q3
 181134-9,impugnatura completa,Q8
 181145-4,impugnatura completa,Q5
 181150-1,impugnatura completa,Q3
 181151-9,impugnatura x 1805/6,P3
-181286-6,impugnatura completa,E1
+181286-6,impugnatura completa,E01
 181653-5,impugnatura completa,Q6
-181737-9,impugnatura x 9906B,C6
+181737-9,impugnatura x 9906B,C06
 182077-8,impugnatura,Q7
-183B54-5,carter pignone,K5
+183B54-5,carter pignone,K05
 187573-1,pompa olio,F12
 188092-0,coppia conica,L14
-192140-9,"motore 9,6",E3
-192249-7,porta punte hilti,H1
+192140-9,"motore 9,6",E03
+192249-7,porta punte hilti,H01
 192640-9,coppia conica x 9527,P3
 192983-9,base velcro x BO3700,F11
 193521-0,soletta x BO4900,F13
-193523-6,soletta,K6
+193523-6,soletta,K06
 193752-1,base x BO500,U2
-194930-6,soletta,K5
+194930-6,soletta,K05
 210006-2,cuscinetto 696,Q1
 210057-5,cuscinetto,Y3
 210059-1,cuscinetto,Z5
 210213102,carter,X5
 211012-0,cuscinetto,T13
-211014-6,cuscinetto,C3
+211014-6,cuscinetto,C03
 211098-4,cuscinetto,U7
 211099-2,cuscinetto,U6
 211121-5,cuscinetto,U7
@@ -206,53 +206,53 @@ codice,descrizione,scaffale
 211141-9,cuscinetto,V14
 211234-2,cuscinetto,G12
 211238-4,cuscinetto,X6
-211244-9,cuscinetto,K8
+211244-9,cuscinetto,K08
 211423-9,cuscinetto,Y8
-212004-2,cuscinetto,K7
+212004-2,cuscinetto,K07
 212005-0,cuscinetto,R2
 212017-3,cuscinetto,V7
-212025-4,cuscinetto,E4
-212065-2,cuscinetto,E4
+212025-4,cuscinetto,E04
+212065-2,cuscinetto,E04
 212102-2,cuscinetto,M3
-212104-8,cuscinetto,I8
-212108-0,cuscinetto,E4
-212151-9,cuscinetto,H3
+212104-8,cuscinetto,I08
+212108-0,cuscinetto,E04
+212151-9,cuscinetto,H03
 212208-6,cuscinetto NK 15/16,L3
 212502-6,cuscinetto,N1
-213027-3,paraolio,F2
+213027-3,paraolio,F02
 213047-7,anello,L14
-213063-9,guarnizione,A9
+213063-9,guarnizione,A09
 213068-9,anello gomma,V2
 213073-6,anello,V2
-213111-4,guarnizione,E1
+213111-4,guarnizione,E01
 213124-5,anello,T3
 213125-3,anello,T3
 213128-7,anello,V1
 213151-2,sigillo olio,A01
-213157-0,paraolio,A6
-213158-8,sigillo olio,E1
+213157-0,paraolio,A06
+213158-8,sigillo olio,E01
 213160-1,sigillo olio,N1
-213164-5,sigillo olio 14,C3
+213164-5,sigillo olio 14,C03
 213172-4,anello,U5
-213214-4,guarnzione or,F8
+213214-4,guarnzione or,F08
 213227-5,anello,V1
 213230-6,anello,T4
 213232-2,anello,V2
 213257-6,sigillo olio,L1
-213258-4,guarnizione or,F7
+213258-4,guarnizione or,F07
 213265-7,anello or,N11
 213269-9,anello,Q6
 213270-4,anello x HM1100,Q8
 213273-8,sigillo olio,S7
 213303-5,sigillo olio,L3
-213305-7,anello x HR2400,A7
-213309-3,guarnizione,E1
+213305-7,anello x HR2400,A07
+213309-3,guarnizione,E01
 213311-6,anello,Q5
-213317-4,anello,B9
-213360-3,sigillo olio,H3
-213370-0,sigillo,B9
+213317-4,anello,B09
+213360-3,sigillo olio,H03
+213370-0,sigillo,B09
 213373-4,anello,A03
-213374-2,guarnizione or,F1
+213374-2,guarnizione or,F01
 213381-5,anello interno,Q4
 213383-1,anello,L4
 213391-2,anello,V6
@@ -267,7 +267,7 @@ codice,descrizione,scaffale
 213431-6,anello gomma,Z4
 213431-6,anello battente,T14
 213435-8,anello,V7
-213469-1,guarnizione or,H6
+213469-1,guarnizione or,H06
 213481-1,guarnizione,N12
 213485-3,guarnizione,R9
 213486-1,anello,Y10
@@ -275,73 +275,73 @@ codice,descrizione,scaffale
 213510-0,anello,Q13
 213512-6,guarnizione,L8
 213523-1,guarnizione,R9
-213554-0,guarnizione or,H2
-213601-7,guarnizione,B9
-213604-1,guarnizione x HR3850,I4
+213554-0,guarnizione or,H02
+213601-7,guarnizione,B09
+213604-1,guarnizione x HR3850,I04
 213611-4,anello,Z5
 213655-4,guarnizione,L3
 213707-1,guarnizione,V2
 213718-6,anello gomma,R13
 213725-9,anello,V1
-213854-8,guarnizione or,H2
+213854-8,guarnizione or,H02
 213909-9,guarnizione,O1
 213958-6,anello,V1
-213962-5,anello,K8
+213962-5,anello,K08
 213983-7,anello,X8
-214016-1,bronzina,E4
-214019-5,bronzina,E5
+214016-1,bronzina,E04
+214019-5,bronzina,E05
 214027-6,bronzina,N1
 214101-0,bronzina,M4
-214104-4,bronzina,E5
-214154-9,bronzina,C3
+214104-4,bronzina,E05
+214154-9,bronzina,C03
 214157-3,bronzina x JR3000,M3
 214170-1,bronzina,V10
 214405-0,bronzina,G15
 216001-0,sfera,M8
-216002-8,sfera,F9
-216008-6,sfera,G6
-216011-7,sfera,G7
+216002-8,sfera,F09
+216008-6,sfera,G06
+216011-7,sfera,G07
 219013-2,cuscinetto or,S3
 219014-0,cuscinetto,P14
 221095-2,ingranaggio x 9030,E12
-221243-3,ingranaggio x 6906,C7
-221312-0,ingranaggio,B4
-221323-5,ingranaggio,F6
-221365-9,ingranaggio,B4
-221367-5,ingranaggio,G9
+221243-3,ingranaggio x 6906,C07
+221312-0,ingranaggio,B04
+221323-5,ingranaggio,F06
+221365-9,ingranaggio,B04
+221367-5,ingranaggio,G09
 221387-9,ingranaggio,P5
-221504-1,ruota dentata,H5
+221504-1,ruota dentata,H05
 221669-9,ingranaggio,M4
-221739-4,ingranaggio 68,C2
-221740-9,ingranaggio,H7
+221739-4,ingranaggio 68,C02
+221740-9,ingranaggio,H07
 221742-5,ingranaggio,S6
-221753-0,ingranaggio,E1
-221772-6,ingranaggio,G1
-221809-9,albero eccentrico,F3
-221849-7,ingranaggio x 6905,C7
-221861-7,ingranaggio,G3
+221753-0,ingranaggio,E01
+221772-6,ingranaggio,G01
+221809-9,albero eccentrico,F03
+221849-7,ingranaggio x 6905,C07
+221861-7,ingranaggio,G03
 221884-5,ingranaggio,O7
 222018-3,puleggia,M4
-222019-1,puleggia x 9030,I6
+222019-1,puleggia x 9030,I06
 222129-4,puleggia x 9031,P2
 222144-8,puleggia,V5
 222156-1,puleggia,Y10
-223029-1,camma a,H9
-223030-6,camma b,H9
+223029-1,camma a,H09
+223030-6,camma b,H09
 223054-2,camma b,R4
-223073-8,camma,A9
-223075-4,camma,G8
-224298-7,flangia interna,C4
-224515-5,flangia per platorello,C8
-225001-9,cinghia,H9
+223073-8,camma,A09
+223075-4,camma,G08
+224298-7,flangia interna,C04
+224515-5,flangia per platorello,C08
+225001-9,cinghia,H09
 225007-7,cinghia x KP0810,F10
-225008-5,cinghia,G5
+225008-5,cinghia,G05
 225041-7,cinghia,L9
-225042-5,cinghia,H6
-225049-1,cinghia,I1
-225064-5,cinghia,I4
+225042-5,cinghia,H06
+225049-1,cinghia,I01
+225064-5,cinghia,I04
 225069-5,cinghia,L7
-225071-8,cinghia,G4
+225071-8,cinghia,G04
 225079-2,cinghia x 9910,S4
 225081-5,cinghia x KP301,S2
 225084-9,cinghia trasmissione,N15
@@ -356,17 +356,17 @@ codice,descrizione,scaffale
 225229010,manicotto,Q9
 225242010,tubo di racc.,U8
 225243011,giunto olio,Q14
-225244010,serbatoio olio,C2
+225244010,serbatoio olio,C02
 225271010,leva int.,S1
 225310020,impugnatura,R2
 226028-2,ingranaggio,N13
-226048-6,ingranaggio x 6010,H7
+226048-6,ingranaggio x 6010,H07
 226062-2,ingranaggio,M5
 226130-1,ingranaggio,Q4
 226213100,carter,E12
 226245200,pompa olio x UC4030,F12
-226259-3,ingranaggio,F4
-226260-8,ingranaggio,G2
+226259-3,ingranaggio,F04
+226260-8,ingranaggio,G02
 226283-6,ingranaggio,S8
 226284-4,ingranaggio,S8
 226285-2,ingranaggio,S8
@@ -385,16 +385,16 @@ codice,descrizione,scaffale
 226712-9,ingranaggio,P4
 226713-7,ingranaggio,P4
 226725-0,ingranaggio,Q2
-226728-4,ingranaggio x 9524NB,B2
-226733-1,ingranaggio x 9524NB,B3
-226741-2,ingranaggio,A9
+226728-4,ingranaggio x 9524NB,B02
+226733-1,ingranaggio x 9524NB,B03
+226741-2,ingranaggio,A09
 226745-4,ingranaggio,R7
 226746-2,ingranaggio,R7
 226771-3,ingranaggio,Q1
 226772-1,ingranaggio,Q5
 226798-3,ingranaggio,E15
 226799-1,ingranaggio,E15
-226818-3,ingranaggio,B8
+226818-3,ingranaggio,B08
 227002-3,ingranaggio,V14
 227109-5,ingranaggio,R12
 227112-6,ingranaggio,V12
@@ -407,26 +407,26 @@ codice,descrizione,scaffale
 227509-9,ingranaggio x HR4001,F15
 227512-0,ingranaggio,R10
 227542-1,ingranaggio,Q15
-227592-6,ingranaggio,K1
-227597-8,ingranaggio,K1
-227754-6,ingranaggio,K7
-231004-3,molla,I8
+227592-6,ingranaggio,K01
+227597-8,ingranaggio,K01
+227754-6,ingranaggio,K07
+231004-3,molla,I08
 231025-5,molla,X4
 231135-8,molla,S3
-231139-0,molla,A9
-231216-8,molla,F7
+231139-0,molla,A09
+231216-8,molla,F07
 231225-7,molla,L9
 231261-3,molla,T4
 231278-6,molla,Z2
-231280-9,molla x 6820BV,I6
+231280-9,molla x 6820BV,I06
 231317-2,molla,M7
 231327-9,molla,L5
 231403-9,molla,L8
 231408-9,molla x HR2000,M2
-231421-7,molla x 6074,B2
+231421-7,molla x 6074,B02
 231433-0,molla,A01
-231434-8,molla,G1
-231504-3,molla di torsione,C6
+231434-8,molla,G01
+231504-3,molla di torsione,C06
 231534-4,molla,M9
 231589-9,molla,M4
 231660-9,molla,U4
@@ -434,15 +434,15 @@ codice,descrizione,scaffale
 231818-0,molla,X4
 231841-5,molla,X3
 231845-7,molla,Q10
-231907-1,anello,K4
-231927-5,molla,F5
+231907-1,anello,K04
+231927-5,molla,F05
 231951-8,anello,M6
-231953-4,anello a molla,A8
-231954-2,anello,A7
+231953-4,anello a molla,A08
+231954-2,anello,A07
 231955-0,ritegno,V13
 231987-7,anello elastico,T3
-232053-3,molla a piastra,F1
-232134-3,molla a piastra,B1
+232053-3,molla a piastra,F01
+232134-3,molla a piastra,B01
 232147-4,molla,R5
 232154-7,molla,U3
 232159-7,molla a piastra,S7
@@ -450,11 +450,11 @@ codice,descrizione,scaffale
 232180-6,anello,Q2
 232182-2,molla a piastra,S4
 232192-9,molla,O8
-232207-2,molla piatta,K1
+232207-2,molla piatta,K01
 232220-0,molla,X2
 232222-6,molla piatta,Y9
 232239-9,molla,X5
-232245-4,molla,K7
+232245-4,molla,K07
 233005-7,molla,N7
 233109-5,molla,Y2
 233188-3,molla,O9
@@ -469,7 +469,7 @@ codice,descrizione,scaffale
 233940-9,anello,Y2
 233974-2,anello,V13
 240067-8,ventola,N12
-241315-8,ventola,I4
+241315-8,ventola,I04
 241654-6,ventola,N8
 241658-8,ventola,X7
 241659-6,ventola x BO5000,M1
@@ -478,19 +478,19 @@ codice,descrizione,scaffale
 241881-5,ventola,G11
 242042-0,tappo,M1
 242502-2,tappo olio,L7
-251246-3,vite,C5
+251246-3,vite,C05
 251287-9,vite,L2
 251322-3,vite,R1
 251387-5,vite,M8
-251425-3,vite,H5
-251448-1,vite mandrino,G4
-251464-3,vite mandrino,D3
-251609-3,bullone con bordino,I3
-251812-6,volantino x 1923B,C5
+251425-3,vite,H05
+251448-1,vite mandrino,G04
+251464-3,vite mandrino,D03
+251609-3,bullone con bordino,I03
+251812-6,volantino x 1923B,C05
 251919-8,vite,P9
-252043-0,dado x 5012,C5
+252043-0,dado x 5012,C05
 252046-4,bullone,L5
-252134-7,dado M8,K8
+252134-7,dado M8,K08
 252624,leva,V4
 252640-2,manopola,O6
 253052-2,rondella,R1
@@ -498,54 +498,54 @@ codice,descrizione,scaffale
 253314-8,rondella,R1
 253338-4,anello,V5
 253748-5,rondella,L1
-253753-2,rondella,H7
-253807-5,rondella,C1
-253813-0,rondella,H7
-253814-8,rondella,H7
+253753-2,rondella,H07
+253807-5,rondella,C01
+253813-0,rondella,H07
+253814-8,rondella,H07
 253937-2,rondella,G10
 253939-8,rondella,Q9
 254001-2,chiavetta mezzaluna,A02
-254031-3,chiavetta,G9
-254231-5,chiavetta,G8
+254031-3,chiavetta,G09
+254231-5,chiavetta,G08
 256036-9,spina,P5
-256047-4,spinotto x 9609HB,C5
+256047-4,spinotto x 9609HB,C05
 256085-6,spinotto,V13
-256101-4,perno,E5
-256173-9,spinotto,H4
+256101-4,perno,E05
+256173-9,spinotto,H04
 256219-1,spinotto,Q8
 256252-3,spinotto,P7
-256439-7,spinotto,A6
+256439-7,spinotto,A06
 256459-1,spinotto,F10
 256491-5,spinotto x GA9020,F13
 256510-7,spinotto x GA4530,Q15
-256615-3,spinotto ferma disco,H3
-257073-6,anello x 6012DW,B7
+256615-3,spinotto ferma disco,H03
+257073-6,anello x 6012DW,B07
 257116-4,anello 21,T12
 257231-4,anello,T4
 257535-4,bronzina,V6
 257671-6,boccola,V7
-257913-8,rondella,G4
+257913-8,rondella,G04
 259033-4,anello,T15
 261015-4,rondella,R1
 261023-5,rondella,L1
 261049-7,rondella,L4
-261074-8,rondella nylon x 6905B,C6
+261074-8,rondella nylon x 6905B,C06
 261099-2,rondella,G10
 262010-7,anello,R1
 262038-5,anello gomma,A02
 262095-3,anello gomma,F14
-262515-7,boccola,K7
+262515-7,boccola,K07
 263032-0,spinotto,V10
-265264-5,bullone,C9
-265322-7,bullone,C1
-265341-3,bullone M5x75,C1
+265264-5,bullone,C09
+265322-7,bullone,C01
+265341-3,bullone M5x75,C01
 265439-6,vite,R6
 265844-7,bullone,L6
 266154-5,vite,O9
 266163-4,bullone,F15
 266322-0,vite imp.,P15
-267017-8,rondella,C9
-267085-1,rondella,G2
+267017-8,rondella,C09
+267085-1,rondella,G02
 267109-3,rondella,A01
 267197-0,rondella,R8
 267336-2,rondella,N10
@@ -556,7 +556,7 @@ codice,descrizione,scaffale
 273472-4,manopola,Q9
 284056-3,coperchio posteriore,N1
 284065-2,coperchio posteriore,N15
-285819-0,ritegno,B4
+285819-0,ritegno,B04
 285842-5,ritegno cuscinetto,R14
 286220-2,tappo,M2
 286234-1,tappo,N6
@@ -569,28 +569,28 @@ codice,descrizione,scaffale
 286269-2,cappuccio,Z4
 286285-4,tappo,E15
 286287-0,cappuccio,K10
-286288-8,tappo,K4
+286288-8,tappo,K04
 3100005-5,porta lama x 4304T,Q7
 310028-3,cursore,L15
 310052-6,perno,U5
 310108-5,chiavetta,U9
-310134-4,slitta,E3
+310134-4,slitta,E03
 310135-2,spinotto,V15
 310136-0,porta lama,V8
 310161-1,ferma punte x HR4001,L13
 312629-3,scatola cuscinetto,F16
 312951-8,piano ant.,G13
-312956-8,biella,F9
+312956-8,biella,F09
 313083-4,porta lama,T2
 313140-8,blocca lama,R11
-314044-7,biella,F9
+314044-7,biella,F09
 315095-3,oscillatore,M3
-315146-2,biella,G1
-315248-4,biella,G1
+315146-2,biella,G01
+315248-4,biella,G01
 315782-4,sede cuscinetto,L5
-316450-2,cilindro,A7
+316450-2,cilindro,A07
 316578-6,guida di profondità,E11
-316587-5,piano ant. x 1923,I6
+316587-5,piano ant. x 1923,I06
 316597-2,guida di profondità,E14
 316598-0,protezione lama,R3
 316605-9,base x 4304/5,O3
@@ -606,29 +606,29 @@ codice,descrizione,scaffale
 317814-3,scatola ingranaggio,N11
 318143-7,protezione lama x 5903,F12
 318151-8,piedino,X5
-318335-8,scatola ingranaggio,K5
+318335-8,scatola ingranaggio,K05
 318817-0,scatola ingranaggi x GA9010,F13
 319310-7,scatola ingranaggi,Y10
 321118-7,albero,Q3
 321170-5,alber eccentrico,L3
-321260-4,spina,C7
-321261-2,bottone olio,G6
-321292-1,albero,G7
+321260-4,spina,C07
+321261-2,bottone olio,G06
+321292-1,albero,G07
 321369-2,battente,R5
-321484-2,spinotto 8,I5
-321723-0,albero,G4
-321725-6,albero eccentrico,G6
-321733-7,coperchio frontale,G5
-321855-3,albero eccentrico,F4
-321859-5,ferma punta x HK1800,C3
-321869-2,leva gancio x BO4510,I4
+321484-2,spinotto 8,I05
+321723-0,albero,G04
+321725-6,albero eccentrico,G06
+321733-7,coperchio frontale,G05
+321855-3,albero eccentrico,F04
+321859-5,ferma punta x HK1800,C03
+321869-2,leva gancio x BO4510,I04
 321954-1,albero eccentrico,R4
 321995-7,albero,L2
 321997-3,bussola,M9
-322168-5,porta punte,G2
-322217-8,alberino x HR3520B,B8
-322218-6,alberino x HR3850B,A7
-322319-0,incudine,B7
+322168-5,porta punte,G02
+322217-8,alberino x HR3520B,B08
+322218-6,alberino x HR3850B,A07
+322319-0,incudine,B07
 322325-5,coperchio frontale,L8
 322327-1,coperchio frontale,L8
 322434-0,manicotto,M4
@@ -675,38 +675,38 @@ codice,descrizione,scaffale
 324549-9,flangia,X3
 324620-9,vite,X3
 324639-8,vite ad alette,T13
-325078-5,asse puleggia,I8
-325125-2,asta porta lama,I6
+325078-5,asse puleggia,I08
+325125-2,asta porta lama,I06
 325464-0,battente,N9
-325467-4,pistone x 8035NB,I2
-325549-2,spinotto,C6
+325467-4,pistone x 8035NB,I02
+325549-2,spinotto,C06
 325551-5,albero x 8419-B2,V4
 325785-0,cono dist.,T13
-326850-8,cono press.,E9
+326850-8,cono press.,E09
 326983-9,incudine,U4
 329910-7,percussore,R10
-331271-1,sigillo,I3
+331271-1,sigillo,I03
 331435-7,piastra ferma base,Q4
 331632-5,pistone,V1
 331768-0,frizione,P11
 331796-5,anello 25,R14
-331814-9,camma frizione,E9
+331814-9,camma frizione,E09
 331992-5,frizione x BHR262,T11
 332139-4,flangia,Y2
 341079-5,piastra,L7
-341345-0,copri scatola ingranaggi,I3
-341360-4,piastra,H1
+341345-0,copri scatola ingranaggi,I03
+341360-4,piastra,H01
 341462-6,piastra,Z1
-341772-1,supporto protettore,C9
-341933-3,leva x 3600,E2
-342152-4,pattino di scorrimento,B7
-342483-1,piastra cursore x 4300BV,I5
+341772-1,supporto protettore,C09
+341933-3,leva x 3600,E02
+342152-4,pattino di scorrimento,B07
+342483-1,piastra cursore x 4300BV,I05
 342833-0,leva,V12
-342910-8,supporto punta x HK1800,C2
-342986-5,gancio x BO4550,I1
-343355-3,piastra acciaio,A9
+342910-8,supporto punta x HK1800,C02
+342986-5,gancio x BO4550,I01
+343355-3,piastra acciaio,A09
 343410-1,piastra,O4
-343433-9,attacco mini coltelli,H5
+343433-9,attacco mini coltelli,H05
 343539-3,pinza ferm. x 9036,M6
 343579-1,piastra,V7
 343650-1,piastrina,M5
@@ -715,43 +715,43 @@ codice,descrizione,scaffale
 344232-2,piastra,U4
 344443-9,piastra,S1
 344466-7,piastra rullo x 1806,X8
-344549-3,piastra x 6017,B7
+344549-3,piastra x 6017,B07
 344586-7,piastra,V16
 344790-8,rondella piana,P3
-345001-4,piastra rullo,I2
+345001-4,piastra rullo,I02
 345007-2,piastra rullo,P4
-345211-3,disco con or,K6
+345211-3,disco con or,K06
 345238-3,piastra base,U7
 345342-8,pinza fermacarta,U9
 345998-7,piastrina,X6
 346677-0,guida,P11
 410051-9,copri cinghia,N12
-410331-3,leva cambio,H2
-410787-0,copri cinghia,I4
-410826-6,copri cinghia,I2
+410331-3,leva cambio,H02
+410787-0,copri cinghia,I04
+410826-6,copri cinghia,I02
 410918-1,supporto base,K11
 410936-9,anello cambio,O8
 410986-4,bussola,M6
-411019-8,copri cinghia,G7
-411305-7,coperchio posteriore,H3
-411426-5,copri cinghia,G5
-411594-4,tappino regolazione,A8
+411019-8,copri cinghia,G07
+411305-7,coperchio posteriore,H03
+411426-5,copri cinghia,G05
+411594-4,tappino regolazione,A08
 411623-3,pomolo,A02
-411625-9,bottone,C4
-411650-0,coperchio trucioli,F9
-412041-8,anello,I3
-412055-7,anello int.,F3
-412067-0,anello pistone,F3
+411625-9,bottone,C04
+411650-0,coperchio trucioli,F09
+412041-8,anello,I03
+412055-7,anello int.,F03
+412067-0,anello pistone,F03
 412072-7,tubo,N3
 412073-5,anello int.,N9
 413068-1,piastra base,P2
-414175-3,copri cannone,C1
+414175-3,copri cannone,C01
 414312-9,leva int.,M8
-414708-4,leva int.,I9
-414740-8,leva,I9
+414708-4,leva int.,I09
+414740-8,leva,I09
 414990-5,spinotto,M2
 415443-7,piastra guida,S9
-415491-6,tasto,B2
+415491-6,tasto,B02
 415515-8,anello cambio,S7
 415524-7,dispositivo antisc.,P1
 415622-7,piastra di blocco,P1
@@ -759,7 +759,7 @@ codice,descrizione,scaffale
 415689-5,biella,Q4
 415690-0,coperchio,Q3
 415807-5,porta riflett.,R9
-415866-9,lente,B7
+415866-9,lente,B07
 415953-4,asta int.,V7
 416058-3,leva cambio,R6
 416079-5,leva cambio,T1
@@ -789,7 +789,7 @@ codice,descrizione,scaffale
 416566-4,manicotto,P12
 416568-0,coperchio,E14
 416571-1,leva cambio,P10
-416572-9,manicotto,I9
+416572-9,manicotto,I09
 416573-7,manicotto,Z5
 416575-3,coperchio carcassa,R16
 416927-8,anello guida,P3
@@ -822,11 +822,11 @@ codice,descrizione,scaffale
 417879-6,leva cambio,V3
 417880-1,leva,X2
 418023-8,spinotto,U2
-418217-5,ghiera,K2
+418217-5,ghiera,K02
 418349-8,pistone x hm860,F10
 418350-3,biella,Z5
 418351-1,coperchio portapunte,Z4
-418352-9,anello guida,D4
+418352-9,anello guida,D04
 418728-0,leva,P13
 418753-1,leva inv.,X6
 418981-8,coperchio,T15
@@ -848,28 +848,28 @@ codice,descrizione,scaffale
 419642-3,coperchio,Q11
 419693-6,coperchio,P16
 419760-7,guida bussola,N10
-419875-0,biella,E9
-421007-7,soletta gomma,I8
+419875-0,biella,E09
+421007-7,soletta gomma,I08
 421075-0,anello gomma,L1
 421093-8,soletta sughero,N9
 421112-0,protezione,V8
-421155-2,nasello gomma,I1
+421155-2,nasello gomma,I01
 421157-8,protezione,V4
-421167-5,copri int.,H6
-421243-5,copri int.,G5
-421279-4,copri int.,C4
+421167-5,copri int.,H06
+421243-5,copri int.,G05
+421279-4,copri int.,C04
 421292-2,anello uretano,R11
 421315-6,bussola,Q8
 421336-8,coperchio antipolvere,L6
 421392-8,guarnizione,A03
 421494-0,anello gomma,A02
-421541-7,coperchio cannone,C3
+421541-7,coperchio cannone,C03
 421570-0,anello,R9
 421582-3,anello in gomma,L15
 421598-4,tubo olio,X3
 421623-5,anello,P14
 421631-6,anello parapolvere,G12
-421648-9,soletta x 9403,K7
+421648-9,soletta x 9403,K07
 421688-7,guarnizione,S5
 421691-8,ammortizzatore,R6
 421720-7,anello gomma,F16
@@ -883,12 +883,12 @@ codice,descrizione,scaffale
 421957-6,copri interruttore,R13
 421958-4,raccordo  ,T14
 422032-1,manicotto gomma,N15
-423026-9,soletta spugna,A8
+423026-9,soletta spugna,A08
 423029-3,soletta carbone,N9
 423036-6,soletta carbone,N9
 423035-8,soletta sughero,N9
 423149-3,soletta sughero,Q7
-423122-3,piastra cusc.,H2
+423122-3,piastra cusc.,H02
 423272-4,soletta gomma,M6
 423315-2,soletta,U1
 423317-8,soletta carbone,F11
@@ -898,11 +898,11 @@ codice,descrizione,scaffale
 424128-4,tappo spazzola,Y9
 424370-7,protezione,P14
 424375-7,protezione,R15
-424429-0,protezione gomma,K9
-442007-4,guarnizione,F5
+424429-0,protezione gomma,K09
+442007-4,guarnizione,F05
 442124-0,guarnizione x 9069,N14
 442129-0,guarnizione,X8
-443034-4,anello,E3
+443034-4,anello,E03
 450067-2,supporto base,X1
 450068-0,supporto base,X1
 450070-3,scatola cusc.,F16
@@ -911,25 +911,25 @@ codice,descrizione,scaffale
 450504-6,leva inv.,X9
 450584-2,leva revers.,T14
 451529-3,leva cambio,T11
-451533-2,ghiera,K2
+451533-2,ghiera,K02
 451639-6,anello,Q12
 452205-2,coperchio,Y3
 452439-7,coperchio,V16
 453125-3,leva cambio,K10
 453369-5,pulsante,Y4
-454826-6,serbatoio olio,E8
-519226-8,indotto bhr202,K8
+454826-6,serbatoio olio,E08
+519226-8,indotto bhr202,K08
 519235-7,indotto bhr2161,X4
-529187-4,statore bhr242,K3
-531017-7,interruttore,D9
-531043-6,interruttore,D4
-531045-2,interruttore,C6
-531052-5,interruttore,C1
-531057-5,interruttore,D7
-531075-3,interruttore,D5
-531078-7,interruttore,D5
+529187-4,statore bhr242,K03
+531017-7,interruttore,D09
+531043-6,interruttore,D04
+531045-2,interruttore,C06
+531052-5,interruttore,C01
+531057-5,interruttore,D07
+531075-3,interruttore,D05
+531078-7,interruttore,D05
 531079-5,interruttore,U6
-539036-7,interruttore,C2
+539036-7,interruttore,C02
 539183-4,resistenza,U3
 539189-2,porta spazzola,R14
 619057-6,indotto,L11
@@ -954,22 +954,22 @@ codice,descrizione,scaffale
 619253-6,indotto x btw251,T12
 619263-3,indotto x bdf456,Y4
 619287-9,indotto x bdf446,Y1
-619301-1,indotto x bdf458,K2
+619301-1,indotto x bdf458,K02
 619372-8,indotto x btd140,Y8
-619583-5,indotto x ddf482,E8
+619583-5,indotto x ddf482,E08
 619737-4,indotto x dhr243,Y8
 620120-0,circuito,Y5
 620127-6,circuito,Y11
-620241-9,controllo x dhr2432,K6
-629163-9,motore x td110,E8
-629167-1,motore x df331,E8
-629571-4,motore,H9
+620241-9,controllo x dhr2432,K06
+629163-9,motore x td110,E08
+629167-1,motore x df331,E08
+629571-4,motore,H09
 629574-8,motore,M3
-629577-2,motore,I8
-629580-3,motore,I3
+629577-2,motore,I08
+629580-3,motore,I03
 629581-1,motore,T6
-629618-4,motore 9.6V,I9
-629627-3,motore 9.6,B5
+629618-4,motore 9.6V,I09
+629627-3,motore 9.6,B05
 629683-3,motore x 6940,T16
 629695-6,motore,T6
 629696-4,motore,T9
@@ -982,12 +982,12 @@ codice,descrizione,scaffale
 643964-1,porta spazzole x BHR200,E10
 643995-0,porta spazzole,T15
 646658-4,resistenza,Y7
-649066-1,trasmormatore,G1
-649078-4,trasmormatore x DC9000,H6
-649132-4,trasformatore x DC1201,B1
+649066-1,trasmormatore,G01
+649078-4,trasmormatore x DC9000,H06
+649132-4,trasformatore x DC1201,B01
 649136-6,trasformatore,L9
 649199-2,trasformatore,O6
-650102-8,interruttore x 9029,D6
+650102-8,interruttore x 9029,D06
 650107-5,interruttore,V16
 650107-8,interruttore,P12
 650212-1,interruttore,L12
@@ -996,7 +996,7 @@ codice,descrizione,scaffale
 650226-0,interruttore,P13
 650230-9,interruttore,T14
 650508-0,interruttore,Z2
-650514-5,interruttore,B5
+650514-5,interruttore,B05
 650523-4,interruttore,L12
 650531-5,interruttore,U6
 650543-8,interruttore,U6
@@ -1021,84 +1021,84 @@ codice,descrizione,scaffale
 650682-4,interruttore,V14
 650691-3,interruttore,T10
 650699-7,interruttore,X8
-650709-0,interruttore,E9
+650709-0,interruttore,E09
 650710-5,interruttore,K10
-650721-0,interruttore,E8
+650721-0,interruttore,E08
 650722-8,interruttore x BTD146,R16
 650724-4,interruttore,Y2
 650731-7,interruttore,V14
-650747-2,interruttore BDF456,K6
+650747-2,interruttore BDF456,K06
 650822-8,interruttore JR3070,R12
-651014-8,interruttore,D2
-651018-0,interruttore,D5
-651026-1,interruttore,D9
-651028-7,interruttore,D8
-651034-2,interruttore,D7
-651038-4,interruttore,D5
-651131-4,interruttore,D8
-651134-8,interruttore,D2
-651142-9,interruttore,D4
-651145-3,interruttore,D6
+651014-8,interruttore,D02
+651018-0,interruttore,D05
+651026-1,interruttore,D09
+651028-7,interruttore,D08
+651034-2,interruttore,D07
+651038-4,interruttore,D05
+651131-4,interruttore,D08
+651134-8,interruttore,D02
+651142-9,interruttore,D04
+651145-3,interruttore,D06
 651178-8,interruttore,T3
 651179-6,interruttore x GA9030,R10
 651193-2,interruttore,Q12
-651203-5,interruttore,D1
-651204-3,interruttore,D1
-651212-4,interruttore,D1
-651225-5,interruttore,D5
-651232-8,interruttore,D3
-651235-2,interruttore,D6
+651203-5,interruttore,D01
+651204-3,interruttore,D01
+651212-4,interruttore,D01
+651225-5,interruttore,D05
+651232-8,interruttore,D03
+651235-2,interruttore,D06
 651239-4,interruttore,Q8
-651252-2,interruttore x 5016,B8
-651256-4,interruttore,D6
+651252-2,interruttore x 5016,B08
+651256-4,interruttore,D06
 651268-7,interruttore,L12
 651275-0,interruttore,U3
 651282-3,interruttore,V14
-651283-1,interruttore,I9
+651283-1,interruttore,I09
 651285-7,interruttore,Z2
 651286-5,interruttore,E11
 651332-4,interruttore x 9741,T13
-651344-7,interruttore x 6901,D3
-651354-4,interruttore,D7
-651403-7,interruttore,D2
+651344-7,interruttore x 6901,D03
+651354-4,interruttore,D07
+651403-7,interruttore,D02
 651418-4,interruttore,N2
 651419-2,interruttore,U2
 651423-1,interruttore,T11
 651430-4,interruttore,V12
 651433-8,interruttore,T14
-651470-2,interruttore,H8
-651472-8,interruttore,D9
+651470-2,interruttore,H08
+651472-8,interruttore,D09
 651478-6,interruttore,N3
 651481-7,interruttore,S1
-651504-1,interruttore,D1
-651514-8,interruttore x N910,D8
+651504-1,interruttore,D01
+651514-8,interruttore x N910,D08
 651523-7,interruttore,U9
 651557-0,interruttore,N3
-651558-8,interruttore,D9
+651558-8,interruttore,D09
 651572-4,interruttore,U6
-651600-5,interruttore,D3
-651607-1,interruttore,D9
-651654-2,interruttore,D2
-651709-3,interruttore,A5
-651816-2,interruttore,D8
-651838-2,interruttore,D8
+651600-5,interruttore,D03
+651607-1,interruttore,D09
+651654-2,interruttore,D02
+651709-3,interruttore,A05
+651816-2,interruttore,D08
+651838-2,interruttore,D08
 651852-8,interruttore,Y2
-651898-4,invertitore,D2
+651898-4,invertitore,D02
 651905-3,interruttore,A03
-651909-5,interruttore,D1
+651909-5,interruttore,D01
 651911-8,interruttore,V8
-651912-6,interruttore,D7
-651913-4,interruttore,D3
-651914-2,interruttore,D4
+651912-6,interruttore,D07
+651913-4,interruttore,D03
+651914-2,interruttore,D04
 651919-2,interruttore,N7
 651922-3,interruttore,O8
 651923-1,interruttore,P13
 651926-5,interruttore,A03
-651934-6,interruttore,D6
+651934-6,interruttore,D06
 651969-7,interruttore,L13
 651968-9,interruttore,Z1
 651978-6,interruttore,Z1
-651986-7,interruttore,D4
+651986-7,interruttore,D04
 651989-1,interruttore,Z2
 651990-6,interruttore x BHR200,P7
 651991-4,interruttore,L12
@@ -1107,13 +1107,13 @@ codice,descrizione,scaffale
 651994-8,interruttore,Z1
 651996-4,interruttore,L13
 652191-9,interruttore,U5
-652519-1,salvamotore,H4
-652532-9,salvamatore,G2
-654018-9,anello terminale,H5
-654019-7,anello terminale,H6
-654020-2,anello terminale,H7
+652519-1,salvamotore,H04
+652532-9,salvamatore,G02
+654018-9,anello terminale,H05
+654019-7,anello terminale,H06
+654020-2,anello terminale,H07
 654084-6,anello terminale,A04
-654137-1,piastra b,B6
+654137-1,piastra b,B06
 654168-0,polo positivo,U9
 654169-8,polo negativo,U9
 681623-9,rondella isolante,T12
@@ -1123,67 +1123,67 @@ codice,descrizione,scaffale
 682500-8,passacavo,M9
 682502-4,passacavo,P16
 682503-2,passacavo,P6
-682504-0,passacavo,G8
+682504-0,passacavo,G08
 682505-8,passacavo,M9
 682506-6,passacavo,P6
 682507-4,passacavo,P6
 682559-5,salva cavo,N14
 682560-0,passacavo,E15
-687001-1,morsetto cavo,H4
+687001-1,morsetto cavo,H04
 687085-9,separatore poli,U4
-687113-0,coperchio,K8
+687113-0,coperchio,K08
 743081-8,base x BO5010,V9
 763068-4,mandrino x DA3000,L4
 763082-0,mandrino x DA3000DW,L7
 763174-5,mandrino x DA3010F,F14
-763413-3,chiave mandrino,A5
-763414-1,chiave mandrino,C8
-764415-9,chiave mandrino,G7
-763435-3,chiave mandrino,G8
-763432-9,chiave mandrino,H8
-763601-2,bussola pinza,H5
+763413-3,chiave mandrino,A05
+763414-1,chiave mandrino,C08
+764415-9,chiave mandrino,G07
+763435-3,chiave mandrino,G08
+763432-9,chiave mandrino,H08
+763601-2,bussola pinza,H05
 763607-0,pinza 6mm,F15
 763615-1,dado x 3608,E13
 763618-5,pinza 8mm,M7
 763636-3,pinza 6mm,M7
 763801-4,riduzione 6mm,M7
 763804-8,riduzione 8mm,M7
-80018,invertitore,H8
-80028,interruttore,D5
-80063,invertitore,H8
-80075,interruttore,D7
-82013,portaspazzole,H1
+80018,invertitore,H08
+80028,interruttore,D05
+80063,invertitore,H08
+80075,interruttore,D07
+82013,portaspazzole,H01
 900211,resistenza,R2
-905850,ritegno,G9
-905852,spinotto,G9
-905898,rullino,G9
-907003,puleggia completa,I6
-911106-8,vite,A6
+905850,ritegno,G09
+905852,spinotto,G09
+905898,rullino,G09
+907003,puleggia completa,I06
+911106-8,vite,A06
 911111-5,vite,N2
 911116-5,vite,O8
-911123-8,vite,C8
-911126-2,vite,C7
-911156-3,vite,E2
-911201,flangia esterna,C4
-911226-8,vite,H4
+911123-8,vite,C08
+911126-2,vite,C07
+911156-3,vite,E02
+911201,flangia esterna,C04
+911226-8,vite,H04
 911266-6,vite,L2
-911276-3,vite,E7
-911341-8,vite,E3
-911326-4,vite,E2
+911276-3,vite,E07
+911341-8,vite,E03
+911326-4,vite,E02
 912211-4,vite x 9045N,M8
 915116-7,vite,M5
-920337,spugna,G6
+920337,spugna,G06
 922222-1,vite,L9
 922262-9,vite,Q7
-922337-4,vite,H3
-922371-4,rondella,H9
+922337-4,vite,H03
+922371-4,rondella,H09
 922451-6,bullone,L6
-922847,ingranaggio,E4
+922847,ingranaggio,E04
 922903-7,vite,Q6
 923208004,dado x UC,S5
-925216-5,vite,H1
-926400,kit martello HM1300,I7
-926480,kit martello HM1400,I7
+925216-5,vite,H01
+926400,kit martello HM1300,I07
+926480,kit martello HM1400,I07
 933643,coperchio molla,L3
 933644,molla,L2
 941101-4,rondella,R10
@@ -1205,15 +1205,15 @@ GM00000010,ghiera,T9
 GM00000070,lente,E11
 H311203,cinghia,Z2
 P-00016,lampadina x ML900,N4
-P-00044,interruttore,D3
-P-00050,interruttore,D4
+P-00044,interruttore,D03
+P-00050,interruttore,D04
 P-08414,porta mandrino,M3
 P-09101,protezione gomma,M2
 P-15970,lampadina,R2
 PN1301025,albero flessibile,R13
 629787-1,motore,T7
 629789-7,motore,T8
-629801-3,motore 7.2V,E3
+629801-3,motore 7.2V,E03
 629815-2,motore,L10
 629817-8,motore,L10
 629819-4,motore,L10
@@ -1227,13 +1227,13 @@ PN1301025,albero flessibile,R13
 629900-1,motore,P15
 629922-1,statore,T16
 629937-8,motore,Q14
-629962-9,motore,K6
-629964-5,motore,K2
-631084-3,circuito stampato,C9
-631087-7,circuito stampato,G2
-631093-2,circuito stampato x DC1700,F9
-641107-7,circuito stampato x DC1700,H6
-631109-3,circuito stamapto x DC9100,E2
+629962-9,motore,K06
+629964-5,motore,K02
+631084-3,circuito stampato,C09
+631087-7,circuito stampato,G02
+631093-2,circuito stampato x DC1700,F09
+641107-7,circuito stampato x DC1700,H06
+631109-3,circuito stamapto x DC9100,E02
 631158-0,circuito x DC9700,M1
 631227-7,scheda,Y8
 631231-6,scheda,O5
@@ -1251,8 +1251,8 @@ PN1301025,albero flessibile,R13
 631813-4,circuito luce,X9
 631920-3,scheda,V10
 632A23-2,interruttore,Y7
-632D63-8,statore,K2
-632J71-5,indotto,E7
+632D63-8,statore,K02
+632J71-5,indotto,E07
 632282-2,innesto statore,M9
 632503-2,supporto statore,O4
 632524-4,terminale,V4
@@ -1260,7 +1260,7 @@ PN1301025,albero flessibile,R13
 632679-5,supporto,P12
 632699-9,supporto,Q13
 632828-4,statore,Y3
-632945-0,blocco interruttore,K3
+632945-0,blocco interruttore,K03
 632964-6,statore,Y4
 632965-3,statore x 6918,R15
 632969-6,porta spazzole,R13
@@ -1290,29 +1290,29 @@ PN1301025,albero flessibile,R13
 638511-1,statore,R12
 638511-1,statore,T12
 638605-2,interruttore,V11
-638635-3,blocco interruttore,K4
+638635-3,blocco interruttore,K04
 638657-3,terminale batteria,R13
 638661-2,porta spazzole,Z6
-638845-2,porta spazzole,K5
+638845-2,porta spazzole,K05
 638849-4,porta spazzole,T10
 638853-3,porta spazzole,Y9
 638857-5,porta spazzole,T11
-638884-2,interruttore,K4
-638887-6,interruttore,K3
+638884-2,interruttore,K04
+638887-6,interruttore,K03
 638895-7,supporto spazzole,K11
 638921-2,porta spazzole,R12
 638947-4,supporto interruttore,Y9
 643550-8,tappo spazzole,C10
 643550-8,tappo,Y6
-643551-6,porta spazzole,H2
-643552-4,porta spazzole,H2
+643551-6,porta spazzole,H02
+643552-4,porta spazzole,H02
 643563-9,porta spazzole,R14
 643600-9,tappo,Y7
 643603-3,porta spazzole,L6
-643605-9,porta spazzole,C8
+643605-9,porta spazzole,C08
 643650-4,tappo,Y5
-643653-8,porta spazzole,E3
-643657-0,porta spazzole,F4
+643653-8,porta spazzole,E03
+643657-0,porta spazzole,F04
 643707-1,porta spazzole,N6
 643710-2,tappo,Y5
 643750-0,tappo,Y5
@@ -1321,11 +1321,11 @@ PN1301025,albero flessibile,R13
 643807-7,tappo,Y3
 643829-7,tappo,Y5
 643830-2,terminale batteria,P12
-643909-9,morsetto batteria,I9
+643909-9,morsetto batteria,I09
 643918-8,morsetto batteria,U3
 643923-5,supporto spazzola,P1
-643928-5,tappo spazzole,B6
-643929-3,tappo,B6
+643928-5,tappo spazzole,B06
+643929-3,tappo,B06
 629717-2,motore 12V,O2
 629723-7,motore,T9
 629724-5,motore,P5
@@ -1337,6 +1337,6 @@ PN1301025,albero flessibile,R13
 629763-5,motore x 6914,E10
 629767-7,motorino,L11
 629778-2,motore,T6
-629779-0,motorino x 6017,B1
+629779-0,motorino x 6017,B01
 629781-3,motore,T8
 629785-5,motore,T8
