@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+  <title>Elettromeccanica Maranzan_Magazzino (touch)</title>
+  <link rel="stylesheet" href="css/magazzino2.css" />
+</head>
+<body class="touch-app">
+
+  <main class="app">
+    <!-- Lista risultati -->
+    <section id="results-area" aria-live="polite">
+      <div id="top-results" class="block">
+        <!-- popolato via JS (primi 10 con prefix) -->
+      </div>
+      <div id="suggestions" class="block">
+        <!-- popolato via JS (forse cercavi: fino a 15) -->
+      </div>
+    </section>
+
+    <!-- Box di input + keypad sticky in basso -->
+    <section class="input-zone" role="region" aria-label="Ricerca rapida">
+      <div class="input-row">
+        <div class="input-container">
+          <input
+            id="codice-input"
+            class="code-input"
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9\-]*"
+            placeholder="Codice ricambio"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+          />
+        </div>
+      </div>
+
+      <div class="keypad" role="group" aria-label="Tastiera numerica">
+        <button class="key" data-key="1">1</button>
+        <button class="key" data-key="2">2</button>
+        <button class="key" data-key="3">3</button>
+
+        <button class="key" data-key="4">4</button>
+        <button class="key" data-key="5">5</button>
+        <button class="key" data-key="6">6</button>
+
+        <button class="key" data-key="7">7</button>
+        <button class="key" data-key="8">8</button>
+        <button class="key" data-key="9">9</button>
+
+        <button class="key" data-key="-">-</button>
+        <button class="key" data-key="0">0</button>
+        <button class="key key-reset" data-action="reset">Reset</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/magazzino2.js"></script>
+</body>
+</html>

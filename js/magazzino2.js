@@ -1,0 +1,163 @@
+(() => {
+  const inputEl = document.getElementById('codice-input');
+  const topResultsEl = document.getElementById('top-results');
+  const suggestionsEl = document.getElementById('suggestions');
+  const keypad = document.querySelector('.keypad');
+
+  let DATA = [];      // cache in memoria del CSV
+  let LAST_QUERY = ""; // per evitare render inutili
+
+  // --- UTILITÀ ---
+  const normalize = s => (s || "").trim();
+  const basePart = code => normalize(code).replace(/-\d+$/,""); // parte prima del trattino
+
+  // Parser CSV robusto (usa solo prime 3 colonne, salta righe non valide)
+  function parseCSV(text) {
+    const lines = text.split(/\r?\n/);
+    const out = [];
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i].trim();
+      if (!line) continue;
+      if (i === 0 && /^codice/i.test(line)) continue; // salta intestazione
+
+      // Considera solo A,B,C: spezza e prendi i primi 3 campi
+      const raw = line.split(',');
+      if (raw.length < 3) continue;
+
+      const codice = normalize(raw[0]);
+      const descrizione = normalize(raw[1]);
+      const scaffale = normalize(raw[2]);
+
+      // scarta righe incomplete o con trailing comma extra
+      if (!codice || !descrizione || !scaffale) continue;
+
+      out.push({ codice, descrizione, scaffale });
+    }
+    return out;
+  }
+
+  async function loadCSV() {
+    try {
+      // network-first (bypassa cache) per essere coerenti con /magazzino
+      const res = await fetch(`magazzino.csv?t=${Date.now()}`, { cache: 'no-store' });
+      const text = await res.text();
+      DATA = parseCSV(text);
+    } catch (e) {
+      console.error("Errore caricamento CSV:", e);
+      DATA = [];
+    }
+  }
+
+  // Calcolo “forse cercavi”
+  function similarCodes(query, dati, alreadySet) {
+    const q = normalize(query);
+    const baseQ = basePart(q);
+    if (!q) return [];
+
+    return dati.filter(item => {
+      if (alreadySet.has(item.codice)) return false; // escludi quelli già nei top
+      // stessa base con suffisso diverso (es. 123456-1..-9)
+      if (basePart(item.codice) === baseQ && item.codice !== q) return true;
+
+      // fino a 2 cifre diverse rispetto alla base (prevenzione refusi)
+      const bItem = basePart(item.codice);
+      if (baseQ.length === bItem.length && baseQ.length > 0) {
+        let diff = 0;
+        for (let i = 0; i < baseQ.length; i++) {
+          if (baseQ[i] !== bItem[i]) diff++;
+          if (diff > 2) return false;
+        }
+        return diff > 0 && diff <= 2;
+      }
+      return false;
+    }).slice(0, 15);
+  }
+
+  // Render tabelle
+  function renderTable(rows) {
+    if (!rows || rows.length === 0) return '';
+    const trs = rows.map(r => `
+      <tr>
+        <td class="td-codice">${r.codice}</td>
+        <td class="td-desc">${r.descrizione}</td>
+        <td class="td-scaffale">${r.scaffale}</td>
+      </tr>
+    `).join('');
+    return `<table class="table">${trs}</table>`;
+  }
+
+  function updateResults() {
+    const q = normalize(inputEl.value);
+    if (q === LAST_QUERY) return;
+    LAST_QUERY = q;
+
+    // Pulisci
+    topResultsEl.innerHTML = '';
+    suggestionsEl.innerHTML = '';
+
+    if (!q) {
+      // senza query: non mostrare nulla in alto
+      return;
+    }
+
+    // TOP 10 per prefisso
+    const top = DATA
+      .filter(item => item.codice.startsWith(q))
+      .slice(0, 10);
+
+    if (top.length > 0) {
+      topResultsEl.innerHTML =
+        `<h3>Risultati</h3>${renderTable(top)}`;
+    } else {
+      topResultsEl.innerHTML = `<h3>Risultati</h3><div style="padding:6px 8px;">Nessun risultato con questo prefisso.</div>`;
+    }
+
+    // “Forse cercavi”
+    const already = new Set(top.map(x => x.codice));
+    const maybe = similarCodes(q, DATA, already);
+
+    if (maybe.length > 0) {
+      suggestionsEl.innerHTML =
+        `<h3>Forse cercavi</h3>${renderTable(maybe)}`;
+    }
+  }
+
+  // Debounce per input
+  let debounceTimer;
+  function onInputChange() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(updateResults, 60);
+  }
+
+  // --- Eventi ---
+  inputEl.addEventListener('input', onInputChange);
+
+  keypad.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('.key');
+    if (!btn) return;
+
+    const action = btn.getAttribute('data-action');
+    const key = btn.getAttribute('data-key');
+
+    if (action === 'reset') {
+      inputEl.value = '';
+      updateResults();
+      inputEl.focus();
+      return;
+    }
+    if (key) {
+      inputEl.value += key;
+      updateResults();
+      inputEl.focus();
+    }
+  });
+
+  // Init
+  (async () => {
+    await loadCSV();
+    // all’avvio non mostriamo nulla finché l’utente non digita
+    // ma se vuoi mostrare i primi 10 “globali”, scommenta:
+    // const first10 = [...DATA].slice(0, 10);
+    // topResultsEl.innerHTML = `<h3>Primi 10</h3>${renderTable(first10)}`;
+  })();
+})();
