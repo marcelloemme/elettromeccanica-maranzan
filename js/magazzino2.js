@@ -3,79 +3,66 @@
   const topResultsEl = document.getElementById('top-results');
   const suggestionsEl = document.getElementById('suggestions');
   const keypad = document.querySelector('.keypad');
+  const toggleKbdBtn = document.getElementById('toggle-kbd');
 
-  let DATA = [];      // cache in memoria del CSV
-  let LAST_QUERY = ""; // per evitare render inutili
+  let DATA = [];
+  let LAST_QUERY = "";
 
-  // --- UTILITÀ ---
+  // ---------- Utils ----------
   const normalize = s => (s || "").trim();
-  const basePart = code => normalize(code).replace(/-\d+$/,""); // parte prima del trattino
+  const basePart = code => normalize(code).replace(/-\d+$/,"");
 
-  // Parser CSV robusto (usa solo prime 3 colonne, salta righe non valide)
-  function parseCSV(text) {
+  function parseCSV(text){
     const lines = text.split(/\r?\n/);
     const out = [];
-    for (let i = 0; i < lines.length; i++) {
+    for (let i=0;i<lines.length;i++){
       let line = lines[i].trim();
       if (!line) continue;
-      if (i === 0 && /^codice/i.test(line)) continue; // salta intestazione
-
-      // Considera solo A,B,C: spezza e prendi i primi 3 campi
+      if (i===0 && /^codice/i.test(line)) continue; // salta intestazione
       const raw = line.split(',');
-      if (raw.length < 3) continue;
-
+      if (raw.length < 3) continue;                  // usa solo prime 3 colonne
       const codice = normalize(raw[0]);
       const descrizione = normalize(raw[1]);
       const scaffale = normalize(raw[2]);
-
-      // scarta righe incomplete o con trailing comma extra
-      if (!codice || !descrizione || !scaffale) continue;
-
+      if (!codice || !descrizione || !scaffale) continue; // salta righe incomplete/virgole extra
       out.push({ codice, descrizione, scaffale });
     }
     return out;
   }
 
-  async function loadCSV() {
-    try {
-      // network-first (bypassa cache) per essere coerenti con /magazzino
-      const res = await fetch(`magazzino.csv?t=${Date.now()}`, { cache: 'no-store' });
+  async function loadCSV(){
+    try{
+      const res = await fetch(`magazzino.csv?t=${Date.now()}`, { cache:'no-store' });
       const text = await res.text();
       DATA = parseCSV(text);
-    } catch (e) {
+    }catch(e){
       console.error("Errore caricamento CSV:", e);
       DATA = [];
     }
   }
 
-  // Calcolo “forse cercavi”
-  function similarCodes(query, dati, alreadySet) {
+  function similarCodes(query, dati, alreadySet){
     const q = normalize(query);
     const baseQ = basePart(q);
     if (!q) return [];
-
     return dati.filter(item => {
-      if (alreadySet.has(item.codice)) return false; // escludi quelli già nei top
-      // stessa base con suffisso diverso (es. 123456-1..-9)
-      if (basePart(item.codice) === baseQ && item.codice !== q) return true;
-
-      // fino a 2 cifre diverse rispetto alla base (prevenzione refusi)
+      if (alreadySet.has(item.codice)) return false;
+      if (basePart(item.codice) === baseQ && item.codice !== q) return true; // stessi base + suffisso
       const bItem = basePart(item.codice);
-      if (baseQ.length === bItem.length && baseQ.length > 0) {
+      if (baseQ.length === bItem.length && baseQ.length > 0){
         let diff = 0;
-        for (let i = 0; i < baseQ.length; i++) {
+        for (let i=0;i<baseQ.length;i++){
           if (baseQ[i] !== bItem[i]) diff++;
-          if (diff > 2) return false;
+          if (diff>2) return false;
         }
-        return diff > 0 && diff <= 2;
+        return diff>0 && diff<=2;
       }
       return false;
-    }).slice(0, 15);
+    }).slice(0,15);
   }
 
-  // Render tabelle
-  function renderTable(rows) {
-    if (!rows || rows.length === 0) return '';
+  function renderTable(rows){
+    if (!rows || rows.length===0) return '';
     const trs = rows.map(r => `
       <tr>
         <td class="td-codice">${r.codice}</td>
@@ -86,52 +73,39 @@
     return `<table class="table">${trs}</table>`;
   }
 
-  function updateResults() {
+  function updateResults(){
     const q = normalize(inputEl.value);
     if (q === LAST_QUERY) return;
     LAST_QUERY = q;
 
-    // Pulisci
     topResultsEl.innerHTML = '';
     suggestionsEl.innerHTML = '';
 
-    if (!q) {
-      // senza query: non mostrare nulla in alto
-      return;
-    }
+    if (!q) return;
 
-    // TOP 10 per prefisso
-    const top = DATA
-      .filter(item => item.codice.startsWith(q))
-      .slice(0, 10);
+    const top = DATA.filter(item => item.codice.startsWith(q)).slice(0,10);
+    topResultsEl.innerHTML = top.length
+      ? `<h3>Risultati</h3>${renderTable(top)}`
+      : `<h3>Risultati</h3><div style="padding:6px 8px;">Nessun risultato con questo prefisso.</div>`;
 
-    if (top.length > 0) {
-      topResultsEl.innerHTML =
-        `<h3>Risultati</h3>${renderTable(top)}`;
-    } else {
-      topResultsEl.innerHTML = `<h3>Risultati</h3><div style="padding:6px 8px;">Nessun risultato con questo prefisso.</div>`;
-    }
-
-    // “Forse cercavi”
-    const already = new Set(top.map(x => x.codice));
+    const already = new Set(top.map(x=>x.codice));
     const maybe = similarCodes(q, DATA, already);
-
-    if (maybe.length > 0) {
-      suggestionsEl.innerHTML =
-        `<h3>Forse cercavi</h3>${renderTable(maybe)}`;
+    if (maybe.length){
+      suggestionsEl.innerHTML = `<h3>Forse cercavi</h3>${renderTable(maybe)}`;
     }
   }
 
-  // Debounce per input
+  // Debounce leggero
   let debounceTimer;
-  function onInputChange() {
+  function onInputChange(){
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(updateResults, 60);
   }
 
-  // --- Eventi ---
+  // ---------- Eventi ----------
   inputEl.addEventListener('input', onInputChange);
 
+  // Keypad: niente focus sull'input => non compare la tastiera iOS
   keypad.addEventListener('click', (ev) => {
     const btn = ev.target.closest('.key');
     if (!btn) return;
@@ -139,25 +113,41 @@
     const action = btn.getAttribute('data-action');
     const key = btn.getAttribute('data-key');
 
-    if (action === 'reset') {
-      inputEl.value = '';
+    // Feedback aptico (Android); su iOS Safari in genere non funziona, ma non fa danni
+    if (navigator.vibrate) navigator.vibrate(10);
+
+    if (action === 'backspace'){
+      inputEl.value = inputEl.value.slice(0, -1);
       updateResults();
-      inputEl.focus();
       return;
     }
-    if (key) {
+    if (key){
       inputEl.value += key;
       updateResults();
-      inputEl.focus();
+    }
+  });
+
+  // Toggle tastiera di sistema (QWERTY) solo quando serve
+  toggleKbdBtn.addEventListener('click', () => {
+    const isOff = inputEl.getAttribute('inputmode') === 'none';
+    if (isOff){
+      inputEl.setAttribute('inputmode','text');   // consiglia QWERTY
+      toggleKbdBtn.setAttribute('aria-pressed','true');
+      toggleKbdBtn.textContent = '123';
+      inputEl.focus({ preventScroll:true });
+    } else {
+      inputEl.setAttribute('inputmode','none');   // disattiva tastiera
+      toggleKbdBtn.setAttribute('aria-pressed','false');
+      toggleKbdBtn.textContent = 'ABC';
+      inputEl.blur();
     }
   });
 
   // Init
   (async () => {
     await loadCSV();
-    // all’avvio non mostriamo nulla finché l’utente non digita
-    // ma se vuoi mostrare i primi 10 “globali”, scommenta:
-    // const first10 = [...DATA].slice(0, 10);
+    // (volendo: mostrare i primi 10 globali all'avvio)
+    // const first10 = DATA.slice(0,10);
     // topResultsEl.innerHTML = `<h3>Primi 10</h3>${renderTable(first10)}`;
   })();
 })();
