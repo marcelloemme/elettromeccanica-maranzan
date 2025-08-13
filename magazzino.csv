@@ -725,3 +725,259 @@ codice,descrizione,scaffale
 345342-8,pinza fermacarta,U9
 345998-7,piastrina,X6
 346677-0,guida,P11
+410051-9,copri cinghia,N12
+410331-3,leva cambio,H2
+410787-0,copri cinghia,I4
+410826-6,copri cinghia,I2
+410918-1,supporto base,K11
+410936-9,anello cambio,O8
+410986-4,bussola,M6
+411019-8,copri cinghia,G7
+411305-7,coperchio posteriore,H3
+411426-5,copri cinghia,G5
+411594-4,tappino regolazione,A8
+411623-3,pomolo,A2
+411625-9,bottone,C4
+411650-0,coperchio trucioli,F9
+412041-8,anello,I3
+412055-7,anello int.,F3
+412067-0,anello pistone,F3
+412072-7,tubo,N3
+412073-5,anello int.,N9
+413068-1,piastra base,P2
+414175-3,copri cannone,C1
+414312-9,leva int.,M8
+414708-4,leva int.,I9
+414740-8,leva,I9
+414990-5,spinotto,M2
+415443-7,piastra guida,S9
+415491-6,tasto,B2
+415515-8,anello cambio,S7
+415524-7,dispositivo antisc.,P1
+415622-7,piastra di blocco,P1
+415629-3,leva int.,T5
+415689-5,biella,Q4
+415690-0,coperchio,Q3
+415807-5,porta riflett.,R9
+415866-9,lente,B7
+415953-4,asta int.,V7
+416058-3,leva cambio,R6
+416079-5,leva cambio,T1
+416085-0,coperchio porta punte,P9
+416086-8,supporto imp.,F16
+416087-6,anello cambio,E12
+416119-9,leva cambio,O8
+416123-8,biella,V4
+416124-6,tappo grasso,R12
+416125-4,manicotto,F15
+416127-0,coperchio,U8
+416274-7,tappo olio,T15
+416283-6,sigillo olio,R8
+416287-8,leva cambio hr4000,O1
+416288-6,leva cambio,G14
+416289-4,piastra slitta,P13
+416292-5,coperchio,P14
+416325-6,manicotto,E15
+416401-6,gancio,U1
+416410-5,coperchio porta p.,R7
+286265-0,tappo porta punte,R7
+416449-8,tasto,R1
+256452-5,spinotto,R1
+233089-5,molla,R1
+416490-1,coperchio,T1
+416497-7,raccordo asp.,S3
+416566-4,manicotto,P12
+416568-0,coperchio,E14
+416571-1,leva cambio,P10
+416572-9,manicotto,I9
+416573-7,manicotto,Z5
+416575-3,coperchio carcassa,R16
+416927-8,anello guida,P3
+416929-4,pistone,P11
+416933-3,portaounte,P5
+416934-1,anellodi cambio,R8
+416935-9,tappo,E15
+416937-5,coperchio,R11
+416961-8, coperchio lama,G14
+416994-3,anello di arresto,L15
+417164-7,copri impugnatura,P15
+417186-7,asta interruttore,R3
+417283-9,leva inversione,G12
+417292-8,leva inversione,U1
+417405-1,camma ,T16
+417432-8,biella,U2
+417436-0,bussola,U8
+417437-8,bussola,R1
+417438-6,leva cambio,N15
+417459-8,copri mandrino,V9
+417576-4,bussola,R6
+417577-2,coperchio porta punte,R6
+417628-1,coperchoio leva,G12
+417629-9,coperchio,R7
+417771-9,pulsante,F13
+256486-8,spinotto,F13
+417795-2,leva,X3
+417813-6,comando int.,G14
+417842-9,leva,T2
+417879-6,leva cambio,V3
+417880-1,leva,X2
+418023-8,spinotto,U2
+418217-5,ghiera,K2
+418349-8
+643933-2,tappo,Y6
+643941-3,tappo,Y6
+643955-2,terminale,F10
+643964-1,porta spazzole x BHR200,E10
+643995-0,porta spazzole,T15
+646658-4,resistenza,Y7
+649066-1,trasmormatore,G1
+649078-4,trasmormatore x DC9000,H6
+649132-4,trasformatore x DC1201,B1
+649136-6,trasformatore,L9
+649199-2,trasformatore,O6
+650102-8,interruttore x 9029,D6
+650107-5,interruttore,V16
+650107-8,interruttore,P12
+650212-1,interruttore,L12
+650213-9,interruttore,Y8
+650222-8,interruttore,V15
+650226-0,interruttore,P13
+650230-9,interruttore,T14
+650508-0,interruttore,Z2
+650514-5,interruttore,B5
+650523-4,interruttore,L12
+650531-5,interruttore,U6
+650543-8,interruttore,U6
+650556-9,interruttore,T7
+650559-3,interruttore,Z3
+650564-0,interruttore,F16
+650569-0,interruttore,L14
+650573-9,interruttore,Z6
+650578-9,interruttore,Z7
+650583-6,interruttore,L13
+650587-8,indotto,Z7
+650588-6,interruttore,Z7
+650599-1,interruttore,Z6
+650604-4,interruttore,E16
+650605-2,interruttore,X5
+650619-1,interruttore,Q11
+650653-1,interruttore x BHP451,R16
+650662-0,interruttore,V10
+650663-8,interruttore,X6
+650672-7,interruttore,V10
+650674-3,interruttore,T14
+650682-4,interruttore,V14
+650691-3,interruttore,T10
+650699-7,interruttore,X8
+650709-0,interruttore,E9
+650710-5,interruttore,K10
+650721-0,interruttore,E8
+650722-8,interruttore x BTD146,R16
+650724-4,interruttore,Y2
+650731-7,interruttore,V14
+650747-2,interruttore BDF456,K6
+650822-8,interruttore JR3070,R12
+651014-8,interruttore,D2
+651018-0,interruttore,D5
+651026-1,interruttore,D9
+651028-7,interruttore,D8
+651034-2,interruttore,D7
+651038-4,interruttore,D5
+651131-4,interruttore,D8
+651134-8,interruttore,D2
+651142-9,interruttore,D4
+651145-3,interruttore,D6
+651178-8,interruttore,T3
+651179-6,interruttore x GA9030,R10
+651193-2,interruttore,Q12
+651203-5,interruttore,D1
+651204-3,interruttore,D1
+651212-4,interruttore,D1
+651225-5,interruttore,D5
+651232-8,interruttore,D3
+651235-2,interruttore,D6
+651239-4,interruttore,Q8
+651252-2,interruttore x 5016,B8
+651256-4,interruttore,D6
+651268-7,interruttore,L12
+651275-0,interruttore,U3
+651282-3,interruttore,V14
+651283-1,interruttore,I9
+651285-7,interruttore,Z2
+651286-5,interruttore,E11
+651332-4,interruttore x 9741,T13
+651344-7,interruttore x 6901,D3
+651354-4,interruttore,D7
+651403-7,interruttore,D2
+651418-4,interruttore,N2
+651419-2,interruttore,U2
+651423-1,interruttore,T11
+651430-4,interruttore,V12
+651433-8,interruttore,T14
+651470-2,interruttore,H8
+651472-8,interruttore,D9
+651478-6,interruttore,N3
+651481-7,interruttore,S1
+651504-1,interruttore,D1
+651514-8,interruttore x N910,D8
+651523-7,interruttore,U9
+651557-0,interruttore,N3
+651558-8,interruttore,D9
+651572-4,interruttore,U6
+651600-5,interruttore,D3
+651607-1,interruttore,D9
+651654-2,interruttore,D2
+651709-3,interruttore,A5
+651816-2,interruttore,D8
+651838-2,interruttore,D8
+651852-8,interruttore,Y2
+651898-4,invertitore,D2
+651905-3,interruttore,A3
+651909-5,interruttore,D1
+651911-8,interruttore,V8
+651912-6,interruttore,D7
+651913-4,interruttore,D3
+651914-2,interruttore,D4
+651919-2,interruttore,N7
+651922-3,interruttore,O8
+651923-1,interruttore,P13
+651926-5,interruttore,A3
+651934-6,interruttore,D6
+651969-7,interruttore,L13
+651968-9,interruttore,Z1
+651978-6,interruttore,Z1
+651986-7,interruttore,D4
+651989-1,interruttore,Z2
+651990-6,interruttore x BHR200,P7
+651991-4,interruttore,L12
+651992-2,interruttore,L14
+651993-0,interruttore,Z1
+651994-8,interruttore,Z1
+651996-4,interruttore,L13
+652191-9,interruttore,U5
+652519-1,salvamotore,H4
+652532-9,salvamatore,G2
+654018-9,anello terminale,H5
+654019-7,anello terminale,H6
+654020-2,anello terminale,H7
+654084-6,anello terminale,A4
+654137-1,piastra b,B6
+654168-0,polo positivo,U9
+654169-8,polo negativo,U9
+681623-9,rondella isolante,T12
+681637-8,rondella isolante,O5
+681642-5,anello,S6
+681650-6,rondella isolante,Q5
+682500-8,passacavo,M9
+682502-4,passacavo,P16
+682503-2,passacavo,P6
+682504-0,passacavo,G8
+682505-8,passacavo,M9
+682506-6,passacavo,P6
+682507-4,passacavo,P6
+682559-5,salva cavo,N14
+682560-0,passacavo,E15
+687001-1,morsetto cavo,H4
+687085-9,separatore poli,U4
+687113-0,coperchio,K8
+743081-8,base x BO5010
