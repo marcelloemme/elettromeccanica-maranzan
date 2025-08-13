@@ -823,7 +823,133 @@ codice,descrizione,scaffale
 417880-1,leva,X2
 418023-8,spinotto,U2
 418217-5,ghiera,K2
-418349-8
+418349-8,pistone x hm860,F10
+418350-3,biella,Z5
+418351-1,coperchio portapunte,Z4
+418352-9,anello guida,D4
+418728-0,leva,P13
+418753-1,leva inv.,X6
+418981-8,coperchio,T15
+419002-9,distanziale,Y11
+419004-5,pistone x hr4010,F13
+419005-3,biella,Z9
+419015-0,manicotto,E16
+419016-8,coperchio,E14
+419081-4,piastra,V16
+419022-3,convogliatore,K10
+419027-3,leva,E14
+419041-9,leva inv.,X9
+419202-1,bussola,Z4
+419241-1,coperchio,K11
+419250-0,leva inv.,F14
+419407-3,serbatoio olio,Z6
+419518-4,tappo,Y4
+419566-3,pulsante int.,G15
+419642-3,coperchio,Q11
+419693-6,coperchio,P16
+419760-7,guida bussola,N10
+419875-0,biella,E9
+421007-7,soletta gomma,I8
+421075-0,anello gomma,L1
+421093-8,soletta sughero,N9
+421112-0,protezione,V8
+421155-2,nasello gomma,I1
+421157-8,protezione,V4
+421167-5,copri int.,H6
+421243-5,copri int.,G5
+421279-4,copri int.,C4
+421292-2,anello uretano,R11
+421315-6,bussola,Q8
+421336-8,coperchio antipolvere,L6
+421392-8,guarnizione,A3
+421494-0,anello gomma,A2
+421541-7,coperchio cannone,C3
+421570-0,anello,R9
+421582-3,anello in gomma,L15
+421598-4,tubo olio,X3
+421623-5,anello,P14
+421631-6,anello parapolvere,G12
+421648-9,soletta x 9403,K7
+421688-7,guarnizione,S5
+421691-8,ammortizzatore,R6
+421720-7,anello gomma,F16
+421810-6,guarnizione,P10
+421830-0,anello,U4
+421837-6,protezione x tw0350,R10
+421847-3,protezione,G13
+421868-5,anello gomma,N10
+421910-2,piastra di tenuta,E12
+421942-9,distanziale,T13
+421957-6,copri interruttore,R13
+421958-4,raccordo  ,T14
+422032-1,manicotto gomma,N15
+423026-9,soletta spugna,A8
+423029-3,soletta carbone,N9
+423036-6,soletta carbone,N9
+423035-8,soletta sughero,N9
+423149-3,soletta sughero,Q7
+423122-3,piastra cusc.,H2
+423272-4,soletta gomma,M6
+423315-2,soletta,U1
+423317-8,soletta carbone,F11
+423314-4,soletta sughero,F11
+424056-3,bussola,X4
+424109-8,protezione,P13
+424128-4,tappo spazzola,Y9
+424370-7,protezione,P14
+424375-7,protezione,R15
+424429-0,protezione gomma,K9
+442007-4,guarnizione,F5
+442124-0,guarnizione x 9069,N14
+442129-0,guarnizione,X8
+443034-4,anello,E3
+450067-2,supporto base,X1
+450068-0,supporto base,X1
+450070-3,scatola cusc.,F16
+450098-1,bussola,Q11
+450273-9,supporto,R16
+450504-6,leva inv.,X9
+450584-2,leva revers.,T14
+451529-3,leva cambio,T11
+451533-2,ghiera,K2
+451639-6,anello,Q12
+452205-2,coperchio,Y3
+452439-7,coperchio,V16
+453125-3,leva cambio,K10
+453369-5,pulsante,Y4
+454826-6,serbatoio olio,E8
+519226-8,indotto bhr202,K8
+519235-7,indotto bhr2161,X4
+529187-4,statore bhr242,K3
+531017-7,interruttore,D9
+531043-6,interruttore,D4
+531045-2,interruttore,C6
+531052-5,interruttore,C1
+531057-5,interruttore,D7
+531075-3,interruttore,D5
+531078-7,interruttore,D5
+531079-5,interruttore,U6
+539036-7,interruttore,C2
+539183-4,resistenza,U3
+539189-2,porta spazzola,R14
+619057-6,indotto,L11
+619078-8,motore,T8
+619084-3,indotto x 6980,X5
+619115-8,indotto x 6337,T8
+619116-6,indotto x 6317,Q9
+619117-4,indotto x 6207,Q12
+619134-4,indotto x 6935,P15
+619152-2,indotto ,L11
+616161-1,indotto x bdf440,L11
+619164-5,indotto x bdf441,P10
+619165-3,indotto x bdf451,Z8
+619170-0,indotto x bhp450,E10
+619182-3,indotto x bhp162,Z8
+619190-4,indotto x bhr240,Q14
+619196-2,indotto x bdf442,Z7
+619198-8,indotto x bhp452,X9
+619218-8,indotto bga452,Y7
+619244-7,indotto x btd130,Q13
 643933-2,tappo,Y6
 643941-3,tappo,Y6
 643955-2,terminale,F10
@@ -980,4 +1106,189 @@ codice,descrizione,scaffale
 687001-1,morsetto cavo,H4
 687085-9,separatore poli,U4
 687113-0,coperchio,K8
-743081-8,base x BO5010
+743081-8,base x BO5010,V9
+763068-4,mandrino x DA3000,L4
+763082-0,mandrino x DA3000DW,L7
+763174-5,mandrino x DA3010F,F14
+763413-3,chiave mandrino,A5
+763414-1,chiave mandrino,C8
+764415-9,chiave mandrino,G7
+763435-3,chiave mandrino,G8
+763432-9,chiave mandrino,H8
+763601-2,bussola pinza,H5
+763607-0,pinza 6mm,F15
+763615-1,dado x 3608,E13
+763618-5,pinza 8mm,M7
+763636-3,pinza 6mm,M7
+763801-4,riduzione 6mm,M7
+763804-8,riduzione 8mm,M7
+80018,invertitore,H8
+80028,interruttore,D5
+80063,invertitore,H8
+80075,interruttore,D7
+82013,portaspazzole,H1
+900211,resistenza,R2
+905850,ritegno,G9
+905852,spinotto,G9
+905898,rullino,G9
+907003,puleggia completa,I6
+911106-8,vite,A6
+911111-5,vite,N2
+911116-5,vite,O8
+911123-8,vite,C8
+911126-2,vite,C7
+911156-3,vite,E2
+911201,flangia esterna,C4
+911226-8,vite,H4
+911266-6,vite,L2
+911276-3,vite,E7
+911341-8,vite,E3
+911326-4,vite,E2
+912211-4,vite x 9045N,M8
+915116-7,vite,M5
+920337,spugna,G6
+922222-1,vite,L9
+922262-9,vite,Q7
+922337-4,vite,H3
+922371-4,rondella,H9
+922451-6,bullone,L6
+922847,ingranaggio,E4
+922903-7,vite,Q6
+923208004,dado x UC,S5
+925216-5,vite,H1
+926400,kit martello HM1300,I7
+926480,kit martello HM1400,I7
+933643,coperchio molla,L3
+933644,molla,L2
+941101-4,rondella,R10
+942101-7,rondella,R16
+951051-5,spinotto,T1
+957113840,set spazzole,N2
+961011-9,anello ritegno,P1
+961052-5,anello ritegno,L1
+961054-1,anello,V15
+961072-9,anello ritegno,L6
+965452380,tubo olio,S3
+970802420,tappo spazzole,O3
+975001160,interruttore x DES,O7
+975001190,pulsante x UC,R2
+999984,kit coppia conica,O3
+999986,kit impugnatura,Q4
+999987,kit impugnatura,O7
+GM00000010,ghiera,T9
+GM00000070,lente,E11
+H311203,cinghia,Z2
+P-00016,lampadina x ML900,N4
+P-00044,interruttore,D3
+P-00050,interruttore,D4
+P-08414,porta mandrino,M3
+P-09101,protezione gomma,M2
+P-15970,lampadina,R2
+PN1301025,albero flessibile,R13
+629787-1,motore,T7
+629789-7,motore,T8
+629801-3,motore 7.2V,E3
+629815-2,motore,L10
+629817-8,motore,L10
+629819-4,motore,L10
+629821-7,motore,L10
+629823-3,motore,Q15
+629827-5,indotto,Z3
+629829-1,indotto,Z3
+629851-8,motore,Z9
+629853-4,motore,Z8
+629877-0,motore UM164,T16
+629900-1,motore,P15
+629922-1,statore,T16
+629937-8,motore,Q14
+629962-9,motore,K6
+629964-5,motore,K2
+631084-3,circuito stampato,C9
+631087-7,circuito stampato,G2
+631093-2,circuito stampato x DC1700,F9
+641107-7,circuito stampato x DC1700,H6
+631109-3,circuito stamapto x DC9100,E2
+631158-0,circuito x DC9700,M1
+631227-7,scheda,Y8
+631231-6,scheda,O5
+631233-2,circuito x DC1201,T2
+631235-8,scheda,V8
+631248-9,circuito x DC1700,S1
+631257-8,scheda,P9
+631264-1,circuito x DC9701,R3
+631399-8,scheda,U1
+631443-1,scheda,T5
+631566-5,scheda,U5
+631733-2,circuito,Y4
+631766-7,scheda x 4305F,R14
+631806-1,circuito,Q11
+631813-4,circuito luce,X9
+631920-3,scheda,V10
+632A23-2,interruttore,Y7
+632D63-8,statore,K2
+632J71-5,indotto,E7
+632282-2,innesto statore,M9
+632503-2,supporto statore,O4
+632524-4,terminale,V4
+632524-4,terminale,V4
+632679-5,supporto,P12
+632699-9,supporto,Q13
+632828-4,statore,Y3
+632945-0,blocco interruttore,K3
+632964-6,statore,Y4
+632965-3,statore x 6918,R15
+632969-6,porta spazzole,R13
+635511-1,statore,V11
+638138-7,motore,T7
+638139-5,porta spazzole,R8
+638156-5,porta spazzole,Q14
+638236-7,unità supporto carboncini,N13
+638237-5,porta spazzole,Q12
+638288-8,interruttore,L14
+638294-3,cavetto cablaggio,Q15
+638326-6,interruttore,L13
+638375-3,supporto spazzole,N15
+638387-6,supporto spazzole,N14
+638396-5,statore,Q14
+638413-1,supporto,N13
+638423-8,statore,Z9
+638424-6,porta spazzole,N14
+638425-4,statore,X7
+638445-8,porta spazzole,Z6
+638461-0,statore,Z8
+638494-5,portaspazzole,Q12
+638495-3,statore x BTW251,R11
+638499-5,ventola,X2
+638500-6,porta spazzole,Z7
+638504-8,porta spazzole,P15
+638511-1,statore,R12
+638511-1,statore,T12
+638605-2,interruttore,V11
+638635-3,blocco interruttore,K4
+638657-3,terminale batteria,R13
+638661-2,porta spazzole,Z6
+638845-2,porta spazzole,K5
+638849-4,porta spazzole,T10
+638853-3,porta spazzole,Y9
+638857-5,porta spazzole,T11
+638884-2,interruttore,K4
+638887-6,interruttore,K3
+638895-7,supporto spazzole,K11
+638921-2,porta spazzole,R12
+638947-4,supporto interruttore,Y9
+643550-8,tappo spazzole,C10
+643550-8,tappo,Y6
+643551-6,porta spazzole,H2
+643552-4,porta spazzole,H2
+643563-9,porta spazzole,R14
+643600-9,tappo,Y7
+643603-3,porta spazzole,L6
+643605-9,porta spazzole,C8
+643650-4,tappo,Y5
+643653-8,porta spazzole,E3
+643657-0,porta spazzole,F4
+643707-1,porta spazzole,N6
+643710-2,tappo,Y5
+643750-0,tappo,Y5
+643753-4,tappo,Y6
+643760-7,porta spazole,R15
