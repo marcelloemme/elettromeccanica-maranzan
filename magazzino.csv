@@ -30,7 +30,7 @@ codice,descrizione,scaffale
 125428-2,gruppo ingranaggi x 8414,F11
 125430-5,gruppo ingranaggi x BHP451,F12
 125431-3,gruppo ingranaggi x 6319,F11
-1255433-9,gruppo ingranaggi x BDF451,F12
+125433-9,gruppo ingranaggi x BDF451,F12
 125435-5,leva cambio,F10
 125482-6,gruppo ingranaggi,Z8
 125483-4,gruppo ingranaggi,X1
@@ -127,8 +127,8 @@ codice,descrizione,scaffale
 155811-9,cassetta olio,C4
 155812-7,cassetta olio x 5014B,C5
 155957-1,gancio x BO4540,I1
-156529-5,carcassa motore,E2
 156452-4,carcassa motore,E2
+156529-5,carcassa motore,E2
 156681-9,scatola ingranaggi,F8
 156916-8,scatola laterale x 5014B,E1
 157045-0,scatola ingranaggi,H1
@@ -170,6 +170,7 @@ codice,descrizione,scaffale
 165326-8,albero,V5
 165406-0,pattino,K3
 165633-9,bussola di blocco,N10
+167088-8,carter,Q13
 168096-8,pomolino,M8
 168097-6,pomolino,G4
 168282-1,albero x 4304T,Q3
@@ -182,9 +183,8 @@ codice,descrizione,scaffale
 181737-9,impugnatura x 9906B,C6
 182077-8,impugnatura,Q7
 183B54-5,carter pignone,K5
-167088-8,carter,Q13
 187573-1,pompa olio,F12
-188092,coppia conica,L14
+188092-0,coppia conica,L14
 192140-9,"motore 9,6",E3
 192249-7,porta punte hilti,H1
 192640-9,coppia conica x 9527,P3
@@ -245,6 +245,7 @@ codice,descrizione,scaffale
 213270-4,anello x HM1100,Q8
 213273-8,sigillo olio,S7
 213303-5,sigillo olio,L3
+213305-7,anello x HR2400,A7
 213309-3,guarnizione,E1
 213311-6,anello,Q5
 213317-4,anello,B9
@@ -254,17 +255,16 @@ codice,descrizione,scaffale
 213374-2,guarnizione or,F1
 213381-5,anello interno,Q4
 213383-1,anello,L4
-213305-7,anello x HR2400,A7
 213391-2,anello,V6
 213392-0,anello gomma,O1
 213394-6,guarnizione,Z4
-213431-6,anello gomma,Z4
 213405-7,guarnizione,S5
 213406-5,guarnizione,N8
 213411-2,anello,L4
 213418-8,sigillo olio,U9
 213428-5,guarnzione,L5
 213429-3,anello,P7
+213431-6,anello gomma,Z4
 213431-6,anello battente,T14
 213435-8,anello,V7
 213469-1,guarnizione or,H6
@@ -392,8 +392,8 @@ codice,descrizione,scaffale
 226746-2,ingranaggio,R7
 226771-3,ingranaggio,Q1
 226772-1,ingranaggio,Q5
-226799-1,ingranaggio,E15
 226798-3,ingranaggio,E15
+226799-1,ingranaggio,E15
 226818-3,ingranaggio,B8
 227002-3,ingranaggio,V14
 227109-5,ingranaggio,R12
@@ -401,9 +401,9 @@ codice,descrizione,scaffale
 227179-4,ingranaggio,R15
 227213-0,ingranaggio AN090,V15
 227360-7,ingranaggio,Y1
+227457-2,ingranaggio,G13
 227464-5,ingranaggio,G10
 227505-7,ingranaggio,G10
-227457-2,ingranaggio,G13
 227509-9,ingranaggio x HR4001,F15
 227512-0,ingranaggio,R10
 227542-1,ingranaggio,Q15
@@ -494,10 +494,8 @@ codice,descrizione,scaffale
 252624,leva,V4
 252640-2,manopola,O6
 253052-2,rondella,R1
-261015-4,rondella,R1
 253215-0,rondella,R15
 253314-8,rondella,R1
-262010-7,anello,R1
 253338-4,anello,V5
 253748-5,rondella,L1
 253753-2,rondella,H7
@@ -528,10 +526,12 @@ codice,descrizione,scaffale
 257671-6,boccola,V7
 257913-8,rondella,G4
 259033-4,anello,T15
+261015-4,rondella,R1
 261023-5,rondella,L1
 261049-7,rondella,L4
 261074-8,rondella nylon x 6905B,C6
 261099-2,rondella,G10
+262010-7,anello,R1
 262038-5,anello gomma,A2
 262095-3,anello gomma,F14
 262515-7,boccola,K7
@@ -598,14 +598,14 @@ codice,descrizione,scaffale
 316672-4,copri cilindro,Q2
 316883-1,base x 4306,V15
 317380-0,cilindro,T5
-317461-0,protezione,X7
 317439-3,protezione lama,R3
+317461-0,protezione,X7
 317536-5,eccentrico,K11
 317565-8,piastra,U7
 317635-3,scatola ingranaggio,R11
 317814-3,scatola ingranaggio,N11
-318151-8,piedino,X5
 318143-7,protezione lama x 5903,F12
+318151-8,piedino,X5
 318335-8,scatola ingranaggio,K5
 318817-0,scatola ingranaggi x GA9010,F13
 319310-7,scatola ingranaggi,Y10
@@ -622,3 +622,48 @@ codice,descrizione,scaffale
 321855-3,albero eccentrico,F4
 321859-5,ferma punta x HK1800,C3
 321869-2,leva gancio x BO4510,I4
+321954-1,albero eccentrico,R4
+321995-7,albero,L2
+321997-3,bussola,M9
+322168-5,porta punte,G2
+322217-8,alberino x HR3520B,B8
+322218-6,alberino x HR3850B,A7
+322319-0,incudine,B7
+322325-5,coperchio frontale,L8
+322327-1,coperchio frontale,L8
+322434-0,manicotto,M4
+322435-8,incudine,N8
+322517-6,chiavetta,A2
+322537-0,bussola,N2
+322652-0,frizione,O9
+322653-8,con di pressione,O9
+322691-0,albero ingr.,U5
+322743-7,ingranaggio,Q1
+322754-2,incudine x 6950,Q3
+322806-9,battente,R5
+322826-3,asta trasmissione,P2
+322880-7,albero x 6222,P8
+322908-1,chiavetta,O1
+322958-6,albero,N10
+323679-3,anello camb.,P8
+323767-6,spinotto,X2
+323773-1,supporto porta punte,Q6
+323817-7,anello,P10
+323818-5,battente,T2
+323822-4,anello,Y10
+323846-0,custodia anello,T1
+323875-3,bussola,F14
+323876-1,anello,P7
+323892-3,incudine,V11
+323910-7,battente,P14
+323921-2,albero,V12
+323973-3,perno x HR5001C,X4
+323988-0,camma frizione,S4
+324013-0,incudine,P2
+324014-8,porta punte,Y1
+324015-6,battente,T4
+324031-8,piedino,E16
+324131-4,guida,R5
+324185-1,supporto porta punte,F14
+324216-6,anello,V3
+324218-2,anello,V3
