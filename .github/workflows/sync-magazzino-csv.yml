@@ -2,7 +2,7 @@ name: Sync magazzino.csv from Google Sheets
 
 on:
   schedule:
-    - cron: '0 * * * *' # ogni ora
+    - cron: '0 * * * *'  # ogni ora
   workflow_dispatch:
 
 permissions:
@@ -16,9 +16,15 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Scarica CSV da Google Sheets
+      # ⬇⬇ SCARICA SOLO LE COLONNE A:C E PULISCE LE RIGHE "SPORCHE" ⬇⬇
+      - name: Scarica e pulisci CSV da Google Sheets (solo A:C)
         run: |
-          curl -L "https://docs.google.com/spreadsheets/d/e/2PACX-1vTpSPcmdbazc326rjW5oKXyXzD5I0ODXDWOhRunphN9ZpPFhHmsOo7AqgSGELt7O2jXFL7XNznSJL6z/pub?gid=961942791&single=true&output=csv" -o magazzino.csv
+          curl -L "https://docs.google.com/spreadsheets/d/e/2PACX-1vTpSPcmdbazc326rjW5oKXyXzD5I0ODXDWOhRunphN9ZpPFhHmsOo7AqgSGELt7O2jXFL7XNznSJL6z/pub?gid=961942791&single=true&output=csv&range=A:C" \
+          | sed 's/\r$//' \
+          | sed 's/,\+$//' \
+          | awk 'NR==1 || $0!~/^,/' \
+          | grep -vE '^[[:space:]]*$' \
+          > magazzino.csv
 
       - name: Configura git
         run: |
@@ -28,5 +34,5 @@ jobs:
       - name: Commit e push se ci sono modifiche
         run: |
           git add magazzino.csv
-          git diff --cached --quiet || git commit -m "Aggiorna magazzino.csv da Google Sheets"
+          git diff --cached --quiet || git commit -m "Aggiorna magazzino.csv (A:C, pulito) da Google Sheets"
           git push
