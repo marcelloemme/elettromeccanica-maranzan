@@ -3,7 +3,6 @@
   const topResultsEl = document.getElementById('top-results');
   const suggestionsEl = document.getElementById('suggestions');
   const keypad = document.querySelector('.keypad');
-  const toggleKbdBtn = document.getElementById('toggle-kbd');
 
   let DATA = [];
   let LAST_QUERY = "";
@@ -117,29 +116,13 @@
     if (navigator.vibrate) navigator.vibrate(10);
 
     if (action === 'backspace'){
-      inputEl.value = inputEl.value.slice(0, -1);
+      inputEl.value = '';
       updateResults();
       return;
     }
     if (key){
       inputEl.value += key;
       updateResults();
-    }
-  });
-
-  // Toggle tastiera di sistema (QWERTY) solo quando serve
-  toggleKbdBtn.addEventListener('click', () => {
-    const isOff = inputEl.getAttribute('inputmode') === 'none';
-    if (isOff){
-      inputEl.setAttribute('inputmode','text');   // consiglia QWERTY
-      toggleKbdBtn.setAttribute('aria-pressed','true');
-      toggleKbdBtn.textContent = '123';
-      inputEl.focus({ preventScroll:true });
-    } else {
-      inputEl.setAttribute('inputmode','none');   // disattiva tastiera
-      toggleKbdBtn.setAttribute('aria-pressed','false');
-      toggleKbdBtn.textContent = 'ABC';
-      inputEl.blur();
     }
   });
 
