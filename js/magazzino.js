@@ -48,17 +48,61 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  async function fetchCSV() {
-    const response = await fetch(`magazzino.csv?t=${Date.now()}`);
-    const text = await response.text();
-    const lines = text.trim().split("\n").slice(1);
+  function splitCSVLine(line) {
+    // Divide sui separatori "," che NON sono fra virgolette
+    const re = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/;
+    return line.split(re);
+  }
+  function unquote(s) {
+    if (!s) return "";
+    s = s.trim();
+    return (s.startsWith('"') && s.endsWith('"'))
+      ? s.slice(1, -1).replace(/""/g, '"')
+      : s;
+  }
 
-    return lines.map(line => {
-      const fields = line.split(",");
-      if (fields.length !== 3) return null;
-      const [codice, descrizione, scaffale] = fields.map(f => f.trim());
-      return { codice, descrizione, scaffale };
-    }).filter(Boolean);
+  async function fetchCSV() {
+    const res = await fetch(`magazzino.csv?t=${Date.now()}`, { cache: "no-store" });
+    const raw = await res.text();
+
+    // pulizia: BOM, CRLF, righe vuote
+    const clean = raw.replace(/^\uFEFF/, "").replace(/\r/g, "");
+    const lines = clean.split("\n").filter(l => l.trim() !== "");
+    if (lines.length === 0) return [];
+
+    // header → mappiamo per nome (resiste a virgole extra e colonne disallineate)
+    const headerCells = splitCSVLine(lines[0]).map(h => h.trim().toLowerCase());
+    let idxCod = headerCells.indexOf("codice");
+    let idxDesc = headerCells.indexOf("descrizione");
+    let idxSca = headerCells.indexOf("scaffale");
+
+    // fallback: se i nomi non sono presenti, prendi le prime tre colonne
+    if (idxCod < 0 || idxDesc < 0 || idxSca < 0) {
+      idxCod = 0; idxDesc = 1; idxSca = 2;
+    }
+
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cells = splitCSVLine(lines[i]);
+
+      // ignora righe completamente vuote
+      if (!cells.some(c => c && c.trim() !== "")) continue;
+
+      const codice = unquote(cells[idxCod]  ?? "");
+      const descr  = unquote(cells[idxDesc] ?? "");
+      const scaff  = unquote(cells[idxSca]  ?? "");
+
+      // requisito minimo: deve esserci il codice
+      if (!codice.trim()) continue;
+
+      rows.push({
+        codice: codice.trim(),
+        descrizione: descr.trim(),
+        scaffale: scaff.trim()
+      });
+    }
+
+    return rows;
   }
 
   function resetContenuto() {
