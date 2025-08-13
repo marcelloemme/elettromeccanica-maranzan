@@ -3,6 +3,8 @@
   const topResultsEl = document.getElementById('top-results');
   const suggestionsEl = document.getElementById('suggestions');
   const keypad = document.querySelector('.keypad');
+  const cameraBtn = document.getElementById('camera-button');
+  const fileInput = document.getElementById('qr-file-input');
 
   let DATA = [];
   let LAST_QUERY = "";
@@ -27,6 +29,23 @@
       out.push({ codice, descrizione, scaffale });
     }
     return out;
+  }
+
+  function waitForOpenCVReady(){
+    return new Promise((resolve, reject) => {
+      // If OpenCV is already loaded (cv.Mat exists), resolve immediately
+      if (window.cv && cv.Mat) return resolve();
+      const start = Date.now();
+      const interval = setInterval(() => {
+        if (window.cv && cv.Mat){
+          clearInterval(interval);
+          resolve();
+        } else if (Date.now() - start > 10000) {
+          clearInterval(interval);
+          reject(new Error('OpenCV non pronto (timeout)'));
+        }
+      }, 50);
+    });
   }
 
   async function loadCSV(){
@@ -92,6 +111,83 @@
     if (maybe.length){
       suggestionsEl.innerHTML = `<h3>Forse cercavi</h3>${renderTable(maybe)}`;
     }
+  }
+
+  async function decodeQRFromFile(file){
+    if (!file) return null;
+    await waitForOpenCVReady();
+
+    const imgURL = URL.createObjectURL(file);
+    try{
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      const loaded = new Promise((res, rej) => {
+        img.onload = () => res();
+        img.onerror = (e) => rej(e);
+      });
+      img.src = imgURL;
+      await loaded;
+
+      // Riduci per performance se molto grande
+      const maxSide = 1280;
+      let { width, height } = img;
+      const scale = Math.min(1, maxSide / Math.max(width, height));
+      const cw = Math.max(1, Math.round(width * scale));
+      const ch = Math.max(1, Math.round(height * scale));
+
+      const canvas = document.createElement('canvas');
+      canvas.width = cw; canvas.height = ch;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, cw, ch);
+
+      const src = cv.imread(canvas);
+      const detector = new cv.QRCodeDetector();
+      const points = new cv.Mat();
+      const straight = new cv.Mat();
+      const result = detector.detectAndDecode(src, points, straight);
+
+      src.delete(); points.delete(); straight.delete(); detector.delete();
+
+      if (result && typeof result === 'string' && result.trim().length){
+        return result.trim();
+      }
+      return null;
+    } finally {
+      URL.revokeObjectURL(imgURL);
+    }
+  }
+
+  // Hook emoji fotocamera -> input file
+  if (cameraBtn && fileInput){
+    cameraBtn.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(10);
+      fileInput.click();
+    });
+    cameraBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
+
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      try{
+        const code = await decodeQRFromFile(file);
+        if (code){
+          inputEl.value = code;
+          updateResults();
+        } else {
+          console.warn('QR non riconosciuto');
+        }
+      } catch(err){
+        console.error('Errore durante la scansione QR:', err);
+      } finally {
+        // reset per poter ricaricare lo stesso file se serve
+        fileInput.value = '';
+      }
+    });
   }
 
   // Debounce leggero

@@ -77,6 +77,20 @@ button, input {
   border:1px solid #000; background:#fff; color:#222;
   border-radius:6px;
 }
+/* Emoji fotocamera dentro input */
+.camera-inside {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+.code-input {
+  padding-right: 2.2em; /* spazio per emoji */
+}
 /* Toggle tastiera */
 .kbd-toggle{
   font-size:16px; line-height:1;
