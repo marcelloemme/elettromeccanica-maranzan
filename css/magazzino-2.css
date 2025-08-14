@@ -158,3 +158,6 @@ button, input {
 .app, #results-area, .contenitore {
   touch-action: pan-y; /* consenti lo scroll verticale nativo, noi leggiamo solo swipe orizzontale */
 }
+.code-input.error {
+  color: #b00020;
+}

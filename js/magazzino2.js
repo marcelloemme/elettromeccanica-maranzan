@@ -324,13 +324,13 @@
             clearTimeout(placeholderTimer);
             placeholderTimer = null;
           }
+          // Aggiunge stato di errore (gestito dal CSS)
+          inputEl.classList.add('error');
           inputEl.setAttribute('placeholder', 'QR non riconosciuto.');
-          const prevColor = inputEl.style.color;
-          inputEl.style.color = 'red';
-          // After 2.5s restore the original placeholder
+          // Dopo 2.5s ripristina placeholder e stato
           placeholderTimer = setTimeout(() => {
+            inputEl.classList.remove('error');
             inputEl.setAttribute('placeholder', prevPh || 'Codice ricambio');
-            inputEl.style.color = prevColor || '';
             placeholderTimer = null;
           }, 2500);
         }
@@ -346,6 +346,7 @@
   // Debounce leggero
   let debounceTimer;
   function onInputChange(){
+    inputEl.classList.remove('error');
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(updateResults, 60);
   }
