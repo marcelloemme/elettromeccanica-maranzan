@@ -68,7 +68,6 @@ button, input {
 }
 .table .td-codice{
   text-align:left;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   font-weight:500; width:30%;
 }
 .table .td-desc{ text-align:left; width:55%; }
