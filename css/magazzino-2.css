@@ -4,7 +4,7 @@ html, body { margin:0; padding:0; height:100%; }
 
 body.touch-app{
   font-family: -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
-  background:#fafafa; color:#222;
+  background:#ffffff; color:#222;
   font-size: clamp(8px, 2.5vw, 18px);
 }
 /* Assicura lo stesso font su controlli */
@@ -78,7 +78,7 @@ button, input {
 .input-zone{
   position: fixed;
   left: 0; right: 0; bottom: 1vh; /* Alzato del 1% su mobile */
-  background: #fafafa;
+  background: #ffffff;
   padding: 0.3rem 0.2rem calc(0.3rem + env(safe-area-inset-bottom));
   border-top: 1px solid #e5e5e5;
   z-index: 10;
