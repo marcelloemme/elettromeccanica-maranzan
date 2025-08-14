@@ -77,7 +77,7 @@ button, input {
 /* Zona input + keypad sticky in basso */
 .input-zone{
   position: fixed;
-  left: 0; right: 0; bottom: 1vh; /* Alzato del 1% su mobile */
+  left: 0; right: 0; bottom: 5vh; /* Alzato del 5% su mobile */
   background: #fafafa;
   padding: 0.3rem 0.2rem calc(0.3rem + env(safe-area-inset-bottom));
   border-top: 1px solid #e5e5e5;
@@ -92,7 +92,7 @@ button, input {
 .input-container{ flex:1; position:relative; }
 .code-input{
   width:100%;
-  font-size:16px;               /* >=16px: niente zoom iOS */
+  font-size:16px;               /* >=16px: niente zoom iOS - deve rimanere così */
   line-height:1.2;
   padding:10px 12px;
   border:1px solid #000; background:#fff; color:#222;
@@ -106,7 +106,7 @@ button, input {
   transform: translateY(-56%); /* leggera correzione verso l'alto */
   pointer-events: auto;
   cursor: pointer;
-  font-size: 1em;            /* eredita dalla dimensione dell'input */
+  font-size: 18px;           /* CAMBIATO: da 1em a 18px per uniformità */
   line-height: 1;
 }
 .code-input {
