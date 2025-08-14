@@ -28,8 +28,10 @@ button, input {
 /* Blocchi (titolo + tabella) */
 .block{ margin-bottom:0.6rem; }
 .block h3{
-  margin:0.3rem 0 0.2rem 0.1rem;
-  font-weight:600; font-size:15px;
+  margin: 0.3rem 0 0.2rem 0;
+  padding-left: 6px; /* allinea il titolo con la prima colonna (td padding-left) */
+  font-weight: 600;
+  font-size: 15px;
 }
 
 /* Tabella full-width, stile coerente col sito */
@@ -80,16 +82,16 @@ button, input {
 /* Emoji fotocamera dentro input */
 .camera-inside {
   position: absolute;
-  right: 8px;
+  right: 12px;               /* simmetrico al padding sinistro del placeholder (12px) */
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-56%); /* leggera correzione verso l'alto */
   pointer-events: auto;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 1em;            /* eredità dalla dimensione dell'input */
   line-height: 1;
 }
 .code-input {
-  padding-right: 2.2em; /* spazio per emoji */
+  padding-right: 2.8em; /* spazio extra per l'emoji + aria di respiro */
 }
 /* Toggle tastiera */
 .kbd-toggle{
