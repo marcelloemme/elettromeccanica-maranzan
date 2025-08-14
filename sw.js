@@ -1,9 +1,12 @@
 /* Elettromeccanica Maranzan - Magazzino PWA Service Worker */
-const CACHE_NAME = 'magazzino-v2';
+const CACHE_NAME = 'magazzino-v3';
 const PRECACHE_URLS = [
   '/magazzino.html',
   '/css/magazzino.css',
   '/js/magazzino.js',
+  '/magazzino-2.html',
+  '/css/magazzino-2.css',
+  '/js/magazzino2.js',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/offline.html'
@@ -59,9 +62,14 @@ self.addEventListener('fetch', (event) => {
   // Network-first per gli asset principali dell'app (HTML/CSS/JS) così vedi subito gli aggiornamenti
   if (
     isSameOrigin &&
-    (url.pathname === '/magazzino.html' ||
-     url.pathname === '/css/magazzino.css' ||
-     url.pathname === '/js/magazzino.js')
+    (
+      url.pathname === '/magazzino.html'      ||
+      url.pathname === '/css/magazzino.css'   ||
+      url.pathname === '/js/magazzino.js'     ||
+      url.pathname === '/magazzino-2.html'    ||
+      url.pathname === '/css/magazzino-2.css' ||
+      url.pathname === '/js/magazzino2.js'
+    )
   ) {
     event.respondWith(networkFirst(request));
     return;
@@ -131,9 +139,11 @@ async function handleNavigation(request) {
     // Try an exact match first
     const cached = await cache.match(request);
     if (cached) return cached;
-    // Fallback to app shell
-    const shell = await cache.match('/magazzino.html');
-    if (shell) return shell;
+    // Fallback to app shells
+    const shell1 = await cache.match('/magazzino.html');
+    if (shell1) return shell1;
+    const shell2 = await cache.match('/magazzino-2.html');
+    if (shell2) return shell2;
     // Last resort: offline page
     return (await cache.match('/offline.html')) || new Response('Offline', { status: 503 });
   }
