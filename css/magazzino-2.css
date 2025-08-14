@@ -96,7 +96,7 @@ button, input {
   line-height:1.2;
   padding:10px 12px;
   border:1px solid #000; background:#fff; color:#222;
-  border-radius:6px;
+  border-radius: 14px;
 }
 /* Emoji fotocamera dentro input */
 .camera-inside {
@@ -134,7 +134,7 @@ button, input {
 
   font-size: 18px;
   background: #fff; color: #222;
-  border: 1px solid #000; border-radius: 8px;
+  border: 1px solid #000; border-radius: 12px;
   touch-action: manipulation; user-select: none;
 
   /* quadrati coerenti */
