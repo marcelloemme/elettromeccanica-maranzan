@@ -13,6 +13,21 @@
   const normalize = s => (s || "").trim();
   const basePart = code => normalize(code).replace(/-\d+$/,"");
 
+  // Riconoscimento e normalizzazione scaffale (es. A01, B8, Z12)
+  function normalizeShelfToken(s){
+    if (!s) return null;
+    const m = String(s).trim().match(/^([A-Za-z])\s*0*(\d{1,2})$/);
+    if (!m) return null;
+    const letter = m[1].toUpperCase();
+    const num = parseInt(m[2], 10); // rimuove zeri iniziali
+    if (isNaN(num)) return null;
+    return `${letter}${num}`; // forma normalizzata
+  }
+
+  function isShelfQuery(q){
+    return normalizeShelfToken(q) !== null;
+  }
+
   function parseCSV(text){
     const lines = text.split(/\r?\n/);
     const out = [];
@@ -101,6 +116,21 @@
 
     if (!q) return;
 
+    // Se l'input sembra uno scaffale (A01, B8, ecc.), mostra i pezzi di quello scaffale
+    const shelfNorm = normalizeShelfToken(q);
+    if (shelfNorm){
+      // normalizza lo scaffale dei dati a lettera+numero (senza zeri) e confronta
+      const matches = DATA.filter(item => normalizeShelfToken(item.scaffale) === shelfNorm)
+                          .sort((a,b) => a.codice.localeCompare(b.codice));
+      const title = `Scaffale ${shelfNorm.replace(/([A-Z])(\d+)/, (__, L, N) => `${L}${String(N).padStart(2,'0')}`)}`;
+      topResultsEl.innerHTML = matches.length
+        ? `<h3>${title}</h3>${renderTable(matches.slice(0, 50))}`
+        : `<h3>${title}</h3><div style="padding:6px 8px;">Nessun pezzo in questo scaffale.</div>`;
+      // niente "forse cercavi" in modalità scaffale per tenere l'interfaccia pulita
+      return;
+    }
+
+    // Altrimenti, comportamento attuale: prefisso di codice pezzo
     const top = DATA.filter(item => item.codice.startsWith(q)).slice(0,10);
     topResultsEl.innerHTML = top.length
       ? `<h3>Risultati</h3>${renderTable(top)}`
