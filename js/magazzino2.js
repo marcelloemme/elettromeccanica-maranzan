@@ -79,9 +79,16 @@
   function gotoShelf(delta){
     const q = normalize(inputEl.value);
     const cur = normalizeShelfToken(q);
-    if (!cur || SHELVES.length === 0) return;
-    let i = shelfIndex(cur);
-    if (i === -1) return;
+    if (!SHELVES.length) return;
+
+    let i = (cur ? SHELVES.indexOf(cur) : -1);
+    if (i === -1){
+      // prova ad agganciarti alla lettera corrente; se non c'è, inizia dal primo
+      const letter = cur ? cur[0] : null;
+      const base = letter ? SHELVES.findIndex(s => s[0] === letter) : -1;
+      i = base !== -1 ? base : 0;
+    }
+
     i = (i + delta + SHELVES.length) % SHELVES.length;
     const next = SHELVES[i];
     inputEl.value = formatShelf(next);
@@ -296,31 +303,54 @@
   });
 
   // ---- Swipe per navigare scaffali (solo quando l'input è uno scaffale) ----
-  const container = document.querySelector('.contenitore');
-  if (container){
+  const swipeRoot =
+    document.getElementById('results-area') ||
+    document.querySelector('.app') ||
+    document.querySelector('.contenitore') ||
+    document.body;
+
+  const SWIPE_MIN_X = 50;  // soglia orizzontale più permissiva
+  const SWIPE_MAX_Y = 60;  // tollera un po' di verticale
+
+  if (swipeRoot){
     let sx = 0, sy = 0;
-    container.addEventListener('touchstart', (e) => {
-      if (!isShelfQuery(inputEl.value)) return; // attivo solo in modalità scaffale
+    swipeRoot.addEventListener('touchstart', (e) => {
       const t = e.changedTouches && e.changedTouches[0];
       if (!t) return;
       sx = t.clientX; sy = t.clientY;
+      console.debug('[swipe] start', sx, sy);
     }, { passive: true });
 
-    container.addEventListener('touchend', (e) => {
-      if (!isShelfQuery(inputEl.value)) return;
+    swipeRoot.addEventListener('touchend', (e) => {
       const t = e.changedTouches && e.changedTouches[0];
       if (!t) return;
       const dx = t.clientX - sx;
       const dy = t.clientY - sy;
-      // soglie per evitare conflitto con scroll verticale
-      if (Math.abs(dx) > 60 && Math.abs(dy) < 40){
-        if (dx < 0){
-          // swipe sinistra => scaffale successivo
-          gotoShelf(+1);
-        } else {
-          // swipe destra => scaffale precedente
-          gotoShelf(-1);
+      console.debug('[swipe] end', t.clientX, t.clientY, 'dx=', dx, 'dy=', dy);
+
+      if (Math.abs(dx) >= SWIPE_MIN_X && Math.abs(dy) <= SWIPE_MAX_Y){
+        // Determina lo scaffale corrente (può non essere esatto)
+        const q = normalize(inputEl.value);
+        const cur = normalizeShelfToken(q);
+
+        if (!cur || SHELVES.length === 0){
+          return; // niente elenco scaffali disponibile
         }
+
+        let i = SHELVES.indexOf(cur);
+        if (i === -1){
+          // snap al primo scaffale con stessa lettera; se non esiste, al primo globale
+          const letter = cur[0];
+          const base = SHELVES.findIndex(s => s[0] === letter);
+          i = base !== -1 ? base : 0;
+        }
+
+        // direzione swipe: sinistra => +1 (prossimo), destra => -1 (precedente)
+        const delta = dx < 0 ? +1 : -1;
+        i = (i + delta + SHELVES.length) % SHELVES.length;
+        const next = SHELVES[i];
+        inputEl.value = formatShelf(next);
+        updateResults();
       }
     }, { passive: true });
   }
