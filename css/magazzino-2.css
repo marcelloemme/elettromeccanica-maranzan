@@ -38,7 +38,7 @@ button, input {
 /* Uniforma font e margini dei messaggi senza risultati */
 .block.no-results h3,
 .block.no-results p {
-  font-size: 18px;
+  font-size: 15px;
   padding-left: 6px; /* stesso allineamento colonna */
   margin: 0.3rem 0 0.2rem 0;
 }
