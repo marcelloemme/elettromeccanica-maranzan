@@ -27,11 +27,20 @@ button, input {
 
 /* Blocchi (titolo + tabella) */
 .block{ margin-bottom:0.6rem; }
+
 .block h3{
   margin: 0.3rem 0 0.2rem 0;
   padding-left: 6px; /* allinea il titolo con la prima colonna (td padding-left) */
   font-weight: 600;
   font-size: 15px;
+}
+
+/* Uniforma font e margini dei messaggi senza risultati */
+.block.no-results h3,
+.block.no-results p {
+  font-size: 18px;
+  padding-left: 6px; /* stesso allineamento colonna */
+  margin: 0.3rem 0 0.2rem 0;
 }
 
 /* Tabella full-width, stile coerente col sito */
@@ -50,10 +59,10 @@ button, input {
 .table .td-codice{
   text-align:left;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-weight:500; width:36%;
+  font-weight:500; width:30%;
 }
-.table .td-desc{ text-align:left; width:48%; }
-.table .td-scaffale{ text-align:right; width:16%; white-space:nowrap; }
+.table .td-desc{ text-align:left; width:55%; }
+.table .td-scaffale{ text-align:right; width:15%; white-space:nowrap; }
 
 /* Zona input + keypad sticky in basso */
 .input-zone{
