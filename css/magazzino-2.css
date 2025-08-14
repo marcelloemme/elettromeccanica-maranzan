@@ -28,20 +28,24 @@ button, input {
 /* Blocchi (titolo + tabella) */
 .block{ margin-bottom:0.6rem; }
 
+/* UNIFORMATO: tutti i titoli h3 hanno la stessa dimensione e margini */
 .block h3{
   margin: 0.3rem 0 0.2rem 0;
   padding-left: 6px; /* allinea il titolo con la prima colonna (td padding-left) */
   font-weight: 600;
-  font-size: 15px;
+  font-size: 18px; /* CAMBIATO: era 15px, ora uniformato a 18px */
 }
 
-/* Uniforma font e margini dei messaggi senza risultati */
-.block.no-results h3,
-.block.no-results p {
+/* UNIFORMATO: tutti i contenuti di testo hanno la stessa dimensione e margini */
+.block p,
+.block div {
   font-size: 18px;
   padding-left: 6px; /* stesso allineamento colonna */
   margin: 0.3rem 0 0.2rem 0;
 }
+
+/* RIMOSSA la regola specifica .block.no-results h3 e .block.no-results p 
+   perché ora sono uniformate con le regole generali sopra */
 
 /* Tabella full-width, stile coerente col sito */
 .table{
@@ -96,7 +100,7 @@ button, input {
   transform: translateY(-56%); /* leggera correzione verso l'alto */
   pointer-events: auto;
   cursor: pointer;
-  font-size: 1em;            /* eredità dalla dimensione dell'input */
+  font-size: 1em;            /* eredita dalla dimensione dell'input */
   line-height: 1;
 }
 .code-input {
