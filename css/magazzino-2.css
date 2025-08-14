@@ -35,11 +35,15 @@ button, input {
   font-size: 15px;
 }
 
-/* Uniforma font e margini dei messaggi senza risultati */
+/*
+** Uniforma font e margini dei messaggi "nessun risultato"
+** Funziona sia se la classe è sul blocco (.block.no-results) sia direttamente sul &lt;p&gt; (.no-results)
+*/
 .block.no-results h3,
+p.no-results,
 .block.no-results p {
   font-size: 15px;
-  padding-left: 6px; /* stesso allineamento colonna */
+  padding-left: 6px; /* allinea alla prima colonna (td padding-left) */
   margin: 0.3rem 0 0.2rem 0;
 }
 
