@@ -309,8 +309,9 @@
     document.querySelector('.contenitore') ||
     document.body;
 
-  const SWIPE_MIN_X = 50;  // soglia orizzontale più permissiva
-  const SWIPE_MAX_Y = 60;  // tollera un po' di verticale
+  // PARAMETRI PIÙ PERMISSIVI PER LO SWIPE
+  const SWIPE_MIN_X = 25;   // Ridotto da 50 a 25: movimenti più corti
+  const SWIPE_MAX_Y = 100;  // Aumentato da 60 a 100: più tolleranza verticale
 
   if (swipeRoot){
     let sx = 0, sy = 0;
@@ -328,6 +329,7 @@
       const dy = t.clientY - sy;
       console.debug('[swipe] end', t.clientX, t.clientY, 'dx=', dx, 'dy=', dy);
 
+      // CONDIZIONE PIÙ PERMISSIVA: anche diagonali leggere vengono accettate
       if (Math.abs(dx) >= SWIPE_MIN_X && Math.abs(dy) <= SWIPE_MAX_Y){
         // Determina lo scaffale corrente (può non essere esatto)
         const q = normalize(inputEl.value);
