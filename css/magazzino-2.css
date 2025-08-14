@@ -131,3 +131,7 @@ button, input {
     margin: 0;
   }
 }
+/* Consenti lo scroll verticale nativo, noi leggiamo solo swipe orizzontale */
+.contenitore {
+  touch-action: pan-y; /* consenti lo scroll verticale nativo, noi leggiamo solo swipe orizzontale */
+}

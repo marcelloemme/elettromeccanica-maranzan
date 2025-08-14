@@ -8,6 +8,7 @@
 
   let DATA = [];
   let LAST_QUERY = "";
+  let SHELVES = []; // elenco scaffali normalizzati, ordinati
 
   // ---------- Utils ----------
   const normalize = s => (s || "").trim();
@@ -46,6 +47,47 @@
     return out;
   }
 
+  // ---- Scaffali: costruzione elenco e util ----
+  function buildShelves(){
+    const set = new Set();
+    for (const it of DATA){
+      const n = normalizeShelfToken(it.scaffale);
+      if (n) set.add(n);
+    }
+    SHELVES = Array.from(set).sort((a,b) => {
+      // a = "A1", b = "B12"
+      const [aL, aN] = [a[0], parseInt(a.slice(1),10)];
+      const [bL, bN] = [b[0], parseInt(b.slice(1),10)];
+      if (aL !== bL) return aL.localeCompare(bL);
+      return aN - bN;
+    });
+  }
+
+  function formatShelf(nrm){
+    // nrm = "A1" => "A01"
+    if (!nrm) return '';
+    const L = nrm[0];
+    const N = nrm.slice(1);
+    const num = String(parseInt(N,10)).padStart(2,'0');
+    return `${L}${num}`;
+  }
+
+  function shelfIndex(nrm){
+    return SHELVES.indexOf(nrm);
+  }
+
+  function gotoShelf(delta){
+    const q = normalize(inputEl.value);
+    const cur = normalizeShelfToken(q);
+    if (!cur || SHELVES.length === 0) return;
+    let i = shelfIndex(cur);
+    if (i === -1) return;
+    i = (i + delta + SHELVES.length) % SHELVES.length;
+    const next = SHELVES[i];
+    inputEl.value = formatShelf(next);
+    updateResults();
+  }
+
   function waitForOpenCVReady(){
     return new Promise((resolve, reject) => {
       // If OpenCV is already loaded (cv.Mat exists), resolve immediately
@@ -68,6 +110,7 @@
       const res = await fetch(`magazzino.csv?t=${Date.now()}`, { cache:'no-store' });
       const text = await res.text();
       DATA = parseCSV(text);
+      buildShelves();
     }catch(e){
       console.error("Errore caricamento CSV:", e);
       DATA = [];
@@ -251,6 +294,36 @@
       updateResults();
     }
   });
+
+  // ---- Swipe per navigare scaffali (solo quando l'input è uno scaffale) ----
+  const container = document.querySelector('.contenitore');
+  if (container){
+    let sx = 0, sy = 0;
+    container.addEventListener('touchstart', (e) => {
+      if (!isShelfQuery(inputEl.value)) return; // attivo solo in modalità scaffale
+      const t = e.changedTouches && e.changedTouches[0];
+      if (!t) return;
+      sx = t.clientX; sy = t.clientY;
+    }, { passive: true });
+
+    container.addEventListener('touchend', (e) => {
+      if (!isShelfQuery(inputEl.value)) return;
+      const t = e.changedTouches && e.changedTouches[0];
+      if (!t) return;
+      const dx = t.clientX - sx;
+      const dy = t.clientY - sy;
+      // soglie per evitare conflitto con scroll verticale
+      if (Math.abs(dx) > 60 && Math.abs(dy) < 40){
+        if (dx < 0){
+          // swipe sinistra => scaffale successivo
+          gotoShelf(+1);
+        } else {
+          // swipe destra => scaffale precedente
+          gotoShelf(-1);
+        }
+      }
+    }, { passive: true });
+  }
 
   // Init
   (async () => {
