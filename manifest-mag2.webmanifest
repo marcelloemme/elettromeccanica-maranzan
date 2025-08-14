@@ -1,0 +1,14 @@
+{
+  "id": "/mag2",
+  "name": "Magazzino (touch)",
+  "short_name": "Magazzino 2",
+  "start_url": "/magazzino-2.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

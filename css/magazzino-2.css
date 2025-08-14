@@ -35,23 +35,12 @@ button, input {
   font-size: 15px;
 }
 
-/*
-** Uniforma font e margini dei messaggi "nessun risultato"
-** Funziona sia se la classe è sul blocco (.block.no-results) sia direttamente sul &lt;p&gt; (.no-results)
-*/
+/* Uniforma font e margini dei messaggi senza risultati */
 .block.no-results h3,
-p.no-results,
 .block.no-results p {
-  font-size: 15px;
-  padding-left: 6px; /* allinea alla prima colonna (td padding-left) */
+  font-size: 18px;
+  padding-left: 6px; /* stesso allineamento colonna */
   margin: 0.3rem 0 0.2rem 0;
-}
-
-/* Paragrafi dentro i blocchi: uguali ai titoli per allineamento */
-.block p{
-  font-size: 15px;
-  margin: 0.3rem 0 0.2rem 0;
-  padding-left: 6px; /* allineato alla prima colonna */
 }
 
 /* Tabella full-width, stile coerente col sito */
