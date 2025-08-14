@@ -222,13 +222,70 @@
 
       const src = cv.imread(canvas);
       const detector = new cv.QRCodeDetector();
-      const points = new cv.Mat();
-      const straight = new cv.Mat();
-      const result = detector.detectAndDecode(src, points, straight);
 
-      src.delete(); points.delete(); straight.delete(); detector.delete();
+      // Try 1: original
+      let points = new cv.Mat();
+      let straight = new cv.Mat();
+      let result = detector.detectAndDecode(src, points, straight);
+      points.delete(); straight.delete();
 
-      if (result && typeof result === 'string' && result.trim().length){
+      // If not found, preprocess (grayscale + equalize + light blur)
+      if (!result || !result.trim().length) {
+        let gray = new cv.Mat();
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+
+        // Contrast boost (prefer CLAHE if available, else equalizeHist)
+        let enhanced = new cv.Mat();
+        if (cv.createCLAHE) {
+          try {
+            const clahe = new cv.CLAHE(2.0, new cv.Size(8, 8));
+            clahe.apply(gray, enhanced);
+            clahe.delete();
+          } catch (_) {
+            cv.equalizeHist(gray, enhanced);
+          }
+        } else {
+          cv.equalizeHist(gray, enhanced);
+        }
+
+        // Light denoise to reduce JPEG artifacts
+        let blurred = new cv.Mat();
+        cv.GaussianBlur(enhanced, blurred, new cv.Size(3, 3), 0, 0, cv.BORDER_DEFAULT);
+
+        points = new cv.Mat();
+        straight = new cv.Mat();
+        result = detector.detectAndDecode(blurred, points, straight);
+
+        // Cleanup intermats
+        gray.delete(); enhanced.delete(); blurred.delete();
+        points.delete(); straight.delete();
+      }
+
+      // Last try: adaptive threshold (binary) which sometimes helps on low-contrast prints
+      if (!result || !result.trim().length) {
+        let gray2 = new cv.Mat();
+        cv.cvtColor(src, gray2, cv.COLOR_RGBA2GRAY);
+        let bin = new cv.Mat();
+        cv.adaptiveThreshold(
+          gray2,
+          bin,
+          255,
+          cv.ADAPTIVE_THRESH_GAUSSIAN_C,
+          cv.THRESH_BINARY,
+          31,
+          2
+        );
+        points = new cv.Mat();
+        straight = new cv.Mat();
+        result = detector.detectAndDecode(bin, points, straight);
+        gray2.delete(); bin.delete();
+        points.delete(); straight.delete();
+      }
+
+      src.delete();
+      detector.delete();
+
+      if (result && typeof result === 'string' && result.trim().length) {
         return result.trim();
       }
       return null;
