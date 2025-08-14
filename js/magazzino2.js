@@ -9,6 +9,7 @@
   let DATA = [];
   let LAST_QUERY = "";
   let SHELVES = []; // elenco scaffali normalizzati, ordinati
+  let placeholderTimer = null;
 
   // ---------- Utils ----------
   const normalize = s => (s || "").trim();
@@ -317,6 +318,21 @@
           updateResults();
         } else {
           console.warn('QR non riconosciuto');
+          const prevPh = inputEl.getAttribute('placeholder') || '';
+          // Clear any previous timer to avoid races
+          if (placeholderTimer) {
+            clearTimeout(placeholderTimer);
+            placeholderTimer = null;
+          }
+          inputEl.setAttribute('placeholder', 'QR non riconosciuto.');
+          const prevColor = inputEl.style.color;
+          inputEl.style.color = 'red';
+          // After 2.5s restore the original placeholder
+          placeholderTimer = setTimeout(() => {
+            inputEl.setAttribute('placeholder', prevPh || 'Codice ricambio');
+            inputEl.style.color = prevColor || '';
+            placeholderTimer = null;
+          }, 2500);
         }
       } catch(err){
         console.error('Errore durante la scansione QR:', err);
