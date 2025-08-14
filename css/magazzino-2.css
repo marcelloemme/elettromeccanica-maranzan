@@ -77,7 +77,7 @@ button, input {
 /* Zona input + keypad sticky in basso */
 .input-zone{
   position: fixed;
-  left: 0; right: 0; bottom: 5vh; /* Alzato del 5% su mobile */
+  left: 0; right: 0; bottom: 3vh; /* Alzato del 3% su mobile */
   background: #fafafa;
   padding: 0.3rem 0.2rem calc(0.3rem + env(safe-area-inset-bottom));
   border-top: 1px solid #e5e5e5;
