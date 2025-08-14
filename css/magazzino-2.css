@@ -47,6 +47,13 @@ p.no-results,
   margin: 0.3rem 0 0.2rem 0;
 }
 
+/* Paragrafi dentro i blocchi: uguali ai titoli per allineamento */
+.block p{
+  font-size: 15px;
+  margin: 0.3rem 0 0.2rem 0;
+  padding-left: 6px; /* allineato alla prima colonna */
+}
+
 /* Tabella full-width, stile coerente col sito */
 .table{
   width:100%;
