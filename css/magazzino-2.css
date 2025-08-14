@@ -39,7 +39,7 @@ button, input {
   width:100%;
   border-collapse:collapse;
   table-layout:fixed;
-  font-size: clamp(12px, 2.6vw, 16px);
+  font-size: 18px;
 }
 .table tr + tr td{ border-top:1px solid #ddd; } /* solo linee orizzontali interne */
 .table td{
