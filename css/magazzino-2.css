@@ -158,6 +158,15 @@ button, input {
 .app, #results-area, .contenitore {
   touch-action: pan-y; /* consenti lo scroll verticale nativo, noi leggiamo solo swipe orizzontale */
 }
-.code-input.error {
-  color: #b00020;
-}
+
+/* Placeholder di default: grigio */
+.code-input::placeholder { color: #9aa0a6; opacity: 1; }
+.code-input::-webkit-input-placeholder { color: #9aa0a6; opacity: 1; }
+.code-input::-moz-placeholder { color: #9aa0a6; opacity: 1; }
+.code-input:-ms-input-placeholder { color: #9aa0a6; opacity: 1; }
+
+/* Stato errore: SOLO il placeholder diventa rosso */
+.code-input.error::placeholder { color: #b00020; opacity: 1; }
+.code-input.error::-webkit-input-placeholder { color: #b00020; opacity: 1; }
+.code-input.error::-moz-placeholder { color: #b00020; opacity: 1; }
+.code-input.error:-ms-input-placeholder { color: #b00020; opacity: 1; }
