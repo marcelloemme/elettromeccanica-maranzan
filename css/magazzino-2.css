@@ -32,7 +32,7 @@ html, body { margin:0; padding:0; height:100%; }
 body.touch-app.theme-dark{
   --bg: #000000;
   --fg: #ffffff;
-  --panel-bg: #141516;
+  --panel-bg: #000000;
   --border: #2a2b2d;
   --border-strong: #6a6b6d;
   --key-bg: #000000;
