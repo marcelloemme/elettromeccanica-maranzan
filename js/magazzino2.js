@@ -5,11 +5,27 @@
   const keypad = document.querySelector('.keypad');
   const cameraBtn = document.getElementById('camera-button');
   const fileInput = document.getElementById('qr-file-input');
+  const bodyEl = document.querySelector('body.touch-app') || document.body;
 
   let DATA = [];
   let LAST_QUERY = "";
   let SHELVES = []; // elenco scaffali normalizzati, ordinati
   let placeholderTimer = null;
+
+  const THEME_KEY = 'themeOverride'; // 'dark' | 'light'
+  function applyTheme(mode){
+    if (!bodyEl) return;
+    bodyEl.classList.remove('theme-dark', 'theme-light');
+    if (mode === 'dark') bodyEl.classList.add('theme-dark');
+    else if (mode === 'light') bodyEl.classList.add('theme-light');
+  }
+  function setTheme(mode){
+    try { localStorage.setItem(THEME_KEY, mode); } catch(_) {}
+    applyTheme(mode);
+  }
+  function getSavedTheme(){
+    try { return localStorage.getItem(THEME_KEY); } catch(_) { return null; }
+  }
 
   // ---------- Utils ----------
   const normalize = s => (s || "").trim();
@@ -376,6 +392,43 @@
     }
   });
 
+  // ---- Swipe orizzontale sulla keypad per toggle dark/light ----
+  if (keypad) {
+    let kx = 0, ky = 0, kSwiped = false;
+    const THEME_SWIPE_MIN_X = 30;
+    const THEME_SWIPE_MAX_Y = 40;
+
+    keypad.addEventListener('touchstart', (e) => {
+      const t = e.changedTouches && e.changedTouches[0];
+      if (!t) return;
+      kSwiped = false;
+      kx = t.clientX; ky = t.clientY;
+    }, { passive: true });
+
+    keypad.addEventListener('touchend', (e) => {
+      const t = e.changedTouches && e.changedTouches[0];
+      if (!t) return;
+      const dx = t.clientX - kx;
+      const dy = t.clientY - ky;
+      if (Math.abs(dx) >= THEME_SWIPE_MIN_X && Math.abs(dy) <= THEME_SWIPE_MAX_Y) {
+        e.preventDefault();
+        e.stopPropagation();
+        kSwiped = true;
+        const isDark = bodyEl && bodyEl.classList.contains('theme-dark');
+        setTheme(isDark ? 'light' : 'dark');
+      }
+    }, { passive: false });
+
+    // Evita che un gesto di swipe scateni anche un click sul tasto
+    keypad.addEventListener('click', (e) => {
+      if (kSwiped) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+      kSwiped = false;
+    }, true);
+  }
+
   // ---- Swipe per navigare scaffali (solo quando l'input è uno scaffale) ----
   const swipeRoot =
     document.getElementById('results-area') ||
@@ -434,6 +487,10 @@
   // Init
   (async () => {
     await loadCSV();
+    const savedTheme = getSavedTheme();
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      applyTheme(savedTheme);
+    }
     // (volendo: mostrare i primi 10 globali all'avvio)
     // const first10 = DATA.slice(0,10);
     // topResultsEl.innerHTML = `<h3>Primi 10</h3>${renderTable(first10)}`;

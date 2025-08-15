@@ -2,9 +2,48 @@
 * { box-sizing: border-box; }
 html, body { margin:0; padding:0; height:100%; }
 
+:root{
+  --bg: #ffffff;
+  --fg: #222222;
+  --panel-bg: #ffffff;
+  --border: #dddddd;
+  --border-strong: #000000;
+  --key-bg: #ffffff;
+  --key-active: #f0f0f0;
+  --placeholder: #9aa0a6;
+  --error: #b00020;
+}
+
+/* Auto dark via system preference */
+@media (prefers-color-scheme: dark){
+  body.touch-app:not(.theme-light){
+    --bg: #0f0f10;
+    --fg: #e9e9ea;
+    --panel-bg: #141516;
+    --border: #2a2b2d;
+    --border-strong: #6a6b6d;
+    --key-bg: #1a1b1d;
+    --key-active: #222427;
+    --placeholder: #8a8f98;
+    --error: #ff4d4f;
+  }
+}
+/* Manual force dark if JS adds .theme-dark to <body> */
+body.touch-app.theme-dark{
+  --bg: #0f0f10;
+  --fg: #e9e9ea;
+  --panel-bg: #141516;
+  --border: #2a2b2d;
+  --border-strong: #6a6b6d;
+  --key-bg: #1a1b1d;
+  --key-active: #222427;
+  --placeholder: #8a8f98;
+  --error: #ff4d4f;
+}
+
 body.touch-app{
   font-family: -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
-  background:#ffffff; color:#222;
+  background: var(--bg); color: var(--fg);
   font-size: clamp(8px, 2.5vw, 18px);
 }
 /* Assicura lo stesso font su controlli */
@@ -60,7 +99,7 @@ button, input {
   table-layout:fixed;
   font-size: 18px;
 }
-.table tr + tr td{ border-top:1px solid #ddd; } /* solo linee orizzontali interne */
+.table tr + tr td{ border-top:1px solid var(--border); } /* solo linee orizzontali interne */
 .table td{
   padding:6px 6px;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
@@ -77,9 +116,9 @@ button, input {
 .input-zone{
   position: fixed;
   left: 0; right: 0; bottom: 1vh; /* Alzato del 1% su mobile */
-  background: #ffffff;
+  background: var(--panel-bg);
   padding: 0.3rem 0.2rem calc(0.3rem + env(safe-area-inset-bottom));
-  border-top: 1px solid #ffffff;
+  border-top: 1px solid var(--panel-bg);
   z-index: 10;
 }
 
@@ -94,7 +133,7 @@ button, input {
   font-size:16px;               /* >=16px: niente zoom iOS - deve rimanere così */
   line-height:1.2;
   padding:10px 12px;
-  border:1px solid #000; background:#fff; color:#222;
+  border:1px solid var(--border-strong); background: var(--panel-bg); color: var(--fg);
   border-radius: 14px;
 }
 /* Emoji fotocamera dentro input */
@@ -107,6 +146,7 @@ button, input {
   cursor: pointer;
   font-size: 18px;           /* CAMBIATO: da 1em a 18px per uniformità */
   line-height: 1;
+  color: inherit;
 }
 .code-input {
   padding-right: 2.8em; /* spazio extra per l'emoji + aria di respiro */
@@ -115,7 +155,7 @@ button, input {
 .kbd-toggle{
   font-size:16px; line-height:1;
   padding:10px 12px;
-  border:1px solid #000; background:#fff; color:#222;
+  border:1px solid var(--border-strong); background: var(--panel-bg); color: var(--fg);
   border-radius:6px; cursor:pointer;
 }
 
@@ -132,15 +172,15 @@ button, input {
   justify-content: center;
 
   font-size: 18px;
-  background: #fff; color: #222;
-  border: 1px solid #000; border-radius: 12px;
+  background: var(--key-bg); color: var(--fg);
+  border: 1px solid var(--border-strong); border-radius: 12px;
   touch-action: manipulation; user-select: none;
 
   /* quadrati coerenti */
   aspect-ratio: 1 / 1;
   min-height: 54px;
 }
-.key:active{ background:#f0f0f0; }
+.key:active{ background: var(--key-active); }
 
 /* Desktop: centriamo e limitiamo larghezza */
 @media (min-width:768px){
@@ -160,13 +200,13 @@ button, input {
 }
 
 /* Placeholder di default: grigio */
-.code-input::placeholder { color: #9aa0a6; opacity: 1; }
-.code-input::-webkit-input-placeholder { color: #9aa0a6; opacity: 1; }
-.code-input::-moz-placeholder { color: #9aa0a6; opacity: 1; }
-.code-input:-ms-input-placeholder { color: #9aa0a6; opacity: 1; }
+.code-input::placeholder { color: var(--placeholder); opacity: 1; }
+.code-input::-webkit-input-placeholder { color: var(--placeholder); opacity: 1; }
+.code-input::-moz-placeholder { color: var(--placeholder); opacity: 1; }
+.code-input:-ms-input-placeholder { color: var(--placeholder); opacity: 1; }
 
 /* Stato errore: SOLO il placeholder diventa rosso */
-.code-input.error::placeholder { color: #b00020; opacity: 1; }
-.code-input.error::-webkit-input-placeholder { color: #b00020; opacity: 1; }
-.code-input.error::-moz-placeholder { color: #b00020; opacity: 1; }
-.code-input.error:-ms-input-placeholder { color: #b00020; opacity: 1; }
+.code-input.error::placeholder { color: var(--error); opacity: 1; }
+.code-input.error::-webkit-input-placeholder { color: var(--error); opacity: 1; }
+.code-input.error::-moz-placeholder { color: var(--error); opacity: 1; }
+.code-input.error:-ms-input-placeholder { color: var(--error); opacity: 1; }
