@@ -1081,27 +1081,40 @@ P-09101,protezione gomma,M02
 155251-1,pompa olio,F07
 213258-4,guarnizione or,F07
 231216-8,molla,F07
+629842-9,motore,F06
+619358-2,rotore,F06
+619415-6,rotore,F06
 221323-5,ingranaggio,F06
+619304-5,rotore,F05
 153126-8,ingranaggio,F05
 155307-0,coperchio cuscinetto,F05
 231927-5,molla,F05
 442007-4,guarnizione,F05
+631365-5,circuito,F04
+123504-6,gruppo ingranaggi,F04
 226259-3,ingranaggio,F04
 321855-3,albero eccentrico,F04
-643657-0,porta spazzole,F04
+321685-2,pistone,F04
+TP00000113,motore,F03
 122211-8,coperchio guida lama,F03
 221809-9,albero eccentrico,F03
 412055-7,anello int.,F03
 412067-0,anello pistone,F03
+127599-1,gruppo ingranaggi,F02
+616626-3,rotore x TW300,F02
+127598-3,gruppo ingranaggi,F02
 151310-9,cannone,F02
 213027-3,paraolio,F02
+629228-7,statore,F01
+619408-3,rotore,F01
+629395-8,motore,F01
 213374-2,guarnizione or,F01
 232053-3,molla a piastra,F01
 267734-0,rondella,E16
-267735-8,rondella,E16
+326803-7,boccola,E16
 324031-8,piedino,E16
 419015-0,manicotto,E16
-650604-4,interruttore,E16
+143935-3,impugnatura,E16
 226798-3,ingranaggio,E15
 226799-1,ingranaggio,E15
 286285-4,tappo,E15
@@ -1109,11 +1122,11 @@ P-09101,protezione gomma,M02
 416935-9,tappo,E15
 682560-0,passacavo,E15
 158323-1,base x BO4555,E14
-316597-2,guida di profondità,E14
+221427-3,vite senza fine,E14
 416568-0,coperchio,E14
 419016-8,coperchio,E14
 419027-3,leva,E14
-154621-1,carcassa x HR4001,E13
+652772-9,interruttore,E13
 163467-4,gancio,E13
 226605-0,ingranaggio x HR4001,E13
 286259-5,tappo x HR4500,E13
@@ -1130,8 +1143,8 @@ P-09101,protezione gomma,M02
 GM00000070,lente,E11
 125311-3,gruppo ingranaggi x BHP440,E10
 130.426,interruttore,E10
-619170-0,indotto x bhp450,E10
-629763-5,motore x 6914,E10
+643770-4,porta spazzole,E10
+418016-5,tasto,E10
 643964-1,porta spazzole x BHR200,E10
 152547-5,guida lama,E09
 326850-8,cono press.,E09
@@ -1153,22 +1166,27 @@ GM00000070,lente,E11
 126180-5,leva cambio,E06
 126188-9,ingranaggio,E06
 126289-3,leva cambio,E06
+424907-0,anello,E05
+422269-0,anello,E05
 214019-5,bronzina,E05
 214104-4,bronzina,E05
 256101-4,perno,E05
 212025-4,cuscinetto,E04
 212065-2,cuscinetto,E04
 212108-0,cuscinetto,E04
-214016-1,bronzina,E04
-922847,ingranaggio,E04
+454850-9,coperchio,E04
+424828-6,anello,E04
+452832-5,coperchio,E03
+453368-7,interruttore,E03
 310134-4,slitta,E03
-443034-4,anello,E03
+620401-2,circuito,E03
 629801-3,motore 7.2V,E03
-156529-5,carcassa motore,E02
+123442-2,leva inversione,E02
 341933-3,leva x 3600,E02
-631109-3,circuito stamapto x DC9100,E02
-911156-3,vite,E02
-911326-4,vite,E02
+421323-7,copri interruttore,E02
+650577-1,interruttore,E02
+638605-2,interruttore,E02
+456039-5,leva inversione,E01
 152229-5,scatola cuscinetto,E01
 213111-4,guarnizione,E01
 213158-8,sigillo olio,E01
@@ -1258,7 +1276,6 @@ P-00044,interruttore,D03
 214154-9,bronzina,C03
 321859-5,ferma punta x HK1800,C03
 421541-7,coperchio cannone,C03
-152397-4,portapunte hilti,C02
 165007-4,molletta aggancio,C02
 221739-4,ingranaggio 68,C02
 225244010,serbatoio olio,C02
@@ -1269,10 +1286,14 @@ P-00044,interruttore,D03
 265341-3,bullone M5x75,C01
 414175-3,copri cannone,C01
 531052-5,interruttore,C01
+455053-8,leva inversione,B09
+456268-0,leva inversione,B09
 213317-4,anello,B09
 213370-0,sigillo,B09
 213601-7,guarnizione,B09
-226818-3,ingranaggio,B08
+638869-8,interruttore,B08
+651280-7,interruttore,B08
+143975-1,interruttore,B08
 322217-8,alberino x HR3520B,B08
 651252-2,interruttore x 5016,B08
 257073-6,anello x 6012DW,B07
@@ -1280,30 +1301,43 @@ P-00044,interruttore,D03
 342152-4,pattino di scorrimento,B07
 344549-3,piastra x 6017,B07
 415866-9,lente,B07
+638655-7,porta spazzole,B06
 164572-0,supporto manopola,B06
 643928-5,tappo spazzole,B06
 643929-3,tappo,B06
 654137-1,piastra b,B06
+650579-7,interruttore,B05
+651443-5,interruttore,B05
+651527-9,interruttore,B05
 629627-3,motore 9.6,B05
 650514-5,interruttore,B05
+650742-1,interruttore,B04
+632P75-3,contatto batteria,B04
 221312-0,ingranaggio,B04
 221365-9,ingranaggio,B04
 285819-0,ritegno,B04
+650733-3,interruttore,B03
+620548-2,scheda,B03
+531600-1,scheda,B03
 165071-5,supporto punta,B03
 226733-1,ingranaggio x 9524NB,B03
+650689-0,interruttore,B02
+650006-4,interruttore,B02
 226728-4,ingranaggio x 9524NB,B02
 231421-7,molla x 6074,B02
 415491-6,tasto,B02
 125049-0,gruppo ingranaggi,B01
 151364-6,guida lama,B01
 232134-3,molla a piastra,B01
-629779-0,motorino x 6017,B01
+123443-0,gruppo ingranaggi,B01
 649132-4,trasformatore x DC1201,B01
 213063-9,guarnizione,A09
 223073-8,camma,A09
 226741-2,ingranaggio,A09
 231139-0,molla,A09
 343355-3,piastra acciaio,A09
+127C95-2,gruppo ingranaggi,A08
+127500-6,gruppo ingranaggi,A08
 231953-4,anello a molla,A08
 411594-4,tappino regolazione,A08
 423026-9,soletta spugna,A08
@@ -1312,9 +1346,13 @@ P-00044,interruttore,D03
 231954-2,anello,A07
 316450-2,cilindro,A07
 322218-6,alberino x HR3850B,A07
+122C95-2,gruppo ingranaggi,A06
+126188-9,gruppo ingranaggi,A06
 213157-0,paraolio,A06
 256439-7,spinotto,A06
 911106-8,vite,A06
+126961-7,gruppo ingranaggi,A05
+127125-6,gruppo ingranaggi,A05
 134435-4,albero,A05
 651709-3,interruttore,A05
 763413-3,chiave mandrino,A05
