@@ -866,7 +866,7 @@ P-09101,protezione gomma,M02
 638635-3,blocco interruttore,K04
 638884-2,interruttore,K04
 126460-9,gruppo ingranaggi,K03
-165406-0,pattino,K03
+163451-9,pattino,K03
 529187-4,statore bhr242,K03
 632945-0,blocco interruttore,K03
 638887-6,interruttore,K03
@@ -965,7 +965,7 @@ P-09101,protezione gomma,M02
 325783-4,bussola,H03
 213767-3,guarnizione,H02
 346537-6,leva,H02
-326850-8,cono di pressione,H02
+455447-7,tasto interruttore,H02
 423122-3,piastra cusc.,H02
 643551-6,porta spazzole,H02
 643552-4,porta spazzole,H02
@@ -1219,22 +1219,22 @@ GM00000070,lente,E11
 221753-0,ingranaggio,E01
 bucooooo,bucoooo,D09
 bucooooo,bucoooo,D09
-bucooooo,bucoooo,D09
+227378-8,ingranaggio,D09
 651558-8,interruttore,D09
 651607-1,interruttore,D09
-bucooooo,bucoooo,D08
-bucooooo,bucoooo,D08
+232334-5,anello ritegno,D08
+632F21-6,porta spazzole,D08
 651514-8,interruttore x N910,D08
 651816-2,interruttore,D08
 651838-2,interruttore,D08
-bucooooo,bucoooo,D07
-bucooooo,bucoooo,D07
+456699-7,coperchio,D07
+326849-3,ingranaggio,D07
 651354-4,interruttore,D07
 651912-6,interruttore,D07
-bucooooo,bucoooo,D07
-bucooooo,bucoooo,D06
+122H10-6,gruppo ingranaggi,D07
+310285-3,bussola porta lama,D06
+424147-0,protezione,D06
 417715-6,fermo,D06
-651235-2,interruttore,D06
 650102-8,interruttore x 9029,D06
 651256-4,interruttore,D06
 681642-5,disco,D05
