@@ -208,7 +208,6 @@ H311203,cinghia,Z02
 416123-8,biella,V04
 421157-8,protezione,V04
 632524-4,terminale,V04
-632524-4,terminale,V04
 152601-1,guida lama,V03
 233917-4,anello,V03
 324216-6,anello,V03
@@ -958,17 +957,9 @@ P-09101,protezione gomma,M02
 256615-3,spinotto ferma disco,H03
 411305-7,coperchio posteriore,H03
 922337-4,vite,H03
-213554-0,guarnizione or,H02
-213854-8,guarnizione or,H02
-410331-3,leva cambio,H02
 423122-3,piastra cusc.,H02
 643551-6,porta spazzole,H02
 643552-4,porta spazzole,H02
-157045-0,scatola ingranaggi,H01
-192249-7,porta punte hilti,H01
-341360-4,piastra,H01
-82013,portaspazzole,H01
-925216-5,vite,H01
 158571-2,pompa olio,G15
 151760-8,copri puntale,G15
 153289-0,leva cambio,G15
@@ -1396,4 +1387,3 @@ P-00044,interruttore,D03
 267109-3,rondella,A01
 127511-1,gruppo ingranaggi,A01
 127499-5,gruppo ingranaggi,A01
-127499-5
