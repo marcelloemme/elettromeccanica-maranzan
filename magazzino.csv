@@ -456,6 +456,7 @@ codice,descrizione,scaffale
 232239-9,molla,X05
 232245-4,molla,K07
 233005-7,molla,N07
+233089-5,molla,R01
 233109-5,molla,Y02
 233188-3,molla,O09
 233193-0,molla,P08
@@ -515,7 +516,9 @@ codice,descrizione,scaffale
 256219-1,spinotto,Q08
 256252-3,spinotto,P07
 256439-7,spinotto,A06
+256452-5,spinotto,R01
 256459-1,spinotto,F10
+256486-8,spinotto,F13
 256491-5,spinotto x GA9020,F13
 256510-7,spinotto x GA4530,Q15
 256615-3,spinotto ferma disco,H03
@@ -566,6 +569,7 @@ codice,descrizione,scaffale
 286259-5,tappo x HR4500,E13
 286263-4,tappo,V08
 286265-0,cappuccio portapunte,V11
+286265-0,tappo porta punte,R07
 286269-2,cappuccio,Z04
 286285-4,tappo,E15
 286287-0,cappuccio,K10
@@ -780,10 +784,7 @@ codice,descrizione,scaffale
 416325-6,manicotto,E15
 416401-6,gancio,U01
 416410-5,coperchio porta p.,R07
-286265-0,tappo porta punte,R07
 416449-8,tasto,R01
-256452-5,spinotto,R01
-233089-5,molla,R01
 416490-1,coperchio,T01
 416497-7,raccordo asp.,S03
 416566-4,manicotto,P12
@@ -815,7 +816,6 @@ codice,descrizione,scaffale
 417628-1,coperchoio leva,G12
 417629-9,coperchio,R07
 417771-9,pulsante,F13
-256486-8,spinotto,F13
 417795-2,leva,X03
 417813-6,comando int.,G14
 417842-9,leva,T02
@@ -835,10 +835,10 @@ codice,descrizione,scaffale
 419005-3,biella,Z09
 419015-0,manicotto,E16
 419016-8,coperchio,E14
-419081-4,piastra,V16
 419022-3,convogliatore,K10
 419027-3,leva,E14
 419041-9,leva inv.,X09
+419081-4,piastra,V16
 419202-1,bussola,Z04
 419241-1,coperchio,K11
 419250-0,leva inv.,F14
@@ -885,14 +885,14 @@ codice,descrizione,scaffale
 422032-1,manicotto gomma,N15
 423026-9,soletta spugna,A08
 423029-3,soletta carbone,N09
-423036-6,soletta carbone,N09
 423035-8,soletta sughero,N09
-423149-3,soletta sughero,Q07
+423036-6,soletta carbone,N09
 423122-3,piastra cusc.,H02
+423149-3,soletta sughero,Q07
 423272-4,soletta gomma,M06
+423314-4,soletta sughero,F11
 423315-2,soletta,U01
 423317-8,soletta carbone,F11
-423314-4,soletta sughero,F11
 424056-3,bussola,X04
 424109-8,protezione,P13
 424128-4,tappo spazzola,Y09
@@ -932,6 +932,7 @@ codice,descrizione,scaffale
 539036-7,interruttore,C02
 539183-4,resistenza,U03
 539189-2,porta spazzola,R14
+616161-1,indotto x bdf440,L11
 619057-6,indotto,L11
 619078-8,motore,T08
 619084-3,indotto x 6980,X05
@@ -940,7 +941,6 @@ codice,descrizione,scaffale
 619117-4,indotto x 6207,Q12
 619134-4,indotto x 6935,P15
 619152-2,indotto ,L11
-616161-1,indotto x bdf440,L11
 619164-5,indotto x bdf441,P10
 619165-3,indotto x bdf451,Z08
 619170-0,indotto x bhp450,E10
@@ -976,6 +976,135 @@ codice,descrizione,scaffale
 629698-0,motore x 6313,T07
 629700-9,motore x 6333,T09
 629710-6,motore 9.6,P09
+629717-2,motore 12V,O02
+629723-7,motore,T09
+629724-5,motore,P05
+629729-5,motore x 6343,T04
+629733-4,motore,T09
+629734-2,motore,T07
+629757-0,motore,T06
+629762-7,motore,L10
+629763-5,motore x 6914,E10
+629767-7,motorino,L11
+629778-2,motore,T06
+629779-0,motorino x 6017,B01
+629781-3,motore,T08
+629785-5,motore,T08
+629787-1,motore,T07
+629789-7,motore,T08
+629801-3,motore 7.2V,E03
+629815-2,motore,L10
+629817-8,motore,L10
+629819-4,motore,L10
+629821-7,motore,L10
+629823-3,motore,Q15
+629827-5,indotto,Z03
+629829-1,indotto,Z03
+629851-8,motore,Z09
+629853-4,motore,Z08
+629877-0,motore UM164,T16
+629900-1,motore,P15
+629922-1,statore,T16
+629937-8,motore,Q14
+629962-9,motore,K06
+629964-5,motore,K02
+631084-3,circuito stampato,C09
+631087-7,circuito stampato,G02
+631093-2,circuito stampato x DC1700,F09
+631109-3,circuito stamapto x DC9100,E02
+631158-0,circuito x DC9700,M01
+631227-7,scheda,Y08
+631231-6,scheda,O05
+631233-2,circuito x DC1201,T02
+631235-8,scheda,V08
+631248-9,circuito x DC1700,S01
+631257-8,scheda,P09
+631264-1,circuito x DC9701,R03
+631399-8,scheda,U01
+631443-1,scheda,T05
+631566-5,scheda,U05
+631733-2,circuito,Y04
+631766-7,scheda x 4305F,R14
+631806-1,circuito,Q11
+631813-4,circuito luce,X09
+631920-3,scheda,V10
+632282-2,innesto statore,M09
+632503-2,supporto statore,O04
+632524-4,terminale,V04
+632524-4,terminale,V04
+632679-5,supporto,P12
+632699-9,supporto,Q13
+632828-4,statore,Y03
+632945-0,blocco interruttore,K03
+632964-6,statore,Y04
+632965-3,statore x 6918,R15
+632969-6,porta spazzole,R13
+632A23-2,interruttore,Y07
+632D63-8,statore,K02
+632J71-5,indotto,E07
+635511-1,statore,V11
+638138-7,motore,T07
+638139-5,porta spazzole,R08
+638156-5,porta spazzole,Q14
+638236-7,unità supporto carboncini,N13
+638237-5,porta spazzole,Q12
+638288-8,interruttore,L14
+638294-3,cavetto cablaggio,Q15
+638326-6,interruttore,L13
+638375-3,supporto spazzole,N15
+638387-6,supporto spazzole,N14
+638396-5,statore,Q14
+638413-1,supporto,N13
+638423-8,statore,Z09
+638424-6,porta spazzole,N14
+638425-4,statore,X07
+638445-8,porta spazzole,Z06
+638461-0,statore,Z08
+638494-5,portaspazzole,Q12
+638495-3,statore x BTW251,R11
+638499-5,ventola,X02
+638500-6,porta spazzole,Z07
+638504-8,porta spazzole,P15
+638511-1,statore,R12
+638511-1,statore,T12
+638605-2,interruttore,V11
+638635-3,blocco interruttore,K04
+638657-3,terminale batteria,R13
+638661-2,porta spazzole,Z06
+638845-2,porta spazzole,K05
+638849-4,porta spazzole,T10
+638853-3,porta spazzole,Y09
+638857-5,porta spazzole,T11
+638884-2,interruttore,K04
+638887-6,interruttore,K03
+638895-7,supporto spazzole,K11
+638921-2,porta spazzole,R12
+638947-4,supporto interruttore,Y09
+641107-7,circuito stampato x DC1700,H06
+643550-8,tappo spazzole,C10
+643550-8,tappo,Y06
+643551-6,porta spazzole,H02
+643552-4,porta spazzole,H02
+643563-9,porta spazzole,R14
+643600-9,tappo,Y07
+643603-3,porta spazzole,L06
+643605-9,porta spazzole,C08
+643650-4,tappo,Y05
+643653-8,porta spazzole,E03
+643657-0,porta spazzole,F04
+643707-1,porta spazzole,N06
+643710-2,tappo,Y05
+643750-0,tappo,Y05
+643753-4,tappo,Y06
+643760-7,porta spazole,R15
+643807-7,tappo,Y03
+643829-7,tappo,Y05
+643830-2,terminale batteria,P12
+643909-9,morsetto batteria,I09
+643918-8,morsetto batteria,U03
+643923-5,supporto spazzola,P01
+643928-5,tappo spazzole,B06
+643929-3,tappo,B06
 643933-2,tappo,Y06
 643941-3,tappo,Y06
 643955-2,terminale,F10
@@ -1095,8 +1224,8 @@ codice,descrizione,scaffale
 651923-1,interruttore,P13
 651926-5,interruttore,A03
 651934-6,interruttore,D06
-651969-7,interruttore,L13
 651968-9,interruttore,Z01
+651969-7,interruttore,L13
 651978-6,interruttore,Z01
 651986-7,interruttore,D04
 651989-1,interruttore,Z02
@@ -1138,9 +1267,8 @@ codice,descrizione,scaffale
 763174-5,mandrino x DA3010F,F14
 763413-3,chiave mandrino,A05
 763414-1,chiave mandrino,C08
-764415-9,chiave mandrino,G07
-763435-3,chiave mandrino,G08
 763432-9,chiave mandrino,H08
+763435-3,chiave mandrino,G08
 763601-2,bussola pinza,H05
 763607-0,pinza 6mm,F15
 763615-1,dado x 3608,E13
@@ -1148,6 +1276,7 @@ codice,descrizione,scaffale
 763636-3,pinza 6mm,M07
 763801-4,riduzione 6mm,M07
 763804-8,riduzione 8mm,M07
+764415-9,chiave mandrino,G07
 80018,invertitore,H08
 80028,interruttore,D05
 80063,invertitore,H08
@@ -1168,8 +1297,8 @@ codice,descrizione,scaffale
 911226-8,vite,H04
 911266-6,vite,L02
 911276-3,vite,E07
-911341-8,vite,E03
 911326-4,vite,E02
+911341-8,vite,E03
 912211-4,vite x 9045N,M08
 915116-7,vite,M05
 920337,spugna,G06
@@ -1211,132 +1340,3 @@ P-08414,porta mandrino,M03
 P-09101,protezione gomma,M02
 P-15970,lampadina,R02
 PN1301025,albero flessibile,R13
-629787-1,motore,T07
-629789-7,motore,T08
-629801-3,motore 7.2V,E03
-629815-2,motore,L10
-629817-8,motore,L10
-629819-4,motore,L10
-629821-7,motore,L10
-629823-3,motore,Q15
-629827-5,indotto,Z03
-629829-1,indotto,Z03
-629851-8,motore,Z09
-629853-4,motore,Z08
-629877-0,motore UM164,T16
-629900-1,motore,P15
-629922-1,statore,T16
-629937-8,motore,Q14
-629962-9,motore,K06
-629964-5,motore,K02
-631084-3,circuito stampato,C09
-631087-7,circuito stampato,G02
-631093-2,circuito stampato x DC1700,F09
-641107-7,circuito stampato x DC1700,H06
-631109-3,circuito stamapto x DC9100,E02
-631158-0,circuito x DC9700,M01
-631227-7,scheda,Y08
-631231-6,scheda,O05
-631233-2,circuito x DC1201,T02
-631235-8,scheda,V08
-631248-9,circuito x DC1700,S01
-631257-8,scheda,P09
-631264-1,circuito x DC9701,R03
-631399-8,scheda,U01
-631443-1,scheda,T05
-631566-5,scheda,U05
-631733-2,circuito,Y04
-631766-7,scheda x 4305F,R14
-631806-1,circuito,Q11
-631813-4,circuito luce,X09
-631920-3,scheda,V10
-632A23-2,interruttore,Y07
-632D63-8,statore,K02
-632J71-5,indotto,E07
-632282-2,innesto statore,M09
-632503-2,supporto statore,O04
-632524-4,terminale,V04
-632524-4,terminale,V04
-632679-5,supporto,P12
-632699-9,supporto,Q13
-632828-4,statore,Y03
-632945-0,blocco interruttore,K03
-632964-6,statore,Y04
-632965-3,statore x 6918,R15
-632969-6,porta spazzole,R13
-635511-1,statore,V11
-638138-7,motore,T07
-638139-5,porta spazzole,R08
-638156-5,porta spazzole,Q14
-638236-7,unità supporto carboncini,N13
-638237-5,porta spazzole,Q12
-638288-8,interruttore,L14
-638294-3,cavetto cablaggio,Q15
-638326-6,interruttore,L13
-638375-3,supporto spazzole,N15
-638387-6,supporto spazzole,N14
-638396-5,statore,Q14
-638413-1,supporto,N13
-638423-8,statore,Z09
-638424-6,porta spazzole,N14
-638425-4,statore,X07
-638445-8,porta spazzole,Z06
-638461-0,statore,Z08
-638494-5,portaspazzole,Q12
-638495-3,statore x BTW251,R11
-638499-5,ventola,X02
-638500-6,porta spazzole,Z07
-638504-8,porta spazzole,P15
-638511-1,statore,R12
-638511-1,statore,T12
-638605-2,interruttore,V11
-638635-3,blocco interruttore,K04
-638657-3,terminale batteria,R13
-638661-2,porta spazzole,Z06
-638845-2,porta spazzole,K05
-638849-4,porta spazzole,T10
-638853-3,porta spazzole,Y09
-638857-5,porta spazzole,T11
-638884-2,interruttore,K04
-638887-6,interruttore,K03
-638895-7,supporto spazzole,K11
-638921-2,porta spazzole,R12
-638947-4,supporto interruttore,Y09
-643550-8,tappo spazzole,C10
-643550-8,tappo,Y06
-643551-6,porta spazzole,H02
-643552-4,porta spazzole,H02
-643563-9,porta spazzole,R14
-643600-9,tappo,Y07
-643603-3,porta spazzole,L06
-643605-9,porta spazzole,C08
-643650-4,tappo,Y05
-643653-8,porta spazzole,E03
-643657-0,porta spazzole,F04
-643707-1,porta spazzole,N06
-643710-2,tappo,Y05
-643750-0,tappo,Y05
-643753-4,tappo,Y06
-643760-7,porta spazole,R15
-643807-7,tappo,Y03
-643829-7,tappo,Y05
-643830-2,terminale batteria,P12
-643909-9,morsetto batteria,I09
-643918-8,morsetto batteria,U03
-643923-5,supporto spazzola,P01
-643928-5,tappo spazzole,B06
-643929-3,tappo,B06
-629717-2,motore 12V,O02
-629723-7,motore,T09
-629724-5,motore,P05
-629729-5,motore x 6343,T04
-629733-4,motore,T09
-629734-2,motore,T07
-629757-0,motore,T06
-629762-7,motore,L10
-629763-5,motore x 6914,E10
-629767-7,motorino,L11
-629778-2,motore,T06
-629779-0,motorino x 6017,B01
-629781-3,motore,T08
-629785-5,motore,T08
