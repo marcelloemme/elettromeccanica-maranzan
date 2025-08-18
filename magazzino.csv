@@ -1,4 +1,4 @@
-Colonna 1,descrizione,scaffale
+Codice,descrizione,scaffale
 001213042,dado con spina,P05
 021245003,pompa olio,O05
 021245040,vite senza fine,V16
@@ -450,7 +450,6 @@ Colonna 1,descrizione,scaffale
 231818-0,molla,X04
 231841-5,molla,X03
 231845-7,molla,Q10
-vuoto,vuoto,K11
 231907-1,anello,K04
 231921-7,anello ritegno,D02
 231927-5,molla,F05
@@ -469,7 +468,6 @@ vuoto,vuoto,K11
 232180-6,anello,Q02
 232182-2,molla a piastra,S04
 232192-9,molla,O08
-vuoto,vuoto,K01
 232207-2,molla piatta,I05
 232220-0,molla,X02
 232222-6,molla piatta,Y09
@@ -611,7 +609,6 @@ vuoto,vuoto,K01
 310514-4,flangia alberino,G09
 312629-3,scatola cuscinetto,F16
 312951-8,piano ant.,G13
-vuoto,vuoto,T02
 313083-4,porta lama,G12
 313140-8,blocca lama,R11
 314044-7,biella,F09
@@ -630,7 +627,6 @@ vuoto,vuoto,T02
 316883-1,base x 4306,V15
 317380-0,cilindro,T05
 317439-3,protezione lama,R03
-vuoto,vuoto,X07
 317461-0,carter,D01
 317565-8,piastra,U07
 317635-3,scatola ingranaggio,R11
@@ -813,7 +809,6 @@ vuoto,vuoto,X07
 416123-8,biella,V04
 416124-6,tappo grasso,R12
 416127-0,coperchio,U08
-vuoto,vuoto,T15
 416274-7,tappo olio,D03
 416283-6,sigillo olio,R08
 416287-8,leva cambio hr4000,O01
@@ -968,7 +963,6 @@ vuoto,vuoto,T15
 452205-2,coperchio,Y03
 452439-7,coperchio,V16
 452832-5,coperchio,E03
-vuoto,vuoto,K10
 453125-3,leva cambio,H01
 453131-8,coperchio,H07
 453368-7,interruttore,E03
@@ -1144,7 +1138,6 @@ vuoto,vuoto,K10
 638504-8,porta spazzole,P15
 638511-1,statore,T12
 638511-1,statore,R12
-vuoto,vuoto,V11
 638605-2,interruttore,E02
 638627-2,statore,F09
 638635-3,blocco interruttore,K04
@@ -1161,7 +1154,6 @@ vuoto,vuoto,V11
 638895-7,supporto spazzole,K11
 638921-2,porta spazzole,R12
 638947-4,supporto interruttore,Y09
-vuoto,vuoto,Y06
 643550-8,tappo spazzole,C10
 643551-6,porta spazzole,H02
 643552-4,porta spazzole,H02
@@ -1309,7 +1301,6 @@ vuoto,vuoto,Y06
 654169-8,polo negativo,U09
 681623-9,rondella isolante,T12
 681637-8,rondella isolante,O05
-vuoto,vuoto,S06
 681642-5,anello,D05
 681650-6,rondella isolante,Q05
 682500-8,passacavo,M09
@@ -1391,6 +1382,15 @@ P-09101,protezione gomma,M02
 P-15970,lampadina,R02
 PN1301025,albero flessibile,R13
 TP00000113,motore,F03
+vuoto,vuoto,K11
+vuoto,vuoto,K01
+vuoto,vuoto,T02
+vuoto,vuoto,X07
+vuoto,vuoto,T15
+vuoto,vuoto,K10
+vuoto,vuoto,V11
+vuoto,vuoto,Y06
+vuoto,vuoto,S06
 vuoto,vuoto,E06
 vuoto,vuoto,E06
 vuoto,vuoto,Z09
