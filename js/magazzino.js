@@ -8,7 +8,7 @@
   const bodyEl = document.querySelector('body.touch-app') || document.body;
 
   let DATA = [];
-  let LAST_QUERY = "";
+  let LAST_QUERY = null; // null invece di "" per mostrare il messaggio iniziale
   let SHELVES = []; // elenco scaffali normalizzati, ordinati
   let placeholderTimer = null;
 
