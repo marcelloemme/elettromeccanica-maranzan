@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+  <title>Nuova Riparazione - EM Maranzan</title>
+  <link rel="stylesheet" href="css/riparazioni.css" />
+  <!-- PWA / Manifest & iOS meta -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <!-- No indexing for this page -->
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="googlebot" content="noindex, nofollow, noarchive">
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <h1>Nuova Riparazione</h1>
+    </header>
+
+    <form id="form-nuova" class="form-container">
+      <!-- Data Consegna -->
+      <div class="form-group">
+        <label for="data-consegna">Data consegna</label>
+        <input type="date" id="data-consegna" required />
+      </div>
+
+      <!-- Cliente con autocomplete -->
+      <div class="form-group">
+        <label for="cliente">Cliente/Azienda</label>
+        <input type="text" id="cliente" autocomplete="off" required />
+        <div id="autocomplete-list" class="autocomplete-list"></div>
+      </div>
+
+      <!-- Telefono -->
+      <div class="form-group">
+        <label for="telefono">Telefono</label>
+        <input type="tel" id="telefono" required />
+      </div>
+
+      <!-- Attrezzi -->
+      <div class="form-group">
+        <label>Attrezzi</label>
+        <div id="attrezzi-container">
+          <!-- Gli attrezzi verranno aggiunti qui dinamicamente -->
+        </div>
+        <button type="button" id="add-attrezzo" class="btn-secondary">+ Aggiungi attrezzo</button>
+      </div>
+
+      <!-- Pulsanti -->
+      <div class="form-actions">
+        <button type="button" id="btn-annulla" class="btn-secondary">Annulla</button>
+        <button type="submit" class="btn-primary">Crea scheda</button>
+      </div>
+    </form>
+  </main>
+
+  <!-- Popup conferma -->
+  <div id="popup-conferma" class="popup-overlay hidden">
+    <div class="popup-content">
+      <h2>Conferma creazione</h2>
+      <div id="popup-riepilogo"></div>
+      <div class="popup-actions">
+        <button id="popup-annulla" class="btn-secondary">Annulla</button>
+        <button id="popup-conferma-btn" class="btn-primary">Conferma</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup successo -->
+  <div id="popup-successo" class="popup-overlay hidden">
+    <div class="popup-content">
+      <h2>✓ Scheda creata</h2>
+      <p id="popup-successo-msg"></p>
+      <div class="popup-actions">
+        <button id="popup-ok" class="btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/riparazioni-nuova.js"></script>
+</body>
+</html>
