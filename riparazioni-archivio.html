@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+  <title>Archivio Riparazioni - EM Maranzan</title>
+  <link rel="stylesheet" href="css/riparazioni.css" />
+  <!-- PWA / Manifest & iOS meta -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <!-- No indexing for this page -->
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="googlebot" content="noindex, nofollow, noarchive">
+</head>
+<body>
+  <!-- Loading overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <main class="app" style="opacity: 0;">
+    <header class="header">
+      <h1>Archivio Riparazioni</h1>
+    </header>
+
+    <!-- Controlli filtri -->
+    <div class="controls">
+      <!-- Ricerca per cliente -->
+      <div class="search-box">
+        <input type="text" id="search-cliente" placeholder="Cerca per nome cliente..." />
+      </div>
+
+      <!-- Toggle completato/tutti -->
+      <div class="toggle-group">
+        <button class="toggle-btn active" data-filter="tutti">Tutti</button>
+        <button class="toggle-btn" data-filter="incompleti">Da completare</button>
+      </div>
+    </div>
+
+    <!-- Tabella -->
+    <div class="table-container">
+      <table class="table" id="tabella-riparazioni">
+        <thead>
+          <tr>
+            <th>Numero</th>
+            <th>Data</th>
+            <th class="hide-mobile">Telefono</th>
+            <th>Attrezzi</th>
+            <th>Stato</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-riparazioni">
+          <!-- Righe popolate da JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Messaggio vuoto -->
+    <div id="empty-message" class="empty-message hidden">
+      <p>Nessuna riparazione trovata.</p>
+    </div>
+  </main>
+
+  <script src="js/riparazioni-archivio.js"></script>
+</body>
+</html>

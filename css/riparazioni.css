@@ -405,11 +405,14 @@ button:active {
   color: white;
 }
 
-/* Mobile responsive */
+/* Nascondi colonne su mobile */
+.hide-mobile {
+  display: table-cell;
+}
+
 @media (max-width: 768px) {
-  .table th:nth-child(2),
-  .table td:nth-child(2) {
-    display: none; /* Nascondi telefono su mobile */
+  .hide-mobile {
+    display: none;
   }
 
   .table {
@@ -420,6 +423,31 @@ button:active {
   .table td {
     padding: 0.5rem 0.25rem;
   }
+
+  /* Attrezzi troncati su mobile */
+  .table .attrezzi-cell {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Empty message */
+.empty-message {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--fg);
+  opacity: 0.6;
+}
+
+.empty-message.hidden {
+  display: none;
+}
+
+.empty-message p {
+  margin: 0;
+  font-size: 18px;
 }
 
 /* Dettaglio scheda */
