@@ -212,6 +212,7 @@ function addAttrezzo() {
       <button type="button" class="btn-remove" onclick="removeAttrezzo(${attrezziCount})">×</button>
     </div>
     <input type="text" placeholder="Marca/Modello" data-field="marca" required />
+    <input type="text" placeholder="Dotazione (es: batteria, caricabatterie)" data-field="dotazione" />
     <input type="text" placeholder="Note (difetto/problema)" data-field="note" />
   `;
   attrezziContainer.appendChild(div);
@@ -242,9 +243,10 @@ form.addEventListener('submit', (e) => {
   const attrezzi = [];
   document.querySelectorAll('.attrezzo-item').forEach(item => {
     const marca = item.querySelector('[data-field="marca"]').value.trim();
+    const dotazione = item.querySelector('[data-field="dotazione"]').value.trim();
     const note = item.querySelector('[data-field="note"]').value.trim();
     if (marca) {
-      attrezzi.push({ marca, note });
+      attrezzi.push({ marca, dotazione, note });
     }
   });
 
@@ -262,9 +264,12 @@ function mostraPopupConferma(dati) {
   const { dataConsegna, cliente, telefono, attrezzi } = dati;
 
   const dataFormattata = new Date(dataConsegna + 'T00:00:00').toLocaleDateString('it-IT');
-  const attrezziHtml = attrezzi.map((a, i) => `
-    <p><strong>Attrezzo ${i + 1}:</strong> ${a.marca}${a.note ? ` (${a.note})` : ''}</p>
-  `).join('');
+  const attrezziHtml = attrezzi.map((a, i) => {
+    let dettagli = a.marca;
+    if (a.dotazione) dettagli += ` - ${a.dotazione}`;
+    if (a.note) dettagli += ` (${a.note})`;
+    return `<p><strong>Attrezzo ${i + 1}:</strong> ${dettagli}</p>`;
+  }).join('');
 
   popupRiepilogo.innerHTML = `
     <p><strong>Data consegna:</strong> ${dataFormattata}</p>
