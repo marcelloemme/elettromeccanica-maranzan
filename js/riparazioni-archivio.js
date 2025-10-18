@@ -103,7 +103,15 @@ function renderTabella() {
   emptyMessage.classList.add('hidden');
 
   tbody.innerHTML = riparazioni.map(r => {
-    const data = formatData(r['Data Consegna']);
+    // Debug: logga la riparazione per vedere i nomi delle chiavi
+    if (riparazioni.indexOf(r) === 0) {
+      console.log('Prima riparazione:', r);
+      console.log('Chiavi disponibili:', Object.keys(r));
+    }
+
+    // Prova diverse varianti del nome campo
+    const dataConsegna = r['Data Consegna'] || r['Data consegna'] || r.DataConsegna || r['Data'];
+    const data = formatData(dataConsegna);
     const attrezzi = formatAttrezzi(r.Attrezzi);
     const stato = r.Completato ?
       '<span class="badge completato-si">Completato</span>' :
