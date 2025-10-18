@@ -1,304 +1,498 @@
-// Assicurati che jsQR sia incluso via script HTML esterno oppure già disponibile globalmente
-document.addEventListener('DOMContentLoaded', () => {
-  function initQRScanner() {
-    if (typeof cv === 'undefined' || !cv || !cv.QRCodeDetector) {
-      console.error("❌ OpenCV.js non è disponibile o non è stato caricato correttamente.");
+(() => {
+  const inputEl = document.getElementById('codice-input');
+  const topResultsEl = document.getElementById('top-results');
+  const suggestionsEl = document.getElementById('suggestions');
+  const keypad = document.querySelector('.keypad');
+  const cameraBtn = document.getElementById('camera-button');
+  const fileInput = document.getElementById('qr-file-input');
+  const bodyEl = document.querySelector('body.touch-app') || document.body;
+
+  let DATA = [];
+  let LAST_QUERY = "";
+  let SHELVES = []; // elenco scaffali normalizzati, ordinati
+  let placeholderTimer = null;
+
+  const THEME_KEY = 'themeOverride'; // 'dark' | 'light'
+  function applyTheme(mode){
+    if (!bodyEl) return;
+    bodyEl.classList.remove('theme-dark', 'theme-light');
+    if (mode === 'dark') bodyEl.classList.add('theme-dark');
+    else if (mode === 'light') bodyEl.classList.add('theme-light');
+  }
+  function setTheme(mode){
+    try { localStorage.setItem(THEME_KEY, mode); } catch(_) {}
+    applyTheme(mode);
+  }
+  function getSavedTheme(){
+    try { return localStorage.getItem(THEME_KEY); } catch(_) { return null; }
+  }
+
+  // ---------- Utils ----------
+  const normalize = s => (s || "").trim();
+  const basePart = code => normalize(code).replace(/-\d+$/,"");
+
+  // Riconoscimento e normalizzazione scaffale (es. A01, B8, Z12)
+  function normalizeShelfToken(s){
+    if (!s) return null;
+    const m = String(s).trim().match(/^([A-Za-z])\s*0*(\d{1,2})$/);
+    if (!m) return null;
+    const letter = m[1].toUpperCase();
+    const num = parseInt(m[2], 10); // rimuove zeri iniziali
+    if (isNaN(num)) return null;
+    return `${letter}${num}`; // forma normalizzata
+  }
+
+  function isShelfQuery(q){
+    return normalizeShelfToken(q) !== null;
+  }
+
+  function parseCSV(text){
+    const lines = text.split(/\r?\n/);
+    const out = [];
+    for (let i=0;i<lines.length;i++){
+      let line = lines[i].trim();
+      if (!line) continue;
+      if (i===0 && /^codice/i.test(line)) continue; // salta intestazione
+      const raw = line.split(',');
+      if (raw.length < 3) continue;                  // usa solo prime 3 colonne
+      const codice = normalize(raw[0]);
+      const descrizione = normalize(raw[1]);
+      const scaffale = normalize(raw[2]);
+      if (!codice || !descrizione || !scaffale) continue; // salta righe incomplete/virgole extra
+      out.push({ codice, descrizione, scaffale });
+    }
+    return out;
+  }
+
+  // ---- Scaffali: costruzione elenco e util ----
+  function buildShelves(){
+    const set = new Set();
+    for (const it of DATA){
+      const n = normalizeShelfToken(it.scaffale);
+      if (n) set.add(n);
+    }
+    SHELVES = Array.from(set).sort((a,b) => {
+      // a = "A1", b = "B12"
+      const [aL, aN] = [a[0], parseInt(a.slice(1),10)];
+      const [bL, bN] = [b[0], parseInt(b.slice(1),10)];
+      if (aL !== bL) return aL.localeCompare(bL);
+      return aN - bN;
+    });
+  }
+
+  function formatShelf(nrm){
+    // nrm = "A1" => "A01"
+    if (!nrm) return '';
+    const L = nrm[0];
+    const N = nrm.slice(1);
+    const num = String(parseInt(N,10)).padStart(2,'0');
+    return `${L}${num}`;
+  }
+
+  function shelfIndex(nrm){
+    return SHELVES.indexOf(nrm);
+  }
+
+  function gotoShelf(delta){
+    const q = normalize(inputEl.value);
+    const cur = normalizeShelfToken(q);
+    if (!SHELVES.length) return;
+
+    let i = (cur ? SHELVES.indexOf(cur) : -1);
+    if (i === -1){
+      // prova ad agganciarti alla lettera corrente; se non c'è, inizia dal primo
+      const letter = cur ? cur[0] : null;
+      const base = letter ? SHELVES.findIndex(s => s[0] === letter) : -1;
+      i = base !== -1 ? base : 0;
+    }
+
+    i = (i + delta + SHELVES.length) % SHELVES.length;
+    const next = SHELVES[i];
+    inputEl.value = formatShelf(next);
+    updateResults();
+  }
+
+  function waitForOpenCVReady(){
+    return new Promise((resolve, reject) => {
+      // If OpenCV is already loaded (cv.Mat exists), resolve immediately
+      if (window.cv && cv.Mat) return resolve();
+      const start = Date.now();
+      const interval = setInterval(() => {
+        if (window.cv && cv.Mat){
+          clearInterval(interval);
+          resolve();
+        } else if (Date.now() - start > 10000) {
+          clearInterval(interval);
+          reject(new Error('OpenCV non pronto (timeout)'));
+        }
+      }, 50);
+    });
+  }
+
+  async function loadCSV(){
+    try{
+      const res = await fetch(`magazzino.csv?t=${Date.now()}`, { cache:'no-store' });
+      const text = await res.text();
+      DATA = parseCSV(text);
+      buildShelves();
+    }catch(e){
+      console.error("Errore caricamento CSV:", e);
+      DATA = [];
+    }
+  }
+
+  function similarCodes(query, dati, alreadySet){
+    const q = normalize(query);
+    const baseQ = basePart(q);
+    if (!q) return [];
+    return dati.filter(item => {
+      if (alreadySet.has(item.codice)) return false;
+      if (basePart(item.codice) === baseQ && item.codice !== q) return true; // stessi base + suffisso
+      const bItem = basePart(item.codice);
+      if (baseQ.length === bItem.length && baseQ.length > 0){
+        let diff = 0;
+        for (let i=0;i<baseQ.length;i++){
+          if (baseQ[i] !== bItem[i]) diff++;
+          if (diff>2) return false;
+        }
+        return diff>0 && diff<=2;
+      }
+      return false;
+    }).slice(0,15);
+  }
+
+  function renderTable(rows){
+    if (!rows || rows.length===0) return '';
+    const trs = rows.map(r => `
+      <tr>
+        <td class="td-codice">${r.codice}</td>
+        <td class="td-desc">${r.descrizione}</td>
+        <td class="td-scaffale">${r.scaffale}</td>
+      </tr>
+    `).join('');
+    return `<table class="table">${trs}</table>`;
+  }
+
+  function updateResults(){
+    const q = normalize(inputEl.value);
+    if (q === LAST_QUERY) return;
+    LAST_QUERY = q;
+
+    topResultsEl.innerHTML = '';
+    suggestionsEl.innerHTML = '';
+
+    if (!q) return;
+
+    // Se l'input sembra uno scaffale (A01, B8, ecc.), mostra i pezzi di quello scaffale
+    const shelfNorm = normalizeShelfToken(q);
+    if (shelfNorm){
+      // normalizza lo scaffale dei dati a lettera+numero (senza zeri) e confronta
+      const matches = DATA.filter(item => normalizeShelfToken(item.scaffale) === shelfNorm)
+                          .sort((a,b) => a.codice.localeCompare(b.codice));
+      const title = `Scaffale ${shelfNorm.replace(/([A-Z])(\d+)/, (__, L, N) => `${L}${String(N).padStart(2,'0')}`)}`;
+      topResultsEl.innerHTML = matches.length
+        ? `<h3>${title}</h3>${renderTable(matches.slice(0, 50))}`
+        : `<h3>${title}</h3><div style="padding:6px 8px;">Nessun pezzo in questo scaffale.</div>`;
+      // niente "forse cercavi" in modalità scaffale per tenere l'interfaccia pulita
       return;
     }
 
-    if (cv.getBuildInformation) {
-      console.log("✅ OpenCV pronto");
+    // Altrimenti, comportamento attuale: prefisso di codice pezzo
+    const top = DATA.filter(item => item.codice.startsWith(q)).slice(0,10);
+    topResultsEl.innerHTML = top.length
+      ? `<h3>Risultati</h3>${renderTable(top)}`
+      : `<h3>Risultati</h3><div style="padding:6px 8px;">Nessun risultato con questo prefisso.</div>`;
+
+    const already = new Set(top.map(x=>x.codice));
+    const maybe = similarCodes(q, DATA, already);
+    if (maybe.length){
+      suggestionsEl.innerHTML = `<h3>Forse cercavi</h3>${renderTable(maybe)}`;
     }
-
-    const qrFileInput = document.getElementById("qr-file-input");
-    if (qrFileInput) {
-      qrFileInput.addEventListener("change", handleQRScan);
-    }
   }
 
-  if (typeof cv !== 'undefined' && cv['onRuntimeInitialized']) {
-    // Se già inizializzato
-    initQRScanner();
-  } else if (typeof cv !== 'undefined') {
-    // Se non ancora inizializzato
-    cv['onRuntimeInitialized'] = initQRScanner;
-  } else {
-    console.error("❌ cv non definito: assicurati che OpenCV sia incluso da HTML");
-  }
+  async function decodeQRFromFile(file){
+    if (!file) return null;
+    await waitForOpenCVReady();
 
-  const input = document.getElementById("codice-input");
-  const cercaBtn = document.getElementById("cerca-btn");
-  const mostraAZBtn = document.getElementById("mostraAZ");
-  const mostraScaffaleBtn = document.getElementById("mostraScaffale");
-  const aggiornaBtn = document.getElementById("aggiorna-btn");
-
-  cercaBtn.addEventListener("click", cerca);
-  input.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") cerca();
-  });
-  mostraAZBtn.addEventListener("click", mostraTuttoAZ);
-  mostraScaffaleBtn.addEventListener("click", mostraPerScaffale);
-  aggiornaBtn.addEventListener("click", avviaAggiornamento);
-
-  const scanBtn = document.getElementById("scan-btn");
-  if (scanBtn) {
-    scanBtn.addEventListener("click", () => {
-      const fileInput = document.getElementById("qr-file-input");
-      fileInput.click();
-    });
-  }
-
-  function splitCSVLine(line) {
-    // Divide sui separatori "," che NON sono fra virgolette
-    const re = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/;
-    return line.split(re);
-  }
-  function unquote(s) {
-    if (!s) return "";
-    s = s.trim();
-    return (s.startsWith('"') && s.endsWith('"'))
-      ? s.slice(1, -1).replace(/""/g, '"')
-      : s;
-  }
-
-  async function fetchCSV() {
-    const res = await fetch(`magazzino.csv?t=${Date.now()}`, { cache: "no-store" });
-    const raw = await res.text();
-
-    // pulizia: BOM, CRLF, righe vuote
-    const clean = raw.replace(/^\uFEFF/, "").replace(/\r/g, "");
-    const lines = clean.split("\n").filter(l => l.trim() !== "");
-    if (lines.length === 0) return [];
-
-    // header → mappiamo per nome (resiste a virgole extra e colonne disallineate)
-    const headerCells = splitCSVLine(lines[0]).map(h => h.trim().toLowerCase());
-    let idxCod = headerCells.indexOf("codice");
-    let idxDesc = headerCells.indexOf("descrizione");
-    let idxSca = headerCells.indexOf("scaffale");
-
-    // fallback: se i nomi non sono presenti, prendi le prime tre colonne
-    if (idxCod < 0 || idxDesc < 0 || idxSca < 0) {
-      idxCod = 0; idxDesc = 1; idxSca = 2;
-    }
-
-    const rows = [];
-    for (let i = 1; i < lines.length; i++) {
-      const cells = splitCSVLine(lines[i]);
-
-      // ignora righe completamente vuote
-      if (!cells.some(c => c && c.trim() !== "")) continue;
-
-      const codice = unquote(cells[idxCod]  ?? "");
-      const descr  = unquote(cells[idxDesc] ?? "");
-      const scaff  = unquote(cells[idxSca]  ?? "");
-
-      // requisito minimo: deve esserci il codice
-      if (!codice.trim()) continue;
-
-      rows.push({
-        codice: codice.trim(),
-        descrizione: descr.trim(),
-        scaffale: scaff.trim()
+    const imgURL = URL.createObjectURL(file);
+    try{
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      const loaded = new Promise((res, rej) => {
+        img.onload = () => res();
+        img.onerror = (e) => rej(e);
       });
-    }
+      img.src = imgURL;
+      await loaded;
 
-    return rows;
-  }
+      // Riduci per performance se molto grande
+      const maxSide = 1280;
+      let { width, height } = img;
+      const scale = Math.min(1, maxSide / Math.max(width, height));
+      const cw = Math.max(1, Math.round(width * scale));
+      const ch = Math.max(1, Math.round(height * scale));
 
-  function resetContenuto() {
-    document.getElementById("risultato").innerHTML = "";
-    document.getElementById("forse-cercavi").innerHTML = "";
-    document.getElementById("stesso-scaffale").innerHTML = "";
-    document.getElementById("tutti-risultati").innerHTML = "";
-  }
+      const canvas = document.createElement('canvas');
+      canvas.width = cw; canvas.height = ch;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, cw, ch);
 
-  function creaTabella(dati) {
-    const table = document.createElement("table");
-    table.style.marginTop = "1em";
-    table.style.marginBottom = "1em";
-    table.style.marginLeft = "0.2em";
-    table.style.marginRight = "0.2em";
-    table.style.borderCollapse = "collapse";
+      const src = cv.imread(canvas);
+      const detector = new cv.QRCodeDetector();
 
-    dati.forEach(item => {
-      const tr = document.createElement("tr");
+      // Try 1: original
+      let points = new cv.Mat();
+      let straight = new cv.Mat();
+      let result = detector.detectAndDecode(src, points, straight);
+      points.delete(); straight.delete();
 
-      const tdCodice = document.createElement("td");
-      tdCodice.textContent = item.codice;
-      tdCodice.style.textAlign = "left";
-      tdCodice.style.paddingRight = "1em";
+      // If not found, preprocess (grayscale + equalize + light blur)
+      if (!result || !result.trim().length) {
+        let gray = new cv.Mat();
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
 
-      const tdDescrizione = document.createElement("td");
-      tdDescrizione.textContent = item.descrizione;
-      tdDescrizione.style.textAlign = "left";
-      tdDescrizione.style.width = "100%";
-      tdDescrizione.style.paddingRight = "1em";
-
-      const tdScaffale = document.createElement("td");
-      tdScaffale.textContent = item.scaffale;
-      tdScaffale.style.textAlign = "right";
-      tdScaffale.style.whiteSpace = "nowrap";
-      tdScaffale.classList.add("colonna-scaffale");
-
-      tr.appendChild(tdCodice);
-      tr.appendChild(tdDescrizione);
-      tr.appendChild(tdScaffale);
-      table.appendChild(tr);
-    });
-
-    return table;
-  }
-
-  function codiciSimili(inputCodice, dati) {
-    const base = inputCodice.replace(/-\d+$/, "");
-    return dati.filter(item => {
-      const baseItem = item.codice.replace(/-\d+$/, "");
-      if (base === item.codice) return false;
-      if (item.codice.startsWith(base + "-")) return true;
-
-      if (base.length !== baseItem.length) return false;
-      let differenze = 0;
-      for (let i = 0; i < base.length; i++) {
-        if (base[i] !== baseItem[i]) differenze++;
-        if (differenze > 2) return false;
-      }
-      return differenze > 0 && differenze <= 2;
-    });
-  }
-
-  async function cerca() {
-    resetContenuto();
-    const codiceInput = document.getElementById("codice-input").value.trim();
-
-    const dati = await fetchCSV();
-    const risultato = dati.find(item => item.codice === codiceInput);
-
-    if (risultato) {
-      const div = document.getElementById("risultato");
-      const h3 = document.createElement("h3");
-      h3.textContent = "Risultato esatto";
-      div.appendChild(h3);
-      const tabellaEsatto = creaTabella([risultato]);
-      div.appendChild(tabellaEsatto);
-
-      const stesso = dati
-        .filter(item => item.scaffale === risultato.scaffale && item.codice !== risultato.codice)
-        .slice(0, 10);
-
-      if (stesso.length > 0) {
-        const sezione = document.getElementById("stesso-scaffale");
-        const h3 = document.createElement("h3");
-        h3.textContent = "Nello stesso scaffale";
-        sezione.appendChild(h3);
-        sezione.appendChild(creaTabella(stesso));
-      }
-    } else {
-      document.getElementById("risultato").textContent = "Nessun risultato esatto trovato.";
-    }
-
-    const suggeriti = codiciSimili(codiceInput, dati).slice(0, 10);
-    if (suggeriti.length > 0) {
-      const sezione = document.getElementById("forse-cercavi");
-      const h3 = document.createElement("h3");
-      h3.textContent = "Forse cercavi";
-      sezione.appendChild(h3);
-      sezione.appendChild(creaTabella(suggeriti));
-    }
-  }
-
-  async function mostraTuttoAZ() {
-    resetContenuto();
-    const dati = await fetchCSV();
-    const ordinati = [...dati].sort((a, b) => a.codice.localeCompare(b.codice));
-
-    const sezione = document.getElementById("tutti-risultati");
-    const h3 = document.createElement("h3");
-    h3.textContent = "Tutti i codici (A-Z)";
-    sezione.appendChild(h3);
-    sezione.appendChild(creaTabella(ordinati));
-  }
-
-  async function mostraPerScaffale() {
-    resetContenuto();
-    const dati = await fetchCSV();
-    const ordinati = [...dati].sort((a, b) => {
-      if (a.scaffale === b.scaffale) return a.codice.localeCompare(b.codice);
-      return a.scaffale.localeCompare(b.scaffale);
-    });
-
-    const sezione = document.getElementById("tutti-risultati");
-    const h3 = document.createElement("h3");
-    h3.textContent = "Tutti i codici (per scaffale)";
-    sezione.appendChild(h3);
-    sezione.appendChild(creaTabella(ordinati));
-  }
-
-  async function avviaAggiornamento() {
-    const btn = document.getElementById("aggiorna-btn");
-    btn.disabled = true;
-    btn.textContent = "Aggiornamento in corso...";
-
-    try {
-      const res = await fetch("https://aggiorna.marcellomaranzan.workers.dev/");
-      const text = await res.text();
-      alert(text);
-    } catch (err) {
-      alert("Errore durante l'aggiornamento.");
-    }
-
-    btn.disabled = false;
-    btn.textContent = "Aggiorna dati";
-  }
-
-  async function handleQRScan(e) {
-    const input = document.getElementById("codice-input");
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async function(event) {
-      console.log("File caricato:", file.name);
-      console.log("Tipo MIME:", file.type);
-      try {
-        const imageBitmap = await createImageBitmap(file);
-        console.log("Bitmap creata:", imageBitmap);
-
-        const canvas = document.createElement("canvas");
-        canvas.width = imageBitmap.width;
-        canvas.height = imageBitmap.height;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(imageBitmap, 0, 0);
-        console.log("Disegnato su canvas");
-
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        console.log("ImageData estratto");
-
-        // Conversione a Mat per OpenCV
-        const mat = cv.matFromImageData(imageData);
-        const gray = new cv.Mat();
-        cv.cvtColor(mat, gray, cv.COLOR_RGBA2GRAY);
-
-        const qrDetector = new cv.QRCodeDetector();
-        const points = new cv.Mat();
-        const straightQR = new cv.Mat();
-
-        const result = qrDetector.detectAndDecode(gray);
-        if (result) {
-          console.log("Codice QR rilevato:", result);
-          input.value = result;
-          cerca();
+        // Contrast boost (prefer CLAHE if available, else equalizeHist)
+        let enhanced = new cv.Mat();
+        if (cv.createCLAHE) {
+          try {
+            const clahe = new cv.CLAHE(2.0, new cv.Size(8, 8));
+            clahe.apply(gray, enhanced);
+            clahe.delete();
+          } catch (_) {
+            cv.equalizeHist(gray, enhanced);
+          }
         } else {
-          console.warn("QR non riconosciuto");
-          alert("Codice QR non riconosciuto.");
+          cv.equalizeHist(gray, enhanced);
         }
 
-        // cleanup
-        mat.delete(); gray.delete(); qrDetector.delete(); points.delete(); straightQR.delete();
-      } catch (err) {
-        console.error("Errore durante la scansione:", err);
-        alert("Errore durante la scansione.");
+        // Light denoise to reduce JPEG artifacts
+        let blurred = new cv.Mat();
+        cv.GaussianBlur(enhanced, blurred, new cv.Size(3, 3), 0, 0, cv.BORDER_DEFAULT);
+
+        points = new cv.Mat();
+        straight = new cv.Mat();
+        result = detector.detectAndDecode(blurred, points, straight);
+
+        // Cleanup intermats
+        gray.delete(); enhanced.delete(); blurred.delete();
+        points.delete(); straight.delete();
       }
-    };
-    reader.readAsDataURL(file);
+
+      // Last try: adaptive threshold (binary) which sometimes helps on low-contrast prints
+      if (!result || !result.trim().length) {
+        let gray2 = new cv.Mat();
+        cv.cvtColor(src, gray2, cv.COLOR_RGBA2GRAY);
+        let bin = new cv.Mat();
+        cv.adaptiveThreshold(
+          gray2,
+          bin,
+          255,
+          cv.ADAPTIVE_THRESH_GAUSSIAN_C,
+          cv.THRESH_BINARY,
+          31,
+          2
+        );
+        points = new cv.Mat();
+        straight = new cv.Mat();
+        result = detector.detectAndDecode(bin, points, straight);
+        gray2.delete(); bin.delete();
+        points.delete(); straight.delete();
+      }
+
+      src.delete();
+      detector.delete();
+
+      if (result && typeof result === 'string' && result.trim().length) {
+        return result.trim();
+      }
+      return null;
+    } finally {
+      URL.revokeObjectURL(imgURL);
+    }
   }
-});
+
+  // Hook emoji fotocamera -> input file
+  if (cameraBtn && fileInput){
+    cameraBtn.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(10);
+      fileInput.click();
+    });
+    cameraBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
+
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      try{
+        const code = await decodeQRFromFile(file);
+        if (code){
+          inputEl.value = code;
+          updateResults();
+        } else {
+          console.warn('QR non riconosciuto');
+          const prevPh = inputEl.getAttribute('placeholder') || '';
+          // Clear any previous timer to avoid races
+          if (placeholderTimer) {
+            clearTimeout(placeholderTimer);
+            placeholderTimer = null;
+          }
+          // Aggiunge stato di errore (gestito dal CSS)
+          inputEl.classList.add('error');
+          inputEl.setAttribute('placeholder', 'QR non riconosciuto.');
+          // Dopo 2.5s ripristina placeholder e stato
+          placeholderTimer = setTimeout(() => {
+            inputEl.classList.remove('error');
+            inputEl.setAttribute('placeholder', prevPh || 'Codice ricambio');
+            placeholderTimer = null;
+          }, 2500);
+        }
+      } catch(err){
+        console.error('Errore durante la scansione QR:', err);
+      } finally {
+        // reset per poter ricaricare lo stesso file se serve
+        fileInput.value = '';
+      }
+    });
+  }
+
+  // Debounce leggero
+  let debounceTimer;
+  function onInputChange(){
+    inputEl.classList.remove('error');
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(updateResults, 60);
+  }
+
+  // ---------- Eventi ----------
+  inputEl.addEventListener('input', onInputChange);
+
+  // Keypad: niente focus sull'input => non compare la tastiera iOS
+  keypad.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('.key');
+    if (!btn) return;
+
+    const action = btn.getAttribute('data-action');
+    const key = btn.getAttribute('data-key');
+
+    // Feedback aptico (Android); su iOS Safari in genere non funziona, ma non fa danni
+    if (navigator.vibrate) navigator.vibrate(10);
+
+    if (action === 'backspace'){
+      inputEl.value = '';
+      updateResults();
+      return;
+    }
+    if (key){
+      inputEl.value += key;
+      updateResults();
+    }
+  });
+
+  // ---- Swipe orizzontale sulla keypad per toggle dark/light ----
+  if (keypad) {
+    let kx = 0, ky = 0, kSwiped = false;
+    const THEME_SWIPE_MIN_X = 30;
+    const THEME_SWIPE_MAX_Y = 40;
+
+    keypad.addEventListener('touchstart', (e) => {
+      const t = e.changedTouches && e.changedTouches[0];
+      if (!t) return;
+      kSwiped = false;
+      kx = t.clientX; ky = t.clientY;
+    }, { passive: true });
+
+    keypad.addEventListener('touchend', (e) => {
+      const t = e.changedTouches && e.changedTouches[0];
+      if (!t) return;
+      const dx = t.clientX - kx;
+      const dy = t.clientY - ky;
+      if (Math.abs(dx) >= THEME_SWIPE_MIN_X && Math.abs(dy) <= THEME_SWIPE_MAX_Y) {
+        e.preventDefault();
+        e.stopPropagation();
+        kSwiped = true;
+        const isDark = bodyEl && bodyEl.classList.contains('theme-dark');
+        setTheme(isDark ? 'light' : 'dark');
+      }
+    }, { passive: false });
+
+    // Evita che un gesto di swipe scateni anche un click sul tasto
+    keypad.addEventListener('click', (e) => {
+      if (kSwiped) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+      kSwiped = false;
+    }, true);
+  }
+
+  // ---- Swipe per navigare scaffali (solo quando l'input è uno scaffale) ----
+  const swipeRoot =
+    document.getElementById('results-area') ||
+    document.querySelector('.app') ||
+    document.querySelector('.contenitore') ||
+    document.body;
+
+  // PARAMETRI PIÙ PERMISSIVI PER LO SWIPE
+  const SWIPE_MIN_X = 25;   // Ridotto da 50 a 25: movimenti più corti
+  const SWIPE_MAX_Y = 100;  // Aumentato da 60 a 100: più tolleranza verticale
+
+  if (swipeRoot){
+    let sx = 0, sy = 0;
+    swipeRoot.addEventListener('touchstart', (e) => {
+      const t = e.changedTouches && e.changedTouches[0];
+      if (!t) return;
+      sx = t.clientX; sy = t.clientY;
+      console.debug('[swipe] start', sx, sy);
+    }, { passive: true });
+
+    swipeRoot.addEventListener('touchend', (e) => {
+      const t = e.changedTouches && e.changedTouches[0];
+      if (!t) return;
+      const dx = t.clientX - sx;
+      const dy = t.clientY - sy;
+      console.debug('[swipe] end', t.clientX, t.clientY, 'dx=', dx, 'dy=', dy);
+
+      // CONDIZIONE PIÙ PERMISSIVA: anche diagonali leggere vengono accettate
+      if (Math.abs(dx) >= SWIPE_MIN_X && Math.abs(dy) <= SWIPE_MAX_Y){
+        // Determina lo scaffale corrente (può non essere esatto)
+        const q = normalize(inputEl.value);
+        const cur = normalizeShelfToken(q);
+
+        if (!cur || SHELVES.length === 0){
+          return; // niente elenco scaffali disponibile
+        }
+
+        let i = SHELVES.indexOf(cur);
+        if (i === -1){
+          // snap al primo scaffale con stessa lettera; se non esiste, al primo globale
+          const letter = cur[0];
+          const base = SHELVES.findIndex(s => s[0] === letter);
+          i = base !== -1 ? base : 0;
+        }
+
+        // direzione swipe: sinistra => +1 (prossimo), destra => -1 (precedente)
+        const delta = dx < 0 ? +1 : -1;
+        i = (i + delta + SHELVES.length) % SHELVES.length;
+        const next = SHELVES[i];
+        inputEl.value = formatShelf(next);
+        updateResults();
+      }
+    }, { passive: true });
+  }
+
+  // Init
+  (async () => {
+    await loadCSV();
+    const savedTheme = getSavedTheme();
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      applyTheme(savedTheme);
+    }
+    // (volendo: mostrare i primi 10 globali all'avvio)
+    // const first10 = DATA.slice(0,10);
+    // topResultsEl.innerHTML = `<h3>Primi 10</h3>${renderTable(first10)}`;
+  })();
+})();

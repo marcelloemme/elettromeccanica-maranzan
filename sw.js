@@ -1,12 +1,11 @@
-/* Elettromeccanica Maranzan - Magazzino PWA Service Worker */
-const CACHE_NAME = 'magazzino-v3';
+/* Elettromeccanica Maranzan - PWA Service Worker */
+const CACHE_NAME = 'em-maranzan-v1';
 const PRECACHE_URLS = [
+  '/private.html',
+  '/css/private.css',
   '/magazzino.html',
   '/css/magazzino.css',
   '/js/magazzino.js',
-  '/magazzino-2.html',
-  '/css/magazzino-2.css',
-  '/js/magazzino2.js',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/offline.html'
@@ -63,12 +62,11 @@ self.addEventListener('fetch', (event) => {
   if (
     isSameOrigin &&
     (
-      url.pathname === '/magazzino.html'      ||
-      url.pathname === '/css/magazzino.css'   ||
-      url.pathname === '/js/magazzino.js'     ||
-      url.pathname === '/magazzino-2.html'    ||
-      url.pathname === '/css/magazzino-2.css' ||
-      url.pathname === '/js/magazzino2.js'
+      url.pathname === '/private.html'      ||
+      url.pathname === '/css/private.css'   ||
+      url.pathname === '/magazzino.html'    ||
+      url.pathname === '/css/magazzino.css' ||
+      url.pathname === '/js/magazzino.js'
     )
   ) {
     event.respondWith(networkFirst(request));
@@ -140,9 +138,9 @@ async function handleNavigation(request) {
     const cached = await cache.match(request);
     if (cached) return cached;
     // Fallback to app shells
-    const shell1 = await cache.match('/magazzino.html');
+    const shell1 = await cache.match('/private.html');
     if (shell1) return shell1;
-    const shell2 = await cache.match('/magazzino-2.html');
+    const shell2 = await cache.match('/magazzino.html');
     if (shell2) return shell2;
     // Last resort: offline page
     return (await cache.match('/offline.html')) || new Response('Offline', { status: 503 });

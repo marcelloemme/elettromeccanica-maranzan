@@ -1,7 +1,7 @@
 {
-  "name": "Elettromeccanica Maranzan — Magazzino",
-  "short_name": "Magazzino",
-  "start_url": "/magazzino.html?source=pwa",
+  "name": "Elettromeccanica Maranzan",
+  "short_name": "EM Maranzan",
+  "start_url": "/private.html?source=pwa",
   "scope": "/",
   "display": "standalone",
   "background_color": "#fafafa",

@@ -1,196 +1,212 @@
-/* RESET GLOBALE */
-/* Disabilita zoom automatico su Safari mobile */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* Reset minimo */
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; height:100%; }
+
+:root{
+  --bg: #ffffff;
+  --fg: #222222;
+  --panel-bg: #ffffff;
+  --border: #dddddd;
+  --border-strong: #000000;
+  --key-bg: #ffffff;
+  --key-active: #f0f0f0;
+  --placeholder: #9aa0a6;
+  --error: #b00020;
 }
 
-html, body {
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: clamp(11px, 3.5vw, 18px);
-  -webkit-text-size-adjust: 100%;
-  line-height: 1.2;
-  background: #fafafa;
-  color: #222;
-  text-align: left;
-}
-
-
-.homepage p {
-  font-size: clamp(11px, 3.5vw, 18px);
-  -webkit-text-size-adjust: 100%;
-  margin: 0;
-  padding-top: 0.2em;
-  line-height: 1.2;
-  text-overflow: ellipsis;
-}
-
-h2, h3 {
-  font-size: clamp(11px, 3.5vw, 18px);
-  -webkit-text-size-adjust: 100%;
-  margin: 0;
-  line-height: 1.2;
-  text-overflow: ellipsis;
-}
-
-/* CONTENITORE */
-.contenitore {
-  max-width: 100vw;
-  padding: 0 0.2em;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  font-size: clamp(11px, 3.5vw, 18px);
-  -webkit-text-size-adjust: 100%;
-}
-
-/* LINK */
-a {
-  color: inherit;
-  text-decoration: underline;
-}
-
-/* TESTO */
-p {
-  font-size: clamp(11px, 3.5vw, 18px);
-  -webkit-text-size-adjust: 100%;
-  margin: 0;
-}
-
-/* CAMPI E PULSANTI */
-input, button {
-  font-size: clamp(11px, 3.5vw, 18px);
-  -webkit-text-size-adjust: 100%;
-  padding: 3px 5px;
-  margin: 5px 5px 10px 0;
-  border: 1px solid #000;
-  background: #fff;
-  height: auto;
-  line-height: 1.2;
-}
-
-button {
-  cursor: pointer;
-  color: #000;
-  text-decoration: none;
-}
-
-/* SEZIONI RISULTATO */
-#risultato,
-#forse-cercavi,
-#stesso-scaffale,
-#lista-tutti,
-#lista-scaffale,
-#tutti-risultati {
-  margin-top: 20px;
-}
-
-/* FOOTER */
-.footer {
-  font-size: clamp(11px, 3.5vw, 18px);
-  -webkit-text-size-adjust: 100%;
-  padding: 0.2em;
-  margin-top: 2em;
-}
-
-.colonna-scaffale {
-  width: 4ch; /* oppure 50px */
-  text-align: right;
-  white-space: nowrap;
-}
-
-@media (max-width: 768px) {
-  #risultato table,
-  #forse-cercavi table,
-  #stesso-scaffale table,
-  #tutti-risultati table {
-    width: calc(100% - 0.6em);
-    box-sizing: border-box;
-    margin-left: 0.3em;
-    margin-right: 0.3em;
+/* Auto dark via system preference */
+@media (prefers-color-scheme: dark){
+  body.touch-app:not(.theme-light){
+    --bg: #000000;
+    --fg: #ffffff;
+    --panel-bg: #000000;
+    --border: #2a2b2d;
+    --border-strong: #6a6b6d;
+    --key-bg: #000000;
+    --key-active: #222427;
+    --placeholder: #8a8f98;
+    --error: #ff4d4f;
   }
 }
+/* Manual force dark if JS adds .theme-dark to <body> */
+body.touch-app.theme-dark{
+  --bg: #000000;
+  --fg: #ffffff;
+  --panel-bg: #000000;
+  --border: #2a2b2d;
+  --border-strong: #6a6b6d;
+  --key-bg: #000000;
+  --key-active: #222427;
+  --placeholder: #8a8f98;
+  --error: #ff4d4f;
+}
 
-.homepage {
-  padding-right: 0.3em;
-  padding-left: 0.3em;
+body.touch-app{
+  font-family: -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  background: var(--bg); color: var(--fg);
+  font-size: clamp(8px, 2.5vw, 18px);
+}
+/* Assicura lo stesso font su controlli */
+button, input {
+  font: inherit;
+}
+
+.app{
+  min-height:100dvh;
+  display:flex; flex-direction:column;
+}
+
+/* Area risultati (scroll) */
+#results-area{
   flex: 1;
+  overflow-y: auto;
+  padding: 0.3em 0.2em 0; /* in alto/lati come la home */
+  padding-bottom: 180px;   /* spazio per la barra fissa in basso */
 }
 
-.barra-ricerca {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.4em;
-  position: relative;
+/* Blocchi (titolo + tabella) */
+.block{ margin-bottom:0.6rem; }
+
+/* UNIFORMATO: tutti i titoli h3 hanno la stessa dimensione e margini */
+.block h3{
+  margin: 0.3rem 0 0.2rem 0;
+  padding-left: 6px; /* allinea il titolo con la prima colonna (td padding-left) */
+  font-weight: 600;
+  font-size: 18px; /* CAMBIATO: era 15px, ora uniformato a 18px */
 }
 
-/* Linee orizzontali tra le righe della tabella */
-table tr:not(:last-child) {
-  border-bottom: 1px solid #ccc;
+/* UNIFORMATO: tutti i contenuti di testo hanno la stessa dimensione e margini */
+.block p,
+.block div {
+  font-size: 18px;
+  padding-left: 6px !important; /* !important per sovrascrivere stili inline */
+  margin: 0.3rem 0 0.2rem 0;
 }
 
-#codice-input {
-  padding-right: 2em;
-  min-width: 13ch;
+/* RIMOSSA la regola specifica .block.no-results h3 e .block.no-results p 
+   perché ora sono uniformate con le regole generali sopra */
+
+/* Regole aggiuntive per garantire uniformità in tutti i casi */
+#top-results h3,
+#suggestions h3 {
+  font-size: 18px !important;
 }
 
-.input-container {
-  position: relative;
-  display: inline-block;
-  width: auto;
+/* Tabella full-width, stile coerente col sito */
+.table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+  font-size: 18px;
+}
+.table tr + tr td{ border-top:1px solid var(--border); } /* solo linee orizzontali interne */
+.table td{
+  padding:6px 6px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  vertical-align:middle;
+}
+.table .td-codice{
+  text-align:left;
+  font-weight:500; width:30%;
+}
+.table .td-desc{ text-align:left; width:55%; }
+.table .td-scaffale{ text-align:right; width:15%; white-space:nowrap; }
+
+/* Zona input + keypad sticky in basso */
+.input-zone{
+  position: fixed;
+  left: 0; right: 0; bottom: 1vh; /* Alzato del 1% su mobile */
+  background: var(--panel-bg);
+  padding: 0.3rem 0.2rem calc(0.3rem + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--panel-bg);
+  z-index: 10;
 }
 
-.input-container input {
-  padding-right: 2.4em;
-  padding-left: 0.5em;
-  width: 20ch;
-  height: auto;
-  line-height: 1.2;
-  vertical-align: middle;
-  font-size: 1em;
-  display: inline-block;
-  box-sizing: border-box;
+/* Riga input */
+.input-row{
+  display:flex; align-items:center; gap:0.4rem;
+  margin-bottom:0.4rem;
 }
-
-.camera-label {
-  position: absolute;
-  right: 0.4em;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  pointer-events: auto;
-  font-size: 1em;
-  vertical-align: middle;
-  display: flex;
-  align-items: baseline;
-  line-height: 1;
-  height: 100%;
-  padding: 0;
+.input-container{ flex:1; position:relative; }
+.code-input{
+  width:100%;
+  font-size:16px;               /* >=16px: niente zoom iOS - deve rimanere così */
+  line-height:1.2;
+  padding:10px 12px;
+  border:1px solid var(--border-strong); background: var(--panel-bg); color: var(--fg);
+  border-radius: 14px;
 }
-
+/* Emoji fotocamera dentro input */
 .camera-inside {
   position: absolute;
-  right: 0.7em;
+  right: 12px;               /* simmetrico al padding sinistro del placeholder (12px) */
   top: 50%;
-  transform: translateY(-56%);
-  cursor: pointer;
+  transform: translateY(-56%); /* leggera correzione verso l'alto */
   pointer-events: auto;
-  font-size: inherit;
+  cursor: pointer;
+  font-size: 18px;           /* CAMBIATO: da 1em a 18px per uniformità */
+  line-height: 1;
+  color: inherit;
+}
+.code-input {
+  padding-right: 2.8em; /* spazio extra per l'emoji + aria di respiro */
+}
+/* Toggle tastiera */
+.kbd-toggle{
+  font-size:16px; line-height:1;
+  padding:10px 12px;
+  border:1px solid var(--border-strong); background: var(--panel-bg); color: var(--fg);
+  border-radius:6px; cursor:pointer;
+}
+
+/* Keypad: due righe da 6, tasti quadrati e identici */
+.keypad{
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-flow: row;
+  gap: 6px;
+}
+.key{
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  padding: 0;
+
+  font-size: 18px;
+  background: var(--key-bg); color: var(--fg);
+  border: 1px solid var(--border-strong); border-radius: 12px;
+  touch-action: manipulation; user-select: none;
+
+  /* quadrati coerenti */
+  aspect-ratio: 1 / 1;
+  min-height: 54px;
+}
+.key:active{ background: var(--key-active); }
+
+/* Desktop: centriamo e limitiamo larghezza */
+@media (min-width:768px){
+  #results-area, .input-zone{
+    max-width: 100vw;
+    margin: 0;
+  }
+  
+  /* Su desktop riportiamo la zona input in basso senza spazio */
+  .input-zone {
+    bottom: 0;
+  }
+}
+/* Consenti lo scroll verticale nativo, noi leggiamo solo swipe orizzontale */
+.app, #results-area, .contenitore {
+  touch-action: pan-y; /* consenti lo scroll verticale nativo, noi leggiamo solo swipe orizzontale */
 }
 
-.nascosto-ma-cliccabile {
-  opacity: 0;
-  width: 0.1px;
-  height: 0.1px;
-  position: absolute;
-  z-index: -1;
-}
+/* Placeholder di default: grigio */
+.code-input::placeholder { color: var(--placeholder); opacity: 1; }
+.code-input::-webkit-input-placeholder { color: var(--placeholder); opacity: 1; }
+.code-input::-moz-placeholder { color: var(--placeholder); opacity: 1; }
+.code-input:-ms-input-placeholder { color: var(--placeholder); opacity: 1; }
+
+/* Stato errore: SOLO il placeholder diventa rosso */
+.code-input.error::placeholder { color: var(--error); opacity: 1; }
+.code-input.error::-webkit-input-placeholder { color: var(--error); opacity: 1; }
+.code-input.error::-moz-placeholder { color: var(--error); opacity: 1; }
+.code-input.error:-ms-input-placeholder { color: var(--error); opacity: 1; }

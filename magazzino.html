@@ -2,70 +2,79 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Elettromeccanica Maranzan_Magazzino</title>
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+  <title>Elettromeccanica Maranzan_Magazzino (touch)</title>
   <link rel="stylesheet" href="css/magazzino.css" />
+  <!-- PWA / Manifest & iOS meta -->
   <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="theme-color" content="#ffffff">
-  <link rel="apple-touch-icon" href="/icons/icon-192.png">
-  <script>
-    window.addEventListener('load', function () {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-          .then(function (registration) {
-            console.log('Service Worker registered with scope:', registration.scope);
-          })
-          .catch(function (error) {
-            console.error('Service Worker registration failed:', error);
-          });
-      }
-    });
-  </script>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
-<body class="homepage">
-  <div class="contenitore">
-    <p>Elettromeccanica Maranzan_Magazzino</p>
-    <br>
-    <p>
-      Inserisci il codice del ricambio da cercare, oppure visualizza il catalogo 
-      <a href="#" id="mostraAZ">in ordine</a>, o 
-      <a href="#" id="mostraScaffale">per scaffale</a>.
-    </p>
-    <br>
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <!-- No indexing for this page -->
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="googlebot" content="noindex, nofollow, noarchive">
+</head>
+<body class="touch-app">
 
-    <div class="barra-ricerca">
-      <div class="input-wrapper">
-        <div class="input-container camera-wrapper">
+  <main class="app">
+    <!-- Risultati -->
+    <section id="results-area" aria-live="polite">
+      <div id="top-results" class="block"></div>
+      <div id="suggestions" class="block"></div>
+    </section>
+
+    <!-- Input + Keypad sticky -->
+    <section class="input-zone" role="region" aria-label="Ricerca rapida">
+      <div class="input-row">
+        <div class="input-container">
+          <!-- niente tastiera iOS finché non premi ABC -->
           <input
-            type="text"
             id="codice-input"
+            class="code-input"
+            type="text"
             inputmode="text"
-            pattern="[0-9A-Za-z\-]*"
+            placeholder="Codice ricambio/scaffale"
             autocomplete="off"
-            placeholder="Codice ricambio"
+            autocapitalize="off"
+            spellcheck="false"
           />
-          <label for="qr-file-input" class="camera-inside">📷</label>
+          <span class="camera-inside" id="camera-button" role="button" aria-label="Scansiona QR" tabindex="0">📷</span>
+          <input type="file" id="qr-file-input" accept="image/*" capture="environment" style="display:none">
         </div>
       </div>
-      <button id="cerca-btn">Cerca</button>
-      <button id="aggiorna-btn">Aggiorna dati</button>
-    </div>
 
-    <!-- Tutte le sezioni dei risultati sono contenute in .contenitore per mantenere padding su mobile --->
-    <div id="risultato"></div>
-    <div id="forse-cercavi"></div>
-    <div id="stesso-scaffale"></div>
-    <div id="lista-tutti"></div>
-    <div id="lista-scaffale"></div>
-    <div id="tutti-risultati"></div>
-  </div>
+      <div class="keypad" role="group" aria-label="Tastiera numerica">
+        <!-- Riga 1: 0 1 2 3 4 - -->
+        <button class="key" data-key="0">0</button>
+        <button class="key" data-key="1">1</button>
+        <button class="key" data-key="2">2</button>
+        <button class="key" data-key="3">3</button>
+        <button class="key" data-key="4">4</button>
+        <button class="key" data-key="-">-</button>
 
-  <!-- Il file input per selezionare immagini QR -->
-  <input type="file" accept="image/*" id="qr-file-input" class="nascosto-ma-cliccabile" capture="environment" />
-  <script src="https://docs.opencv.org/4.x/opencv.js" type="text/javascript"></script>
-  <script type="module" src="js/magazzino.js"></script>
+        <!-- Riga 2: 5 6 7 8 9 ⌫ -->
+        <button class="key" data-key="5">5</button>
+        <button class="key" data-key="6">6</button>
+        <button class="key" data-key="7">7</button>
+        <button class="key" data-key="8">8</button>
+        <button class="key" data-key="9">9</button>
+        <button class="key key-back" data-action="backspace" aria-label="Cancella">⌫</button>
+      </div>
+    </section>
+  </main>
+
+</script>
+  <script async src="https://docs.opencv.org/4.x/opencv.js" type="text/javascript"></script>
+  <script src="js/magazzino.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' })
+        .catch(console.error);
+    }
+  </script>
 </body>
 </html>
