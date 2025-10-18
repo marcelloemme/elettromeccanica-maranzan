@@ -314,9 +314,19 @@ async function salvaModifiche(dati) {
     if (result.success) {
       popupConfermaModifica.classList.add('hidden');
       popupModifica.classList.add('hidden');
+
+      // Aspetta un attimo per dare tempo a Google Sheets di aggiornare
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Ricarica i dati senza refresh completo della pagina
+      await caricaTutteRiparazioni();
+      await caricaRiparazione(dati.numero);
+
       alert('Modifiche salvate con successo!');
-      // Ricarica la pagina per mostrare i dati aggiornati
-      window.location.reload();
+
+      // Reset pulsante conferma per prossime modifiche
+      popupConfermaSalva.disabled = false;
+      popupConfermaSalva.textContent = 'Conferma';
     } else {
       alert('Errore: ' + (result.error || 'Errore sconosciuto'));
       popupConfermaSalva.disabled = false;
