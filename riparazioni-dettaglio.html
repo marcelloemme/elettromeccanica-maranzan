@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+  <title>Dettaglio Riparazione - EM Maranzan</title>
+  <link rel="stylesheet" href="css/riparazioni.css" />
+  <!-- PWA / Manifest & iOS meta -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <!-- No indexing for this page -->
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="googlebot" content="noindex, nofollow, noarchive">
+</head>
+<body>
+  <!-- Loading overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <main class="app" style="opacity: 0;">
+    <header class="header">
+      <h1 id="titolo-numero">Riparazione</h1>
+    </header>
+
+    <!-- Contenuto dettaglio -->
+    <div class="detail-container" id="detail-container">
+      <div class="detail-group">
+        <div class="detail-label">Numero</div>
+        <div class="detail-value" id="detail-numero">-</div>
+      </div>
+
+      <div class="detail-group">
+        <div class="detail-label">Data consegna</div>
+        <div class="detail-value" id="detail-data">-</div>
+      </div>
+
+      <div class="detail-group">
+        <div class="detail-label">Cliente</div>
+        <div class="detail-value" id="detail-cliente">-</div>
+      </div>
+
+      <div class="detail-group">
+        <div class="detail-label">Telefono</div>
+        <div class="detail-value" id="detail-telefono">-</div>
+      </div>
+
+      <div class="detail-group">
+        <div class="detail-label">Attrezzi</div>
+        <div class="attrezzi-list" id="detail-attrezzi">
+          <!-- Popolato da JS -->
+        </div>
+      </div>
+
+      <div class="detail-group">
+        <div class="detail-label">Stato</div>
+        <div class="detail-value" id="detail-stato">-</div>
+      </div>
+
+      <!-- Pulsante modifica -->
+      <div class="form-actions">
+        <button id="btn-modifica" class="btn-primary">Modifica scheda</button>
+      </div>
+    </div>
+
+    <!-- Navigazione -->
+    <div class="nav-buttons">
+      <button class="nav-btn btn-secondary" id="btn-prev" title="Scheda precedente">←</button>
+      <button class="nav-btn burger btn-secondary" id="btn-archivio" title="Torna all'archivio">☰</button>
+      <button class="nav-btn btn-secondary" id="btn-next" title="Scheda successiva">→</button>
+    </div>
+  </main>
+
+  <!-- Popup modifica -->
+  <div id="popup-modifica" class="popup-overlay hidden">
+    <div class="popup-content">
+      <h2>Modifica Riparazione</h2>
+
+      <form id="form-modifica" class="form-container">
+        <div class="form-group">
+          <label for="edit-data">Data consegna</label>
+          <input type="date" id="edit-data" required />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-cliente">Cliente</label>
+          <input type="text" id="edit-cliente" required />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-telefono">Telefono</label>
+          <input type="tel" id="edit-telefono" required />
+        </div>
+
+        <div class="form-group">
+          <label>Attrezzi</label>
+          <div id="edit-attrezzi-container">
+            <!-- Popolato da JS -->
+          </div>
+          <button type="button" id="edit-add-attrezzo" class="btn-secondary">+ Aggiungi attrezzo</button>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-completato">Stato</label>
+          <select id="edit-completato">
+            <option value="false">In corso</option>
+            <option value="true">Completato</option>
+          </select>
+        </div>
+
+        <div class="popup-actions">
+          <button type="button" id="popup-annulla" class="btn-secondary">Annulla</button>
+          <button type="submit" class="btn-primary">Salva modifiche</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Popup conferma modifiche -->
+  <div id="popup-conferma-modifica" class="popup-overlay hidden">
+    <div class="popup-content">
+      <h2>Conferma modifiche</h2>
+      <div id="popup-riepilogo-modifica"></div>
+      <div class="popup-actions">
+        <button id="popup-conferma-annulla" class="btn-secondary">Annulla</button>
+        <button id="popup-conferma-salva" class="btn-primary">Conferma</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/riparazioni-dettaglio.js"></script>
+</body>
+</html>
