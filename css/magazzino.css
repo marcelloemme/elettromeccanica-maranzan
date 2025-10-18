@@ -210,3 +210,50 @@ button, input {
 .code-input.error::-webkit-input-placeholder { color: var(--error); opacity: 1; }
 .code-input.error::-moz-placeholder { color: var(--error); opacity: 1; }
 .code-input.error:-ms-input-placeholder { color: var(--error); opacity: 1; }
+
+/* Long-press indicator per tornare a /private */
+.long-press-indicator {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(0, 122, 255, 0.2);
+  border: 3px solid rgba(0, 122, 255, 0.6);
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.2s ease;
+}
+
+.long-press-indicator.active {
+  transform: translate(-50%, -50%) scale(1);
+  animation: long-press-fill 4s linear forwards;
+}
+
+.long-press-indicator.complete {
+  background: rgba(0, 122, 255, 0.8);
+  border-color: rgba(0, 122, 255, 1);
+  animation: long-press-complete 0.3s ease forwards;
+}
+
+@keyframes long-press-fill {
+  from {
+    background: rgba(0, 122, 255, 0.2);
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    background: rgba(0, 122, 255, 0.6);
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+@keyframes long-press-complete {
+  0% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+}

@@ -20,6 +20,9 @@
 </head>
 <body class="touch-app">
 
+  <!-- Indicatore visivo long-press -->
+  <div id="long-press-indicator" class="long-press-indicator"></div>
+
   <main class="app">
     <!-- Risultati -->
     <section id="results-area" aria-live="polite">
@@ -75,6 +78,92 @@
       navigator.serviceWorker.register('/sw.js', { scope: '/' })
         .catch(console.error);
     }
+
+    // Long-press gesture per tornare a /private (4 secondi)
+    (() => {
+      const LONG_PRESS_DURATION = 4000; // 4 secondi
+      const indicator = document.getElementById('long-press-indicator');
+      let pressTimer = null;
+      let startX = 0, startY = 0;
+      let isCancelled = false;
+
+      // Funzione per avviare il long-press
+      function startPress(e) {
+        // Previeni interferenze con input, button, link
+        const target = e.target;
+        if (target.closest('input, button, a, .key')) return;
+
+        // Salva posizione iniziale
+        const touch = e.touches ? e.touches[0] : e;
+        startX = touch.clientX;
+        startY = touch.clientY;
+        isCancelled = false;
+
+        // Mostra indicatore e avvia animazione
+        indicator.style.left = startX + 'px';
+        indicator.style.top = startY + 'px';
+        indicator.classList.add('active');
+
+        // Vibrazione iniziale (se supportato)
+        if (navigator.vibrate) navigator.vibrate(50);
+
+        // Avvia timer
+        pressTimer = setTimeout(() => {
+          if (!isCancelled) {
+            // Long-press completato!
+            indicator.classList.remove('active');
+            indicator.classList.add('complete');
+
+            // Vibrazione di conferma
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+            // Torna a /private dopo breve delay
+            setTimeout(() => {
+              window.location.href = '/private.html';
+            }, 300);
+          }
+        }, LONG_PRESS_DURATION);
+      }
+
+      // Funzione per cancellare il long-press
+      function cancelPress(e) {
+        if (pressTimer) {
+          // Controlla se il dito si è mosso troppo (tolleranza 20px)
+          if (e.touches || e.changedTouches) {
+            const touch = e.changedTouches ? e.changedTouches[0] : e.touches[0];
+            const moveX = Math.abs(touch.clientX - startX);
+            const moveY = Math.abs(touch.clientY - startY);
+
+            if (moveX > 20 || moveY > 20) {
+              isCancelled = true;
+            }
+          }
+
+          clearTimeout(pressTimer);
+          pressTimer = null;
+          indicator.classList.remove('active', 'complete');
+        }
+      }
+
+      // Event listeners per touch
+      document.addEventListener('touchstart', startPress, { passive: true });
+      document.addEventListener('touchend', cancelPress, { passive: true });
+      document.addEventListener('touchmove', cancelPress, { passive: true });
+      document.addEventListener('touchcancel', cancelPress, { passive: true });
+
+      // Event listeners per mouse (desktop testing)
+      document.addEventListener('mousedown', startPress);
+      document.addEventListener('mouseup', cancelPress);
+      document.addEventListener('mousemove', (e) => {
+        if (pressTimer) {
+          const moveX = Math.abs(e.clientX - startX);
+          const moveY = Math.abs(e.clientY - startY);
+          if (moveX > 20 || moveY > 20) {
+            cancelPress(e);
+          }
+        }
+      });
+    })();
   </script>
 </body>
 </html>
