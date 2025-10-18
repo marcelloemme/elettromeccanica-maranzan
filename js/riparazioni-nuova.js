@@ -24,28 +24,35 @@ const popupOk = document.getElementById('popup-ok');
 let clienti = [];
 let attrezziCount = 0;
 
+// Cache keys
+const CACHE_KEY_CLIENTI = 'riparazioni_clienti';
+const CACHE_KEY_TIMESTAMP = 'riparazioni_clienti_timestamp';
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minuti
+
 // Init
 (async () => {
   // Imposta data di oggi come default
   const oggi = new Date().toISOString().split('T')[0];
   dataConsegnaInput.value = oggi;
 
-  // Carica clienti per autocomplete
-  await loadClienti();
-
-  // Carica e mostra prossimo numero
-  await mostraProssimoNumero();
-
-  // Aggiungi primo attrezzo
+  // Aggiungi primo attrezzo subito
   addAttrezzo();
 
-  // Nascondi loading e mostra form
+  // Mostra form immediatamente con numero placeholder
+  const anno = new Date().getFullYear() % 100;
+  document.querySelector('.header h1').textContent = `Nuova Riparazione ${anno}/????`;
+
+  // Nascondi loading e mostra form SUBITO
   const loadingOverlay = document.getElementById('loading-overlay');
   const appMain = document.querySelector('.app');
 
   loadingOverlay.classList.add('hidden');
   appMain.style.opacity = '1';
   appMain.style.transition = 'opacity 0.3s ease';
+
+  // Carica dati in background
+  loadClientiCached();
+  mostraProssimoNumero();
 })();
 
 // Mostra prossimo numero nel titolo
@@ -84,15 +91,69 @@ async function mostraProssimoNumero() {
   }
 }
 
-// Carica lista clienti
+// Carica lista clienti con cache
+async function loadClientiCached() {
+  // Prova a caricare dalla cache
+  const cached = getCachedClienti();
+  if (cached) {
+    clienti = cached;
+    console.log('Clienti caricati da cache:', clienti.length);
+    // Aggiorna in background senza bloccare
+    loadClienti();
+    return;
+  }
+
+  // Altrimenti carica da API
+  await loadClienti();
+}
+
+// Carica lista clienti da API
 async function loadClienti() {
   try {
-    const res = await fetch(`${API_URL}?action=getClienti`);
+    const res = await fetch(`${API_URL}?action=getClienti`, {
+      redirect: 'follow'
+    });
     const data = await res.json();
     clienti = data.clienti || [];
+
+    // Salva in cache
+    setCachedClienti(clienti);
+    console.log('Clienti caricati da API:', clienti.length);
   } catch (err) {
     console.error('Errore caricamento clienti:', err);
     clienti = [];
+  }
+}
+
+// Get cached clienti
+function getCachedClienti() {
+  try {
+    const timestamp = localStorage.getItem(CACHE_KEY_TIMESTAMP);
+    if (!timestamp) return null;
+
+    const age = Date.now() - parseInt(timestamp);
+    if (age > CACHE_DURATION) {
+      // Cache scaduta
+      localStorage.removeItem(CACHE_KEY_CLIENTI);
+      localStorage.removeItem(CACHE_KEY_TIMESTAMP);
+      return null;
+    }
+
+    const cached = localStorage.getItem(CACHE_KEY_CLIENTI);
+    return cached ? JSON.parse(cached) : null;
+  } catch (err) {
+    console.error('Errore lettura cache:', err);
+    return null;
+  }
+}
+
+// Set cached clienti
+function setCachedClienti(data) {
+  try {
+    localStorage.setItem(CACHE_KEY_CLIENTI, JSON.stringify(data));
+    localStorage.setItem(CACHE_KEY_TIMESTAMP, Date.now().toString());
+  } catch (err) {
+    console.error('Errore scrittura cache:', err);
   }
 }
 
