@@ -38,6 +38,14 @@ let attrezziCount = 0;
 
   // Aggiungi primo attrezzo
   addAttrezzo();
+
+  // Nascondi loading e mostra form
+  const loadingOverlay = document.getElementById('loading-overlay');
+  const appMain = document.querySelector('.app');
+
+  loadingOverlay.classList.add('hidden');
+  appMain.style.opacity = '1';
+  appMain.style.transition = 'opacity 0.3s ease';
 })();
 
 // Mostra prossimo numero nel titolo
