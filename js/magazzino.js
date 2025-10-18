@@ -181,7 +181,11 @@
     topResultsEl.innerHTML = '';
     suggestionsEl.innerHTML = '';
 
-    if (!q) return;
+    // Mostra messaggio iniziale quando l'input è vuoto
+    if (!q) {
+      topResultsEl.innerHTML = '<div style="padding:6px 8px; font-size:18px;">Digita per iniziare la ricerca del codice. Visualizza il contenuto degli scaffali con il formato A01.</div>';
+      return;
+    }
 
     // Se l'input sembra uno scaffale (A01, B8, ecc.), mostra i pezzi di quello scaffale
     const shelfNorm = normalizeShelfToken(q);
@@ -491,8 +495,7 @@
     if (savedTheme === 'dark' || savedTheme === 'light') {
       applyTheme(savedTheme);
     }
-    // (volendo: mostrare i primi 10 globali all'avvio)
-    // const first10 = DATA.slice(0,10);
-    // topResultsEl.innerHTML = `<h3>Primi 10</h3>${renderTable(first10)}`;
+    // Mostra messaggio iniziale all'avvio
+    updateResults();
   })();
 })();

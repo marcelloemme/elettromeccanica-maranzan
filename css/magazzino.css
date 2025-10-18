@@ -45,6 +45,9 @@ body.touch-app{
   font-family: -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
   background: var(--bg); color: var(--fg);
   font-size: clamp(8px, 2.5vw, 18px);
+  /* Previene selezione testo e lente iOS durante long-press */
+  -webkit-user-select: none;
+  user-select: none;
 }
 /* Assicura lo stesso font su controlli */
 button, input {
@@ -98,6 +101,9 @@ button, input {
   border-collapse:collapse;
   table-layout:fixed;
   font-size: 18px;
+  /* Permetti selezione testo nei risultati */
+  -webkit-user-select: text;
+  user-select: text;
 }
 .table tr + tr td{ border-top:1px solid var(--border); } /* solo linee orizzontali interne */
 .table td{

@@ -68,10 +68,11 @@ body {
   font-weight: normal;
 }
 
-/* Sottotitoli (non sottolineati) */
+/* Sottotitoli (non sottolineati, 25% più piccoli) */
 .menu-item.sub-item {
   text-decoration: none;
   font-weight: normal;
+  font-size: 13.5px; /* 18px × 0.75 = 13.5px */
 }
 
 .menu-item:hover,
