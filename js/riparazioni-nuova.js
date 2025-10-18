@@ -33,9 +33,30 @@ let attrezziCount = 0;
   // Carica clienti per autocomplete
   await loadClienti();
 
+  // Carica e mostra prossimo numero
+  await mostraProssimoNumero();
+
   // Aggiungi primo attrezzo
   addAttrezzo();
 })();
+
+// Mostra prossimo numero nel titolo
+async function mostraProssimoNumero() {
+  try {
+    const res = await fetch(`${API_URL}?action=getRiparazioni`);
+    const data = await res.json();
+    const riparazioni = data.riparazioni || [];
+
+    const anno = new Date().getFullYear() % 100;
+    const annoCorrente = riparazioni.filter(r => r.Numero.startsWith(`${anno}/`));
+    const prossimoProgressivo = annoCorrente.length + 1;
+    const prossimoNumero = `${anno}/${String(prossimoProgressivo).padStart(4, '0')}`;
+
+    document.querySelector('.header h1').textContent = `Nuova Riparazione ${prossimoNumero}`;
+  } catch (err) {
+    console.error('Errore caricamento numero:', err);
+  }
+}
 
 // Carica lista clienti
 async function loadClienti() {
@@ -207,14 +228,12 @@ popupAnnulla.addEventListener('click', () => {
   popupConfermaBtn.textContent = 'Conferma';
 });
 
-// Popup OK (successo)
+// Popup OK (successo) - ricarica pagina per nuovo inserimento
 popupOk.addEventListener('click', () => {
-  window.location.href = '/riparazioni-archivio.html';
+  window.location.reload();
 });
 
-// Bottone annulla
+// Bottone annulla - torna a /private senza conferma
 btnAnnulla.addEventListener('click', () => {
-  if (confirm('Sicuro di voler annullare? I dati inseriti verranno persi.')) {
-    window.location.href = '/private.html';
-  }
+  window.location.href = '/private.html';
 });
