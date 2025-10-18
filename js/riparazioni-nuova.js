@@ -43,18 +43,36 @@ let attrezziCount = 0;
 // Mostra prossimo numero nel titolo
 async function mostraProssimoNumero() {
   try {
-    const res = await fetch(`${API_URL}?action=getRiparazioni`);
-    const data = await res.json();
-    const riparazioni = data.riparazioni || [];
+    const res = await fetch(`${API_URL}?action=getRiparazioni`, {
+      redirect: 'follow'
+    });
 
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    console.log('Riparazioni ricevute:', data);
+
+    const riparazioni = data.riparazioni || [];
     const anno = new Date().getFullYear() % 100;
-    const annoCorrente = riparazioni.filter(r => r.Numero.startsWith(`${anno}/`));
+
+    // Filtra riparazioni dell'anno corrente
+    const annoCorrente = riparazioni.filter(r => {
+      return r.Numero && r.Numero.startsWith(`${anno}/`);
+    });
+
     const prossimoProgressivo = annoCorrente.length + 1;
     const prossimoNumero = `${anno}/${String(prossimoProgressivo).padStart(4, '0')}`;
 
+    console.log('Prossimo numero:', prossimoNumero);
     document.querySelector('.header h1').textContent = `Nuova Riparazione ${prossimoNumero}`;
   } catch (err) {
     console.error('Errore caricamento numero:', err);
+    // Fallback: mostra comunque un numero basato sull'anno corrente
+    const anno = new Date().getFullYear() % 100;
+    const fallbackNumero = `${anno}/????`;
+    document.querySelector('.header h1').textContent = `Nuova Riparazione ${fallbackNumero}`;
   }
 }
 
