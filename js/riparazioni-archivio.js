@@ -40,6 +40,15 @@ async function caricaRiparazioni() {
     tutteRiparazioni = data.riparazioni || [];
     console.log('Riparazioni caricate:', tutteRiparazioni.length);
 
+    // Salva in cache per navigazione veloce
+    try {
+      localStorage.setItem('riparazioni_cache', JSON.stringify(tutteRiparazioni));
+      localStorage.setItem('riparazioni_cache_timestamp', Date.now().toString());
+      console.log('Cache salvata in localStorage');
+    } catch (e) {
+      console.warn('Impossibile salvare cache in localStorage:', e);
+    }
+
     renderTabella();
   } catch (err) {
     console.error('Errore caricamento riparazioni:', err);

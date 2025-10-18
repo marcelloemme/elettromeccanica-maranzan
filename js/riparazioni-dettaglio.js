@@ -38,6 +38,35 @@ let riparazioneCorrente = null;
 let tutteRiparazioni = [];
 let editAttrezziCount = 0;
 
+// Cache
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minuti
+
+// Carica da cache localStorage
+function caricaDaCache() {
+  try {
+    const cached = localStorage.getItem('riparazioni_cache');
+    const timestamp = localStorage.getItem('riparazioni_cache_timestamp');
+
+    if (!cached || !timestamp) {
+      console.log('Nessuna cache trovata');
+      return false;
+    }
+
+    const age = Date.now() - parseInt(timestamp);
+    if (age > CACHE_DURATION) {
+      console.log('Cache scaduta');
+      return false;
+    }
+
+    tutteRiparazioni = JSON.parse(cached);
+    console.log('Cache caricata:', tutteRiparazioni.length, 'riparazioni');
+    return true;
+  } catch (e) {
+    console.error('Errore lettura cache:', e);
+    return false;
+  }
+}
+
 // Init
 (async () => {
   // Ottieni numero dalla URL
@@ -50,6 +79,38 @@ let editAttrezziCount = 0;
     return;
   }
 
+  // Prova a caricare da cache prima
+  const cacheCaricata = caricaDaCache();
+
+  if (cacheCaricata) {
+    // Cache valida trovata - mostra subito i dati
+    const riparazioneTrovata = tutteRiparazioni.find(r => r.Numero === numero);
+    if (riparazioneTrovata) {
+      riparazioneCorrente = riparazioneTrovata;
+      renderDettaglio();
+      aggiornaNavigazione();
+
+      loadingOverlay.classList.add('hidden');
+      appMain.style.opacity = '1';
+      appMain.style.transition = 'opacity 0.3s ease';
+
+      setupEventListeners();
+
+      // Aggiorna in background per avere dati freschi
+      caricaTutteRiparazioni().then(() => {
+        const riparazioneAggiornata = tutteRiparazioni.find(r => r.Numero === numero);
+        if (riparazioneAggiornata) {
+          riparazioneCorrente = riparazioneAggiornata;
+          renderDettaglio();
+          aggiornaNavigazione();
+        }
+      });
+
+      return;
+    }
+  }
+
+  // Nessuna cache o riparazione non trovata - carica da API
   await caricaTutteRiparazioni();
   await caricaRiparazione(numero);
 
@@ -68,6 +129,15 @@ async function caricaTutteRiparazioni() {
     });
     const data = await res.json();
     tutteRiparazioni = data.riparazioni || [];
+
+    // Salva in cache
+    try {
+      localStorage.setItem('riparazioni_cache', JSON.stringify(tutteRiparazioni));
+      localStorage.setItem('riparazioni_cache_timestamp', Date.now().toString());
+      console.log('Cache aggiornata');
+    } catch (e) {
+      console.warn('Impossibile salvare cache:', e);
+    }
   } catch (err) {
     console.error('Errore caricamento riparazioni:', err);
     tutteRiparazioni = [];
@@ -77,6 +147,18 @@ async function caricaTutteRiparazioni() {
 // Carica singola riparazione
 async function caricaRiparazione(numero) {
   try {
+    // Se abbiamo già tutte le riparazioni, cerca lì prima
+    if (tutteRiparazioni.length > 0) {
+      const riparazioneTrovata = tutteRiparazioni.find(r => r.Numero === numero);
+      if (riparazioneTrovata) {
+        riparazioneCorrente = riparazioneTrovata;
+        renderDettaglio();
+        aggiornaNavigazione();
+        return;
+      }
+    }
+
+    // Altrimenti fai chiamata API specifica
     const res = await fetch(`${API_URL}?action=getRiparazione&numero=${encodeURIComponent(numero)}`, {
       redirect: 'follow'
     });
@@ -170,7 +252,12 @@ function navigaPrev() {
   const indice = tutteRiparazioni.findIndex(r => r.Numero === riparazioneCorrente.Numero);
   if (indice > 0) {
     const prev = tutteRiparazioni[indice - 1];
-    window.location.href = `/riparazioni-dettaglio.html?numero=${encodeURIComponent(prev.Numero)}`;
+    // Navigazione istantanea senza reload
+    riparazioneCorrente = prev;
+    renderDettaglio();
+    aggiornaNavigazione();
+    // Aggiorna URL senza reload
+    window.history.pushState({}, '', `/riparazioni-dettaglio.html?numero=${encodeURIComponent(prev.Numero)}`);
   }
 }
 
@@ -178,7 +265,12 @@ function navigaNext() {
   const indice = tutteRiparazioni.findIndex(r => r.Numero === riparazioneCorrente.Numero);
   if (indice < tutteRiparazioni.length - 1) {
     const next = tutteRiparazioni[indice + 1];
-    window.location.href = `/riparazioni-dettaglio.html?numero=${encodeURIComponent(next.Numero)}`;
+    // Navigazione istantanea senza reload
+    riparazioneCorrente = next;
+    renderDettaglio();
+    aggiornaNavigazione();
+    // Aggiorna URL senza reload
+    window.history.pushState({}, '', `/riparazioni-dettaglio.html?numero=${encodeURIComponent(next.Numero)}`);
   }
 }
 
