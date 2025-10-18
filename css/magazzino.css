@@ -233,7 +233,7 @@ button, input {
 
 .long-press-indicator.active {
   transform: translate(-50%, -50%) scale(1);
-  animation: long-press-fill 3s linear forwards;
+  animation: long-press-fill 2.5s linear forwards;
 }
 
 .long-press-indicator.complete {
