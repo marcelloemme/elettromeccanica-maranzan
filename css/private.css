@@ -39,18 +39,39 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2rem; /* Spaziatura equidistante tra gli item */
+  gap: 2rem; /* Spaziatura equidistante tra le sezioni principali */
   width: 100%;
   max-width: 600px;
 }
 
-/* Link del menu: stile semplice */
+/* Sezione del menu (titolo + sottotitoli) */
+.menu-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem; /* Spaziatura ridotta tra titolo e sottotitoli (semplice a capo) */
+  width: 100%;
+}
+
+/* Link del menu: stile base */
 .menu-item {
   font-size: 18px;
   color: var(--fg);
   text-decoration: none;
   text-align: center;
   transition: opacity 0.2s ease;
+}
+
+/* Titolo principale (sottotitolato) */
+.menu-item.main-item {
+  text-decoration: underline;
+  font-weight: normal;
+}
+
+/* Sottotitoli (non sottolineati) */
+.menu-item.sub-item {
+  text-decoration: none;
+  font-weight: normal;
 }
 
 .menu-item:hover,
