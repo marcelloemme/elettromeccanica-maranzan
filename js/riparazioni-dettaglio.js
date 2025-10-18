@@ -188,10 +188,17 @@ function apriModifica() {
 
   // Popola form
   const dataConsegna = r['Data Consegna'] || r['Data consegna'] || r.DataConsegna;
-  editData.value = dataConsegna || '';
+  // Converti data in formato YYYY-MM-DD per input type="date"
+  if (dataConsegna) {
+    const date = new Date(dataConsegna);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    editData.value = `${year}-${month}-${day}`;
+  }
   editCliente.value = r.Cliente || '';
   editTelefono.value = r.Telefono || '';
-  editCompletato.value = r.Completato ? 'true' : 'false';
+  editCompletato.checked = r.Completato || false;
 
   // Attrezzi
   editAttrezziContainer.innerHTML = '';
@@ -244,7 +251,7 @@ function handleSubmitModifica(e) {
     dataConsegna: editData.value,
     cliente: editCliente.value.trim(),
     telefono: editTelefono.value.trim(),
-    completato: editCompletato.value === 'true',
+    completato: editCompletato.checked,
     attrezzi: []
   };
 
