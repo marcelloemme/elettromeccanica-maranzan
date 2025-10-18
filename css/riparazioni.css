@@ -74,7 +74,7 @@ body {
 .app {
   min-height: 100vh;
   min-height: 100dvh;
-  padding: 1rem;
+  padding: calc(1rem + env(safe-area-inset-top, 0)) 1rem calc(1rem + env(safe-area-inset-bottom, 0));
   max-width: 800px;
   margin: 0 auto;
 }
