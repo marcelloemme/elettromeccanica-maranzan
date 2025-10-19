@@ -34,6 +34,46 @@ const appMain = document.querySelector('.app');
 // Stato
 let ricambioCorrente = null;
 
+// Cache
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minuti
+
+// Carica da cache localStorage
+function caricaDaCache(codice) {
+  try {
+    const cached = localStorage.getItem('magazzino_cache');
+    const timestamp = localStorage.getItem('magazzino_cache_timestamp');
+
+    if (!cached || !timestamp) {
+      console.log('Nessuna cache trovata');
+      return null;
+    }
+
+    const age = Date.now() - parseInt(timestamp);
+    if (age > CACHE_DURATION) {
+      console.log('Cache scaduta');
+      return null;
+    }
+
+    const ricambi = JSON.parse(cached);
+    console.log('Cache caricata:', ricambi.length, 'ricambi');
+
+    // Cerca il ricambio specifico
+    const ricambio = ricambi.find(r => r.codice === codice);
+    if (ricambio) {
+      return {
+        Codice: ricambio.codice,
+        Descrizione: ricambio.descrizione,
+        Scaffale: ricambio.scaffale
+      };
+    }
+
+    return null;
+  } catch (e) {
+    console.error('Errore lettura cache:', e);
+    return null;
+  }
+}
+
 // Init
 (async () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -45,6 +85,23 @@ let ricambioCorrente = null;
     return;
   }
 
+  // Prova a caricare da cache prima
+  const ricambioDaCache = caricaDaCache(codice);
+
+  if (ricambioDaCache) {
+    // Cache valida trovata - mostra subito i dati
+    ricambioCorrente = ricambioDaCache;
+    renderDettaglio();
+
+    loadingOverlay.classList.add('hidden');
+    appMain.style.opacity = '1';
+    appMain.style.transition = 'opacity 0.3s ease';
+
+    setupEventListeners();
+    return;
+  }
+
+  // Nessuna cache - carica da API
   await caricaRicambio(codice);
   setupEventListeners();
 
