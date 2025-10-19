@@ -216,8 +216,17 @@ async function salvaModifiche(dati) {
       popupConfermaModifica.classList.add('hidden');
       popupModifica.classList.add('hidden');
 
-      // Ricarica i dati
-      await caricaRicambio(dati.codice);
+      // Aggiorna dati localmente senza ricaricare
+      ricambioCorrente = {
+        Codice: dati.codice,
+        Descrizione: dati.descrizione,
+        Scaffale: dati.scaffale
+      };
+      renderDettaglio();
+
+      // Invalida cache per forzare ricaricamento al prossimo accesso
+      localStorage.removeItem('magazzino_cache');
+      localStorage.removeItem('magazzino_cache_timestamp');
 
       alert('Modifiche salvate con successo!');
 
