@@ -1,5 +1,5 @@
 /* Elettromeccanica Maranzan - PWA Service Worker */
-const CACHE_NAME = 'em-maranzan-v4';
+const CACHE_NAME = 'em-maranzan-v5';
 const PRECACHE_URLS = [
   '/private.html',
   '/html/magazzino.html',
@@ -51,9 +51,9 @@ self.addEventListener('fetch', (event) => {
   // Solo stesso dominio per il cache-first di base
   const isSameOrigin = url.origin === self.location.origin;
 
-  // Network-first per il CSV (così prendi gli aggiornamenti), fallback cache (ignoreSearch) se offline
+  // Network-ONLY per il CSV (no cache corrotta!)
   if (isSameOrigin && url.pathname.endsWith('/magazzino.csv')) {
-    event.respondWith(networkFirstCSV(request));
+    event.respondWith(fetch(request, { cache: 'no-store' }));
     return;
   }
 
