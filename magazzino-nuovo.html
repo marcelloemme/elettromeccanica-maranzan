@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+  <title>Nuovo Ricambio - EM Maranzan</title>
+  <link rel="stylesheet" href="css/riparazioni.css" />
+  <!-- PWA / Manifest & iOS meta -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <!-- No indexing for this page -->
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="googlebot" content="noindex, nofollow, noarchive">
+</head>
+<body>
+  <!-- Loading overlay -->
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <main class="app">
+    <header class="header">
+      <h1>Nuovo Ricambio</h1>
+    </header>
+
+    <!-- Form -->
+    <form id="form-nuovo" class="form-container">
+      <div class="form-group">
+        <label for="codice">Codice</label>
+        <input type="text" id="codice" required placeholder="es. 127499-5" />
+      </div>
+
+      <div class="form-group">
+        <label for="descrizione">Descrizione</label>
+        <input type="text" id="descrizione" required placeholder="es. gruppo ingranaggi" />
+      </div>
+
+      <div class="form-group">
+        <label for="scaffale">Scaffale</label>
+        <input type="text" id="scaffale" required placeholder="es. A01" />
+      </div>
+
+      <div class="form-actions">
+        <button type="button" id="btn-annulla" class="btn-secondary">Annulla</button>
+        <button type="submit" class="btn-primary">Aggiungi ricambio</button>
+      </div>
+    </form>
+  </main>
+
+  <!-- Popup conferma -->
+  <div id="popup-conferma" class="popup-overlay hidden">
+    <div class="popup-content">
+      <h2>Conferma nuovo ricambio</h2>
+      <div id="popup-riepilogo"></div>
+      <div class="popup-actions">
+        <button id="popup-annulla-conferma" class="btn-secondary">Annulla</button>
+        <button id="popup-conferma-salva" class="btn-primary">Conferma</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/magazzino-nuovo.js"></script>
+</body>
+</html>

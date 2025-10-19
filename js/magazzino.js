@@ -164,7 +164,7 @@
   function renderTable(rows){
     if (!rows || rows.length===0) return '';
     const trs = rows.map(r => `
-      <tr>
+      <tr onclick="window.location.href='/magazzino-dettaglio.html?codice=${encodeURIComponent(r.codice)}'" style="cursor: pointer;">
         <td class="td-codice">${r.codice}</td>
         <td class="td-desc">${r.descrizione}</td>
         <td class="td-scaffale">${r.scaffale}</td>

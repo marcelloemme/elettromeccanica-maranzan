@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+  <title>Dettaglio Ricambio - EM Maranzan</title>
+  <link rel="stylesheet" href="css/riparazioni.css" />
+  <!-- PWA / Manifest & iOS meta -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <!-- No indexing for this page -->
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="googlebot" content="noindex, nofollow, noarchive">
+</head>
+<body>
+  <!-- Loading overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <main class="app" style="opacity: 0;">
+    <header class="header">
+      <h1 id="titolo-codice">Ricambio</h1>
+    </header>
+
+    <!-- Contenuto dettaglio -->
+    <div class="detail-container">
+      <div class="detail-group">
+        <div class="detail-label">Codice</div>
+        <div class="detail-value" id="detail-codice">-</div>
+      </div>
+
+      <div class="detail-group">
+        <div class="detail-label">Descrizione</div>
+        <div class="detail-value" id="detail-descrizione">-</div>
+      </div>
+
+      <div class="detail-group">
+        <div class="detail-label">Scaffale</div>
+        <div class="detail-value" id="detail-scaffale">-</div>
+      </div>
+
+      <!-- Pulsanti azione -->
+      <div class="form-actions">
+        <button id="btn-modifica" class="btn-primary">Modifica scheda</button>
+        <button id="btn-elimina" class="btn-secondary" style="background: var(--error); color: white; border-color: var(--error);">Elimina scheda</button>
+      </div>
+
+      <!-- Pulsante torna a magazzino -->
+      <div class="form-actions" style="margin-top: 1rem;">
+        <button id="btn-magazzino" class="btn-secondary">← Torna al magazzino</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Popup modifica -->
+  <div id="popup-modifica" class="popup-overlay hidden">
+    <div class="popup-content">
+      <h2>Modifica Ricambio</h2>
+
+      <form id="form-modifica" class="form-container">
+        <div class="form-group">
+          <label for="edit-codice">Codice</label>
+          <input type="text" id="edit-codice" disabled style="opacity: 0.6;" />
+          <small style="font-size: 14px; opacity: 0.7;">Il codice non può essere modificato</small>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-descrizione">Descrizione</label>
+          <input type="text" id="edit-descrizione" required />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-scaffale">Scaffale</label>
+          <input type="text" id="edit-scaffale" required />
+        </div>
+
+        <div class="popup-actions">
+          <button type="button" id="popup-annulla" class="btn-secondary">Annulla</button>
+          <button type="submit" class="btn-primary">Salva modifiche</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Popup conferma modifiche -->
+  <div id="popup-conferma-modifica" class="popup-overlay hidden">
+    <div class="popup-content">
+      <h2>Conferma modifiche</h2>
+      <div id="popup-riepilogo-modifica"></div>
+      <div class="popup-actions">
+        <button id="popup-conferma-annulla" class="btn-secondary">Annulla</button>
+        <button id="popup-conferma-salva" class="btn-primary">Conferma</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup conferma eliminazione -->
+  <div id="popup-conferma-elimina" class="popup-overlay hidden">
+    <div class="popup-content">
+      <h2>Conferma eliminazione</h2>
+      <p style="margin: 1rem 0;">Sei sicuro di voler eliminare questo ricambio?</p>
+      <div id="popup-riepilogo-elimina"></div>
+      <p style="margin: 1rem 0; color: var(--error); font-weight: 500;">Questa azione è irreversibile!</p>
+      <div class="popup-actions">
+        <button id="popup-elimina-annulla" class="btn-secondary">Annulla</button>
+        <button id="popup-elimina-conferma" class="btn-primary" style="background: var(--error); border-color: var(--error);">Elimina</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/magazzino-dettaglio.js"></script>
+</body>
+</html>
