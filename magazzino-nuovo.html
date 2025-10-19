@@ -22,9 +22,13 @@
     <div class="loading-spinner"></div>
   </div>
 
+  <!-- Toast notification -->
+  <div id="toast" class="toast hidden"></div>
+
   <main class="app">
     <header class="header">
       <h1>Nuovo Ricambio</h1>
+      <div id="counter" class="counter">0 inseriti</div>
     </header>
 
     <!-- Form -->
@@ -64,5 +68,34 @@
   </div>
 
   <script src="js/magazzino-nuovo.js"></script>
+
+  <script>
+    // Swipe da sinistra per tornare a /private
+    (() => {
+      const EDGE_THRESHOLD = 50;
+      const SWIPE_MIN_DISTANCE = 100;
+      let startX = 0, startY = 0;
+      let isEdgeSwipe = false;
+
+      document.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+        isEdgeSwipe = startX < EDGE_THRESHOLD;
+      }, { passive: true });
+
+      document.addEventListener('touchend', (e) => {
+        if (!isEdgeSwipe) return;
+        const touch = e.changedTouches[0];
+        const dx = touch.clientX - startX;
+        const dy = Math.abs(touch.clientY - startY);
+        if (dx > SWIPE_MIN_DISTANCE && dy < 100) {
+          if (navigator.vibrate) navigator.vibrate(50);
+          window.location.href = '/private.html';
+        }
+        isEdgeSwipe = false;
+      }, { passive: true });
+    })();
+  </script>
 </body>
 </html>

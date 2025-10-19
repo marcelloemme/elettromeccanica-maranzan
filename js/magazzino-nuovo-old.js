@@ -7,37 +7,16 @@ const codiceInput = document.getElementById('codice');
 const descrizioneInput = document.getElementById('descrizione');
 const scaffaleInput = document.getElementById('scaffale');
 const btnAnnulla = document.getElementById('btn-annulla');
-const btnSubmit = formNuovo.querySelector('button[type="submit"]');
 
 const popupConferma = document.getElementById('popup-conferma');
 const popupRiepilogo = document.getElementById('popup-riepilogo');
 const popupAnnullaConferma = document.getElementById('popup-annulla-conferma');
 const popupConfermaSalva = document.getElementById('popup-conferma-salva');
 
-const toast = document.getElementById('toast');
-const counter = document.getElementById('counter');
-
-// Stato
-let inserimentiCount = 0;
-let codiciEsistenti = new Set();
-
-// Carica cache per validazione duplicati
-function caricaCacheCodici() {
-  try {
-    const cached = localStorage.getItem('magazzino_cache');
-    if (!cached) return;
-
-    const ricambi = JSON.parse(cached);
-    codiciEsistenti = new Set(ricambi.map(r => r.codice.toLowerCase()));
-    console.log('Cache caricata:', codiciEsistenti.size, 'codici');
-  } catch (e) {
-    console.warn('Errore caricamento cache:', e);
-  }
-}
+const loadingOverlay = document.getElementById('loading-overlay');
 
 // Init
-caricaCacheCodici();
-codiceInput.focus();
+loadingOverlay.classList.add('hidden');
 
 // Event listeners
 btnAnnulla.addEventListener('click', () => {
@@ -46,17 +25,6 @@ btnAnnulla.addEventListener('click', () => {
 
 formNuovo.addEventListener('submit', handleSubmit);
 popupAnnullaConferma.addEventListener('click', () => popupConferma.classList.add('hidden'));
-
-// Validazione real-time duplicati
-codiceInput.addEventListener('input', () => {
-  const codice = codiceInput.value.trim().toLowerCase();
-  if (codice && codiciEsistenti.has(codice)) {
-    codiceInput.setCustomValidity('Codice già esistente');
-    codiceInput.reportValidity();
-  } else {
-    codiceInput.setCustomValidity('');
-  }
-});
 
 // Handle submit
 function handleSubmit(e) {
@@ -67,14 +35,6 @@ function handleSubmit(e) {
     descrizione: descrizioneInput.value.trim(),
     scaffale: scaffaleInput.value.trim()
   };
-
-  // Validazione duplicati client-side
-  if (codiciEsistenti.has(dati.codice.toLowerCase())) {
-    showToast('❌ Codice già esistente', 'error');
-    codiceInput.focus();
-    codiceInput.select();
-    return;
-  }
 
   // Mostra popup conferma
   popupRiepilogo.innerHTML = `
@@ -93,7 +53,6 @@ function handleSubmit(e) {
 async function salvaRicambio(dati) {
   popupConfermaSalva.disabled = true;
   popupConfermaSalva.textContent = 'Salvataggio...';
-  btnSubmit.disabled = true;
 
   try {
     const res = await fetch(`${API_URL}?action=addRicambio`, {
@@ -109,55 +68,23 @@ async function salvaRicambio(dati) {
     const result = await res.json();
 
     if (result.success) {
-      // Chiudi popup
       popupConferma.classList.add('hidden');
+      alert('Ricambio aggiunto con successo!');
 
-      // Aggiorna cache locale
-      codiciEsistenti.add(dati.codice.toLowerCase());
-
-      // Invalida cache magazzino per forzare refresh
-      localStorage.removeItem('magazzino_cache');
-      localStorage.removeItem('magazzino_cache_timestamp');
-
-      // Incrementa contatore
-      inserimentiCount++;
-      counter.textContent = `${inserimentiCount} inserit${inserimentiCount === 1 ? 'o' : 'i'}`;
-
-      // Toast success
-      showToast(`✓ ${dati.codice} aggiunto`, 'success');
-
-      // Reset form
+      // Reset form per nuovo inserimento
       formNuovo.reset();
-
-      // Auto-focus per inserimento veloce
-      setTimeout(() => {
-        codiceInput.focus();
-      }, 100);
+      codiceInput.focus();
 
       popupConfermaSalva.disabled = false;
       popupConfermaSalva.textContent = 'Conferma';
-      btnSubmit.disabled = false;
     } else {
-      showToast('❌ ' + (result.error || 'Errore sconosciuto'), 'error');
+      alert('Errore: ' + (result.error || 'Errore sconosciuto'));
       popupConfermaSalva.disabled = false;
       popupConfermaSalva.textContent = 'Conferma';
-      btnSubmit.disabled = false;
     }
   } catch (err) {
-    showToast('❌ Errore di connessione', 'error');
+    alert('Errore di connessione: ' + err.message);
     popupConfermaSalva.disabled = false;
     popupConfermaSalva.textContent = 'Conferma';
-    btnSubmit.disabled = false;
   }
-}
-
-// Toast notification
-function showToast(message, type = 'success') {
-  toast.textContent = message;
-  toast.className = `toast ${type}`;
-  toast.classList.remove('hidden');
-
-  setTimeout(() => {
-    toast.classList.add('hidden');
-  }, 3000);
 }
