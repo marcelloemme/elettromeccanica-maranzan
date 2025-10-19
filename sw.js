@@ -51,9 +51,9 @@ self.addEventListener('fetch', (event) => {
   // Solo stesso dominio per il cache-first di base
   const isSameOrigin = url.origin === self.location.origin;
 
-  // Network-ONLY per il CSV (no cache corrotta!)
+  // Network-first per il CSV (aggiornamenti freschi, fallback cache se offline)
   if (isSameOrigin && url.pathname.endsWith('/magazzino.csv')) {
-    event.respondWith(fetch(request, { cache: 'no-store' }));
+    event.respondWith(networkFirst(request));
     return;
   }
 
@@ -142,22 +142,5 @@ async function handleNavigation(request) {
     if (shell2) return shell2;
     // Last resort: basic offline message
     return new Response('Offline', { status: 503 });
-  }
-}
-
-async function networkFirstCSV(request) {
-  const cache = await caches.open(CACHE_NAME);
-  try {
-    const fresh = await fetch(request, { cache: 'no-store' });
-    if (fresh && fresh.ok) cache.put(request, fresh.clone());
-    return fresh;
-  } catch {
-    // Because the app appends ?t=timestamp, ignore the search to find a cached CSV
-    const cached = await cache.match('/magazzino.csv', { ignoreSearch: true });
-    if (cached) return cached;
-    return new Response('Offline e nessuna copia cache disponibile (CSV).', {
-      status: 503,
-      headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-    });
   }
 }

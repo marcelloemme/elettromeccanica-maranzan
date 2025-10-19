@@ -130,31 +130,13 @@
   }
 
   async function loadCSV(){
-    console.log('[magazzino] Inizio caricamento CSV...');
     try{
-      const res = await fetch(`/magazzino.csv?t=${Date.now()}`, {
-        cache:'no-store',
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      });
-      console.log('[magazzino] Fetch completato, status:', res.status);
-      console.log('[magazzino] Response headers:', {
-        'content-length': res.headers.get('content-length'),
-        'content-type': res.headers.get('content-type'),
-        'cache-control': res.headers.get('cache-control')
-      });
+      const res = await fetch(`/magazzino.csv?t=${Date.now()}`, { cache:'no-store' });
       const text = await res.text();
-      console.log('[magazzino] CSV scaricato, lunghezza:', text.length, 'bytes');
-      console.log('[magazzino] Prime 200 caratteri:', text.substring(0, 200));
       DATA = parseCSV(text);
-      console.log('[magazzino] CSV parsato, ricambi trovati:', DATA.length);
       buildShelves();
-      console.log('[magazzino] Scaffali costruiti:', SHELVES.length);
     }catch(e){
-      console.error("[magazzino] ERRORE caricamento CSV:", e);
+      console.error("Errore caricamento CSV:", e);
       DATA = [];
     }
 
@@ -162,12 +144,9 @@
     try {
       if (typeof window.cacheManager !== 'undefined' && DATA.length > 0) {
         window.cacheManager.set('magazzino', DATA);
-        console.log('[magazzino] Cache salvata con successo');
-      } else {
-        console.warn('[magazzino] CacheManager non disponibile o DATA vuoto');
       }
     } catch (e) {
-      console.warn('[magazzino] Impossibile salvare cache:', e);
+      console.warn('Impossibile salvare cache magazzino:', e);
     }
   }
 
@@ -205,7 +184,6 @@
 
   function updateResults(){
     const q = normalize(inputEl.value);
-    console.log('[magazzino] updateResults chiamato, query:', q, 'DATA.length:', DATA.length);
     if (q === LAST_QUERY) return;
     LAST_QUERY = q;
 
@@ -522,11 +500,8 @@
   // Aggiorna database GitHub in background
   async function triggerDatabaseUpdate() {
     try {
-      console.log('Triggering database update...');
       await fetch("https://aggiorna.marcellomaranzan.workers.dev/");
-      console.log('Database update triggered successfully');
     } catch (err) {
-      console.warn('Database update failed (non-blocking):', err);
       // Fallback silenzioso: continua con il CSV in cache
     }
   }
