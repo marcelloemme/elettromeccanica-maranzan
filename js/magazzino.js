@@ -132,7 +132,7 @@
   async function loadCSV(){
     console.log('[magazzino] Inizio caricamento CSV...');
     try{
-      const res = await fetch(`magazzino.csv?t=${Date.now()}`, {
+      const res = await fetch(`/magazzino.csv?t=${Date.now()}`, {
         cache:'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
