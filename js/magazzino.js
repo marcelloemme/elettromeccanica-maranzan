@@ -130,23 +130,31 @@
   }
 
   async function loadCSV(){
+    console.log('[magazzino] Inizio caricamento CSV...');
     try{
       const res = await fetch(`magazzino.csv?t=${Date.now()}`, { cache:'no-store' });
+      console.log('[magazzino] Fetch completato, status:', res.status);
       const text = await res.text();
+      console.log('[magazzino] CSV scaricato, lunghezza:', text.length);
       DATA = parseCSV(text);
+      console.log('[magazzino] CSV parsato, ricambi trovati:', DATA.length);
       buildShelves();
+      console.log('[magazzino] Scaffali costruiti:', SHELVES.length);
     }catch(e){
-      console.error("Errore caricamento CSV:", e);
+      console.error("[magazzino] ERRORE caricamento CSV:", e);
       DATA = [];
     }
 
     // Salva in cache centralizzata (separato dal try/catch principale)
     try {
-      if (typeof cacheManager !== 'undefined' && DATA.length > 0) {
-        cacheManager.set('magazzino', DATA);
+      if (typeof window.cacheManager !== 'undefined' && DATA.length > 0) {
+        window.cacheManager.set('magazzino', DATA);
+        console.log('[magazzino] Cache salvata con successo');
+      } else {
+        console.warn('[magazzino] CacheManager non disponibile o DATA vuoto');
       }
     } catch (e) {
-      console.warn('Impossibile salvare cache magazzino:', e);
+      console.warn('[magazzino] Impossibile salvare cache:', e);
     }
   }
 
@@ -184,6 +192,7 @@
 
   function updateResults(){
     const q = normalize(inputEl.value);
+    console.log('[magazzino] updateResults chiamato, query:', q, 'DATA.length:', DATA.length);
     if (q === LAST_QUERY) return;
     LAST_QUERY = q;
 
