@@ -225,12 +225,10 @@ body {
 .coda-actions {
   display: flex;
   gap: 1rem;
-  justify-content: center;
 }
 
 .coda-actions button {
   flex: 1;
-  max-width: 200px;
 }
 
 /* Form */
