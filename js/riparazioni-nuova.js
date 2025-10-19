@@ -157,18 +157,63 @@ function setCachedClienti(data) {
   }
 }
 
-// Autocomplete cliente
+// Normalizza stringa (rimuove accenti e caratteri speciali)
+function normalizeString(str) {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Rimuove accenti
+    .replace(/[^a-z0-9\s]/g, ''); // Rimuove caratteri speciali
+}
+
+// Calcola score di rilevanza
+function calculateRelevance(nome, query) {
+  const nomeNorm = normalizeString(nome);
+  const queryNorm = normalizeString(query);
+
+  // Match esatto (100 punti)
+  if (nomeNorm === queryNorm) return 100;
+
+  // Inizia con query (90 punti)
+  if (nomeNorm.startsWith(queryNorm)) return 90;
+
+  // Contiene query completa (80 punti)
+  if (nomeNorm.includes(queryNorm)) return 80;
+
+  // Match multi-parola: tutte le parole della query sono nel nome
+  const queryWords = queryNorm.split(/\s+/).filter(w => w.length > 0);
+  const allWordsMatch = queryWords.every(word => nomeNorm.includes(word));
+
+  if (allWordsMatch) {
+    // Conta quante parole matchano all'inizio (più punti se matchano dall'inizio)
+    const startsMatches = queryWords.filter(word => {
+      const words = nomeNorm.split(/\s+/);
+      return words.some(w => w.startsWith(word));
+    }).length;
+    return 60 + (startsMatches * 5);
+  }
+
+  return 0;
+}
+
+// Autocomplete cliente MIGLIORATO
 clienteInput.addEventListener('input', (e) => {
-  const query = e.target.value.toLowerCase().trim();
+  const query = e.target.value.trim();
 
   if (query.length < 2) {
     autocompleteList.classList.remove('show');
     return;
   }
 
-  const matches = clienti.filter(c =>
-    c.nome.toLowerCase().includes(query)
-  );
+  // Filtra e calcola score per ogni cliente
+  const matches = clienti
+    .map(c => ({
+      ...c,
+      score: calculateRelevance(c.nome, query)
+    }))
+    .filter(c => c.score > 0)
+    .sort((a, b) => b.score - a.score) // Ordina per rilevanza
+    .slice(0, 10); // Massimo 10 risultati
 
   if (matches.length === 0) {
     autocompleteList.classList.remove('show');
