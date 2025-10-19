@@ -83,6 +83,7 @@ body {
 .header {
   text-align: center;
   margin-bottom: 2rem;
+  padding-top: env(safe-area-inset-top, 0); /* Extra padding per notch iOS */
 }
 
 .header h1 {

@@ -13,7 +13,7 @@ body {
 }
 
 .homepage {
-  padding: 0.3em;
+  padding: calc(0.3em + env(safe-area-inset-top, 0)) 0.3em calc(0.3em + env(safe-area-inset-bottom, 0));
   flex: 1;
 }
 
