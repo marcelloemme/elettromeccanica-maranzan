@@ -72,7 +72,30 @@
   <script src="/js/magazzino.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      // Forza update del service worker
+      navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' })
+        .then(reg => {
+          console.log('[SW] Registrato, forzo update...');
+          reg.update();
+
+          // Se c'è un SW in attesa, attivalo subito
+          if (reg.waiting) {
+            console.log('[SW] SW in attesa trovato, attivo subito');
+            reg.waiting.postMessage('SKIP_WAITING');
+          }
+
+          // Listener per nuovo SW
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('[SW] Nuovo SW installato! Ricarica la pagina.');
+                // Ricarica automaticamente per attivare nuovo SW
+                window.location.reload();
+              }
+            });
+          });
+        })
         .catch(console.error);
     }
 

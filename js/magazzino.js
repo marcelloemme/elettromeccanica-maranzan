@@ -132,10 +132,23 @@
   async function loadCSV(){
     console.log('[magazzino] Inizio caricamento CSV...');
     try{
-      const res = await fetch(`magazzino.csv?t=${Date.now()}`, { cache:'no-store' });
+      const res = await fetch(`magazzino.csv?t=${Date.now()}`, {
+        cache:'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
       console.log('[magazzino] Fetch completato, status:', res.status);
+      console.log('[magazzino] Response headers:', {
+        'content-length': res.headers.get('content-length'),
+        'content-type': res.headers.get('content-type'),
+        'cache-control': res.headers.get('cache-control')
+      });
       const text = await res.text();
-      console.log('[magazzino] CSV scaricato, lunghezza:', text.length);
+      console.log('[magazzino] CSV scaricato, lunghezza:', text.length, 'bytes');
+      console.log('[magazzino] Prime 200 caratteri:', text.substring(0, 200));
       DATA = parseCSV(text);
       console.log('[magazzino] CSV parsato, ricambi trovati:', DATA.length);
       buildShelves();
