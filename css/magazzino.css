@@ -191,9 +191,14 @@ button, input {
 
 /* Desktop: centriamo e limitiamo larghezza */
 @media (min-width:768px){
+  .app {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
   #results-area, .input-zone{
-    max-width: 100vw;
-    margin: 0;
+    max-width: 800px;
+    margin: 0 auto;
   }
 
   /* Su desktop riportiamo la zona input in basso senza spazio extra (solo safe-area) */

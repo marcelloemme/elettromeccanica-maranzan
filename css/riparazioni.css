@@ -409,6 +409,30 @@ button:active {
   background: var(--btn-secondary-bg);
 }
 
+/* Larghezze colonne tabella archivio */
+.table .td-numero {
+  width: 20%;
+  text-align: left;
+}
+
+.table .td-data {
+  width: 20%;
+  text-align: left;
+}
+
+.table .td-cliente {
+  width: 40%;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table .td-stato {
+  width: 20%;
+  text-align: left;
+}
+
 /* Completato badge */
 .badge {
   display: inline-block;
@@ -428,16 +452,7 @@ button:active {
   color: white;
 }
 
-/* Nascondi colonne su mobile */
-.hide-mobile {
-  display: table-cell;
-}
-
 @media (max-width: 768px) {
-  .hide-mobile {
-    display: none;
-  }
-
   .table {
     font-size: 14px;
   }
@@ -445,14 +460,6 @@ button:active {
   .table th,
   .table td {
     padding: 0.5rem 0.25rem;
-  }
-
-  /* Attrezzi troncati su mobile */
-  .table .attrezzi-cell {
-    max-width: 150px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 }
 

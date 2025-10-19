@@ -112,27 +112,19 @@ function renderTabella() {
   emptyMessage.classList.add('hidden');
 
   tbody.innerHTML = riparazioni.map(r => {
-    // Debug: logga la riparazione per vedere i nomi delle chiavi
-    if (riparazioni.indexOf(r) === 0) {
-      console.log('Prima riparazione:', r);
-      console.log('Chiavi disponibili:', Object.keys(r));
-    }
-
     // Prova diverse varianti del nome campo
     const dataConsegna = r['Data Consegna'] || r['Data consegna'] || r.DataConsegna || r['Data'];
     const data = formatData(dataConsegna);
-    const attrezzi = formatAttrezzi(r.Attrezzi);
     const stato = r.Completato ?
       '<span class="badge completato-si">Completato</span>' :
       '<span class="badge completato-no">In corso</span>';
 
     return `
       <tr onclick="apriDettaglio('${r.Numero}')">
-        <td><strong>${r.Numero}</strong></td>
-        <td>${data}</td>
-        <td class="hide-mobile">${r.Telefono || '-'}</td>
-        <td class="attrezzi-cell">${attrezzi}</td>
-        <td>${stato}</td>
+        <td class="td-numero"><strong>${r.Numero}</strong></td>
+        <td class="td-data">${data}</td>
+        <td class="td-cliente">${r.Cliente || '-'}</td>
+        <td class="td-stato">${stato}</td>
       </tr>
     `;
   }).join('');
@@ -154,22 +146,6 @@ function formatData(dataStr) {
     return isMobile ? `${giorno}/${mese}` : `${giorno}/${mese}/${anno}`;
   } catch (err) {
     return dataStr;
-  }
-}
-
-// Formatta attrezzi
-function formatAttrezzi(attrezziJson) {
-  if (!attrezziJson || attrezziJson.length === 0) return '-';
-
-  try {
-    const attrezzi = typeof attrezziJson === 'string' ? JSON.parse(attrezziJson) : attrezziJson;
-
-    // Mostra solo le marche, separate da virgola
-    const marche = attrezzi.map(a => a.marca).filter(m => m).join(', ');
-    return marche || '-';
-  } catch (err) {
-    console.error('Errore parsing attrezzi:', err);
-    return '-';
   }
 }
 
