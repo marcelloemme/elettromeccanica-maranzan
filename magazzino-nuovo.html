@@ -28,14 +28,14 @@
   <main class="app">
     <header class="header">
       <h1>Nuovo Ricambio</h1>
-      <div id="counter" class="counter">0 inseriti</div>
+      <div id="counter" class="counter">0 in coda</div>
     </header>
 
     <!-- Form -->
     <form id="form-nuovo" class="form-container">
       <div class="form-group">
         <label for="codice">Codice</label>
-        <input type="text" id="codice" required placeholder="es. 127499-5" />
+        <input type="text" id="codice" required placeholder="es. 127499-5" autocomplete="off" />
       </div>
 
       <div class="form-group">
@@ -50,16 +50,26 @@
 
       <div class="form-actions">
         <button type="button" id="btn-annulla" class="btn-secondary">Annulla</button>
-        <button type="submit" class="btn-primary">Aggiungi ricambio</button>
+        <button type="submit" class="btn-primary">+ Aggiungi alla coda</button>
       </div>
     </form>
+
+    <!-- Coda ricambi -->
+    <div id="coda-container" class="coda-container hidden">
+      <h2>Coda inserimenti</h2>
+      <div id="coda-lista" class="coda-lista"></div>
+      <div class="coda-actions">
+        <button type="button" id="btn-svuota-coda" class="btn-secondary">Svuota coda</button>
+        <button type="button" id="btn-salva-tutto" class="btn-primary">💾 Salva tutto</button>
+      </div>
+    </div>
   </main>
 
-  <!-- Popup conferma -->
+  <!-- Popup conferma batch -->
   <div id="popup-conferma" class="popup-overlay hidden">
     <div class="popup-content">
-      <h2>Conferma nuovo ricambio</h2>
-      <div id="popup-riepilogo"></div>
+      <h2>Conferma inserimento</h2>
+      <p id="popup-messaggio">Stai per salvare <strong id="popup-count">0</strong> ricambi nel foglio Google.</p>
       <div class="popup-actions">
         <button id="popup-annulla-conferma" class="btn-secondary">Annulla</button>
         <button id="popup-conferma-salva" class="btn-primary">Conferma</button>

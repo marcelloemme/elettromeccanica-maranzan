@@ -7,10 +7,14 @@ const codiceInput = document.getElementById('codice');
 const descrizioneInput = document.getElementById('descrizione');
 const scaffaleInput = document.getElementById('scaffale');
 const btnAnnulla = document.getElementById('btn-annulla');
-const btnSubmit = formNuovo.querySelector('button[type="submit"]');
+
+const codaContainer = document.getElementById('coda-container');
+const codaLista = document.getElementById('coda-lista');
+const btnSvuotaCoda = document.getElementById('btn-svuota-coda');
+const btnSalvaTutto = document.getElementById('btn-salva-tutto');
 
 const popupConferma = document.getElementById('popup-conferma');
-const popupRiepilogo = document.getElementById('popup-riepilogo');
+const popupCount = document.getElementById('popup-count');
 const popupAnnullaConferma = document.getElementById('popup-annulla-conferma');
 const popupConfermaSalva = document.getElementById('popup-conferma-salva');
 
@@ -18,7 +22,7 @@ const toast = document.getElementById('toast');
 const counter = document.getElementById('counter');
 
 // Stato
-let inserimentiCount = 0;
+let coda = [];
 let codiciEsistenti = new Set();
 
 // Carica cache per validazione duplicati
@@ -41,68 +45,149 @@ codiceInput.focus();
 
 // Event listeners
 btnAnnulla.addEventListener('click', () => {
-  window.location.href = '/private.html';
+  if (coda.length > 0) {
+    if (confirm('Hai ' + coda.length + ' ricambi in coda. Vuoi davvero uscire senza salvare?')) {
+      window.location.href = '/private.html';
+    }
+  } else {
+    window.location.href = '/private.html';
+  }
 });
 
-formNuovo.addEventListener('submit', handleSubmit);
+formNuovo.addEventListener('submit', aggiungiAllaCoda);
+btnSvuotaCoda.addEventListener('click', svuotaCoda);
+btnSalvaTutto.addEventListener('click', confermaSalvataggio);
 popupAnnullaConferma.addEventListener('click', () => popupConferma.classList.add('hidden'));
+popupConfermaSalva.addEventListener('click', salvaTutto);
 
 // Validazione real-time duplicati
 codiceInput.addEventListener('input', () => {
   const codice = codiceInput.value.trim().toLowerCase();
+
+  // Check in cache
   if (codice && codiciEsistenti.has(codice)) {
-    codiceInput.setCustomValidity('Codice già esistente');
-    codiceInput.reportValidity();
-  } else {
-    codiceInput.setCustomValidity('');
+    codiceInput.setCustomValidity('Codice già esistente nel magazzino');
+    return;
   }
+
+  // Check in coda
+  const inCoda = coda.some(r => r.codice.toLowerCase() === codice);
+  if (codice && inCoda) {
+    codiceInput.setCustomValidity('Codice già in coda');
+    return;
+  }
+
+  codiceInput.setCustomValidity('');
 });
 
-// Handle submit
-function handleSubmit(e) {
+// Aggiungi alla coda
+function aggiungiAllaCoda(e) {
   e.preventDefault();
 
-  const dati = {
-    codice: codiceInput.value.trim(),
-    descrizione: descrizioneInput.value.trim(),
-    scaffale: scaffaleInput.value.trim()
-  };
+  const codice = codiceInput.value.trim();
+  const descrizione = descrizioneInput.value.trim();
+  const scaffale = scaffaleInput.value.trim();
 
-  // Validazione duplicati client-side
-  if (codiciEsistenti.has(dati.codice.toLowerCase())) {
-    showToast('❌ Codice già esistente', 'error');
+  // Validazione duplicati
+  if (codiciEsistenti.has(codice.toLowerCase())) {
+    showToast('❌ Codice già esistente nel magazzino', 'error');
     codiceInput.focus();
     codiceInput.select();
     return;
   }
 
-  // Mostra popup conferma
-  popupRiepilogo.innerHTML = `
-    <p><strong>Codice:</strong> ${dati.codice}</p>
-    <p><strong>Descrizione:</strong> ${dati.descrizione}</p>
-    <p><strong>Scaffale:</strong> ${dati.scaffale}</p>
-  `;
+  const inCoda = coda.some(r => r.codice.toLowerCase() === codice.toLowerCase());
+  if (inCoda) {
+    showToast('❌ Codice già in coda', 'error');
+    codiceInput.focus();
+    codiceInput.select();
+    return;
+  }
 
-  popupConferma.classList.remove('hidden');
+  // Aggiungi alla coda
+  coda.push({ codice, descrizione, scaffale });
 
-  // Salva dati per conferma
-  popupConfermaSalva.onclick = () => salvaRicambio(dati);
+  // Mostra toast
+  showToast('✓ ' + codice + ' aggiunto alla coda', 'success');
+
+  // Aggiorna UI
+  aggiornaUI();
+
+  // Reset form e focus
+  formNuovo.reset();
+  codiceInput.focus();
 }
 
-// Salva ricambio
-async function salvaRicambio(dati) {
+// Aggiorna UI
+function aggiornaUI() {
+  // Contatore
+  counter.textContent = coda.length + ' in coda';
+
+  // Mostra/nascondi container coda
+  if (coda.length > 0) {
+    codaContainer.classList.remove('hidden');
+  } else {
+    codaContainer.classList.add('hidden');
+  }
+
+  // Renderizza lista
+  if (coda.length === 0) {
+    codaLista.innerHTML = '<p class="empty-queue">Nessun ricambio in coda</p>';
+    return;
+  }
+
+  codaLista.innerHTML = coda.map((r, index) => `
+    <div class="coda-item">
+      <div class="coda-item-content">
+        <div class="coda-item-codice">${r.codice}</div>
+        <div class="coda-item-desc">${r.descrizione}</div>
+        <div class="coda-item-scaff">${r.scaffale}</div>
+      </div>
+      <button type="button" class="coda-item-remove" onclick="rimuoviDaCoda(${index})" title="Rimuovi">×</button>
+    </div>
+  `).join('');
+}
+
+// Rimuovi dalla coda
+function rimuoviDaCoda(index) {
+  const ricambio = coda[index];
+  coda.splice(index, 1);
+  showToast('✓ ' + ricambio.codice + ' rimosso dalla coda', 'success');
+  aggiornaUI();
+}
+
+// Svuota coda
+function svuotaCoda() {
+  if (confirm('Vuoi davvero svuotare la coda (' + coda.length + ' ricambi)?')) {
+    coda = [];
+    aggiornaUI();
+    showToast('✓ Coda svuotata', 'success');
+  }
+}
+
+// Conferma salvataggio
+function confermaSalvataggio() {
+  if (coda.length === 0) {
+    showToast('❌ Nessun ricambio in coda', 'error');
+    return;
+  }
+
+  popupCount.textContent = coda.length;
+  popupConferma.classList.remove('hidden');
+}
+
+// Salva tutto (batch insert)
+async function salvaTutto() {
   popupConfermaSalva.disabled = true;
   popupConfermaSalva.textContent = 'Salvataggio...';
-  btnSubmit.disabled = true;
+  btnSalvaTutto.disabled = true;
 
   try {
-    const res = await fetch(`${API_URL}?action=addRicambio`, {
+    const res = await fetch(`${API_URL}?action=batchAddRicambi`, {
       method: 'POST',
       body: JSON.stringify({
-        action: 'addRicambio',
-        codice: dati.codice,
-        descrizione: dati.descrizione,
-        scaffale: dati.scaffale
+        action: 'batchAddRicambi',
+        ricambi: coda
       })
     });
 
@@ -112,42 +197,38 @@ async function salvaRicambio(dati) {
       // Chiudi popup
       popupConferma.classList.add('hidden');
 
-      // Aggiorna cache locale
-      codiciEsistenti.add(dati.codice.toLowerCase());
-
-      // Invalida cache magazzino per forzare refresh
+      // Invalida cache magazzino
       localStorage.removeItem('magazzino_cache');
       localStorage.removeItem('magazzino_cache_timestamp');
 
-      // Incrementa contatore
-      inserimentiCount++;
-      counter.textContent = `${inserimentiCount} inserit${inserimentiCount === 1 ? 'o' : 'i'}`;
-
       // Toast success
-      showToast(`✓ ${dati.codice} aggiunto`, 'success');
+      showToast('✓ ' + result.count + ' ricambi salvati con successo!', 'success');
 
-      // Reset form
-      formNuovo.reset();
+      // Svuota coda
+      coda = [];
+      aggiornaUI();
 
-      // Auto-focus per inserimento veloce
-      setTimeout(() => {
-        codiceInput.focus();
-      }, 100);
+      // Reset e focus
+      codiceInput.focus();
 
       popupConfermaSalva.disabled = false;
       popupConfermaSalva.textContent = 'Conferma';
-      btnSubmit.disabled = false;
+      btnSalvaTutto.disabled = false;
     } else {
       showToast('❌ ' + (result.error || 'Errore sconosciuto'), 'error');
+      if (result.details) {
+        console.error('Dettagli errori:', result.details);
+      }
       popupConfermaSalva.disabled = false;
       popupConfermaSalva.textContent = 'Conferma';
-      btnSubmit.disabled = false;
+      btnSalvaTutto.disabled = false;
     }
   } catch (err) {
     showToast('❌ Errore di connessione', 'error');
+    console.error('Errore:', err);
     popupConfermaSalva.disabled = false;
     popupConfermaSalva.textContent = 'Conferma';
-    btnSubmit.disabled = false;
+    btnSalvaTutto.disabled = false;
   }
 }
 
@@ -161,3 +242,6 @@ function showToast(message, type = 'success') {
     toast.classList.add('hidden');
   }, 3000);
 }
+
+// Esponi funzione globale per rimuoviDaCoda
+window.rimuoviDaCoda = rimuoviDaCoda;
