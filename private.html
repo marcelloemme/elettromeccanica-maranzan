@@ -22,7 +22,6 @@
       <!-- Sezione Magazzino con sottotitoli -->
       <div class="menu-section">
         <a href="/magazzino.html" class="menu-item main-item">Magazzino</a>
-        <a href="#" id="aggiorna-db" class="menu-item sub-item">Aggiorna database</a>
         <a href="https://docs.google.com/spreadsheets/d/1wFamrwzFNNz5iHenqVpdAHb5Dhvv5xYx5XPimjax9As/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="menu-item sub-item">Magazzino.csv</a>
       </div>
 
@@ -40,30 +39,6 @@
       navigator.serviceWorker.register('/sw.js', { scope: '/' })
         .catch(console.error);
     }
-
-    // Funzione per triggerare l'aggiornamento del database
-    document.getElementById('aggiorna-db').addEventListener('click', async function(e) {
-      e.preventDefault();
-
-      const btn = e.target;
-      const originalText = btn.textContent;
-      btn.textContent = 'Aggiornamento in corso...';
-      btn.style.opacity = '0.5';
-      btn.style.pointerEvents = 'none';
-
-      try {
-        const res = await fetch("https://aggiorna.marcellomaranzan.workers.dev/");
-        const text = await res.text();
-        alert(text);
-      } catch (err) {
-        alert("Errore durante l'aggiornamento del database.");
-        console.error(err);
-      }
-
-      btn.textContent = originalText;
-      btn.style.opacity = '1';
-      btn.style.pointerEvents = 'auto';
-    });
   </script>
 </body>
 </html>

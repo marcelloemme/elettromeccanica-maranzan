@@ -488,9 +488,26 @@
     }, { passive: true });
   }
 
+  // Aggiorna database GitHub in background
+  async function triggerDatabaseUpdate() {
+    try {
+      console.log('Triggering database update...');
+      await fetch("https://aggiorna.marcellomaranzan.workers.dev/");
+      console.log('Database update triggered successfully');
+    } catch (err) {
+      console.warn('Database update failed (non-blocking):', err);
+      // Fallback silenzioso: continua con il CSV in cache
+    }
+  }
+
   // Init
   (async () => {
+    // Triggera aggiornamento database in background (non-blocking)
+    triggerDatabaseUpdate();
+
+    // Carica CSV (fallback su cache se aggiornamento fallisce)
     await loadCSV();
+
     const savedTheme = getSavedTheme();
     if (savedTheme === 'dark' || savedTheme === 'light') {
       applyTheme(savedTheme);
