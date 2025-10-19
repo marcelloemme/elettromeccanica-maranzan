@@ -1,2 +1,5 @@
 magazzino.csv
-old/
+
+# File temporanei Mac
+.DS_Store
+**/.DS_Store
