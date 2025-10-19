@@ -34,28 +34,14 @@ const appMain = document.querySelector('.app');
 // Stato
 let ricambioCorrente = null;
 
-// Cache
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minuti
-
 // Carica da cache localStorage
 function caricaDaCache(codice) {
   try {
-    const cached = localStorage.getItem('magazzino_cache');
-    const timestamp = localStorage.getItem('magazzino_cache_timestamp');
+    const ricambi = cacheManager.get('magazzino');
 
-    if (!cached || !timestamp) {
-      console.log('Nessuna cache trovata');
+    if (!ricambi || ricambi.length === 0) {
       return null;
     }
-
-    const age = Date.now() - parseInt(timestamp);
-    if (age > CACHE_DURATION) {
-      console.log('Cache scaduta');
-      return null;
-    }
-
-    const ricambi = JSON.parse(cached);
-    console.log('Cache caricata:', ricambi.length, 'ricambi');
 
     // Cerca il ricambio specifico
     const ricambio = ricambi.find(r => r.codice === codice);
@@ -224,9 +210,8 @@ async function salvaModifiche(dati) {
       };
       renderDettaglio();
 
-      // Invalida cache per forzare ricaricamento al prossimo accesso
-      localStorage.removeItem('magazzino_cache');
-      localStorage.removeItem('magazzino_cache_timestamp');
+      // Invalida cache per forzare ricaricamento fresco
+      cacheManager.invalidate('magazzino');
 
       alert('Modifiche salvate con successo!');
 
@@ -274,6 +259,9 @@ async function eliminaRicambio() {
     const result = await res.json();
 
     if (result.success) {
+      // Invalida cache per forzare ricaricamento fresco
+      cacheManager.invalidate('magazzino');
+
       alert('Ricambio eliminato con successo!');
       window.location.href = '/html/magazzino.html';
     } else {

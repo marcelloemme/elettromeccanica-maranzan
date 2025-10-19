@@ -38,35 +38,6 @@ let riparazioneCorrente = null;
 let tutteRiparazioni = [];
 let editAttrezziCount = 0;
 
-// Cache
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minuti
-
-// Carica da cache localStorage
-function caricaDaCache() {
-  try {
-    const cached = localStorage.getItem('riparazioni_cache');
-    const timestamp = localStorage.getItem('riparazioni_cache_timestamp');
-
-    if (!cached || !timestamp) {
-      console.log('Nessuna cache trovata');
-      return false;
-    }
-
-    const age = Date.now() - parseInt(timestamp);
-    if (age > CACHE_DURATION) {
-      console.log('Cache scaduta');
-      return false;
-    }
-
-    tutteRiparazioni = JSON.parse(cached);
-    console.log('Cache caricata:', tutteRiparazioni.length, 'riparazioni');
-    return true;
-  } catch (e) {
-    console.error('Errore lettura cache:', e);
-    return false;
-  }
-}
-
 // Init
 (async () => {
   // Ottieni numero dalla URL
@@ -80,9 +51,10 @@ function caricaDaCache() {
   }
 
   // Prova a caricare da cache prima
-  const cacheCaricata = caricaDaCache();
+  const cached = cacheManager.get('riparazioni');
 
-  if (cacheCaricata) {
+  if (cached && cached.length > 0) {
+    tutteRiparazioni = cached;
     // Cache valida trovata - mostra subito i dati
     const riparazioneTrovata = tutteRiparazioni.find(r => r.Numero === numero);
     if (riparazioneTrovata) {
@@ -130,14 +102,8 @@ async function caricaTutteRiparazioni() {
     const data = await res.json();
     tutteRiparazioni = data.riparazioni || [];
 
-    // Salva in cache
-    try {
-      localStorage.setItem('riparazioni_cache', JSON.stringify(tutteRiparazioni));
-      localStorage.setItem('riparazioni_cache_timestamp', Date.now().toString());
-      console.log('Cache aggiornata');
-    } catch (e) {
-      console.warn('Impossibile salvare cache:', e);
-    }
+    // Salva in cache centralizzata
+    cacheManager.set('riparazioni', tutteRiparazioni);
   } catch (err) {
     console.error('Errore caricamento riparazioni:', err);
     tutteRiparazioni = [];
@@ -406,6 +372,9 @@ async function salvaModifiche(dati) {
     if (result.success) {
       popupConfermaModifica.classList.add('hidden');
       popupModifica.classList.add('hidden');
+
+      // Invalida cache per forzare ricaricamento fresco
+      cacheManager.invalidate('riparazioni');
 
       // Aspetta un attimo per dare tempo a Google Sheets di aggiornare
       await new Promise(resolve => setTimeout(resolve, 500));

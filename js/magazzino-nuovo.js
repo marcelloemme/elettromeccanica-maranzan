@@ -197,9 +197,8 @@ async function salvaTutto() {
       // Chiudi popup
       popupConferma.classList.add('hidden');
 
-      // Invalida cache magazzino
-      localStorage.removeItem('magazzino_cache');
-      localStorage.removeItem('magazzino_cache_timestamp');
+      // Invalida cache magazzino per forzare ricaricamento fresco
+      cacheManager.invalidate('magazzino');
 
       // Toast success
       showToast('✓ ' + result.count + ' ricambi salvati con successo!', 'success');

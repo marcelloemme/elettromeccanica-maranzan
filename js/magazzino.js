@@ -136,14 +136,8 @@
       DATA = parseCSV(text);
       buildShelves();
 
-      // Salva in cache per navigazione veloce
-      try {
-        localStorage.setItem('magazzino_cache', JSON.stringify(DATA));
-        localStorage.setItem('magazzino_cache_timestamp', Date.now().toString());
-        console.log('Cache magazzino salvata:', DATA.length, 'ricambi');
-      } catch (e) {
-        console.warn('Impossibile salvare cache magazzino:', e);
-      }
+      // Salva in cache centralizzata
+      cacheManager.set('magazzino', DATA);
     }catch(e){
       console.error("Errore caricamento CSV:", e);
       DATA = [];

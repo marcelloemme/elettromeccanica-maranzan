@@ -14,16 +14,12 @@ let tutteRiparazioni = [];
 let filtroAttivo = 'tutti'; // 'tutti' | 'incompleti'
 let searchQuery = '';
 
-// Cache
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minuti
-
 // Init (ottimizzato con cache)
 (async () => {
   // 1. Prova cache prima per mostrare dati istantaneamente
-  const cached = caricaDaCache();
+  const cached = cacheManager.get('riparazioni');
   if (cached && cached.length > 0) {
     tutteRiparazioni = cached;
-    console.log('Riparazioni caricate da cache:', tutteRiparazioni.length);
     renderTabella();
 
     // Nascondi loading
@@ -61,16 +57,9 @@ async function caricaRiparazioni() {
 
     const data = await res.json();
     tutteRiparazioni = data.riparazioni || [];
-    console.log('Riparazioni caricate:', tutteRiparazioni.length);
 
-    // Salva in cache per navigazione veloce
-    try {
-      localStorage.setItem('riparazioni_cache', JSON.stringify(tutteRiparazioni));
-      localStorage.setItem('riparazioni_cache_timestamp', Date.now().toString());
-      console.log('Cache salvata in localStorage');
-    } catch (e) {
-      console.warn('Impossibile salvare cache in localStorage:', e);
-    }
+    // Salva in cache centralizzata
+    cacheManager.set('riparazioni', tutteRiparazioni);
 
     renderTabella();
   } catch (err) {
@@ -184,39 +173,10 @@ window.addEventListener('pageshow', (event) => {
   }
 });
 
-// Carica da cache localStorage (se valida)
-function caricaDaCache() {
-  try {
-    const cached = localStorage.getItem('riparazioni_cache');
-    const timestamp = localStorage.getItem('riparazioni_cache_timestamp');
-
-    if (!cached || !timestamp) {
-      console.log('Nessuna cache trovata');
-      return null;
-    }
-
-    const age = Date.now() - parseInt(timestamp);
-    if (age > CACHE_DURATION) {
-      console.log('Cache scaduta (age:', Math.round(age / 1000), 'secondi)');
-      localStorage.removeItem('riparazioni_cache');
-      localStorage.removeItem('riparazioni_cache_timestamp');
-      return null;
-    }
-
-    console.log('Cache valida (age:', Math.round(age / 1000), 'secondi)');
-    return JSON.parse(cached);
-  } catch (e) {
-    console.error('Errore lettura cache:', e);
-    return null;
-  }
-}
-
 // Carica riparazioni in background (aggiornamento silenzioso)
 async function caricaRiparazioniBackground() {
   try {
-    console.log('Aggiornamento cache in background...');
     await caricaRiparazioni();
-    console.log('Cache aggiornata in background');
   } catch (err) {
     console.warn('Aggiornamento background fallito (non critico):', err);
   }
