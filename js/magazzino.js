@@ -497,10 +497,30 @@
     }, { passive: true });
   }
 
-  // Aggiorna database GitHub in background
+  // Aggiorna database GitHub in background (con throttle)
   async function triggerDatabaseUpdate() {
+    const THROTTLE_DURATION = 5 * 60 * 1000; // 5 minuti
+    const LAST_TRIGGER_KEY = 'magazzino_last_update_trigger';
+
     try {
+      const lastTrigger = localStorage.getItem(LAST_TRIGGER_KEY);
+      const now = Date.now();
+
+      // Controlla se è passato abbastanza tempo dall'ultimo trigger
+      if (lastTrigger) {
+        const elapsed = now - parseInt(lastTrigger);
+        if (elapsed < THROTTLE_DURATION) {
+          console.log(`Database update skipped (ultimo trigger: ${Math.round(elapsed / 1000)}s fa)`);
+          return;
+        }
+      }
+
+      // Triggera il workflow
       await fetch("https://aggiorna.marcellomaranzan.workers.dev/");
+
+      // Salva timestamp del trigger
+      localStorage.setItem(LAST_TRIGGER_KEY, now.toString());
+      console.log('Database update triggered');
     } catch (err) {
       // Fallback silenzioso: continua con il CSV in cache
     }
@@ -508,10 +528,10 @@
 
   // Init
   (async () => {
-    // Triggera aggiornamento database in background (non-blocking)
+    // Triggera aggiornamento database in background (throttled)
     triggerDatabaseUpdate();
 
-    // Carica CSV (fallback su cache se aggiornamento fallisce)
+    // Carica CSV
     await loadCSV();
 
     const savedTheme = getSavedTheme();
