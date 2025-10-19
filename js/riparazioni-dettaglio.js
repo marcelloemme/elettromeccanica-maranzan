@@ -75,7 +75,7 @@ function caricaDaCache() {
 
   if (!numero) {
     alert('Numero riparazione mancante');
-    window.location.href = '/riparazioni-archivio.html';
+    window.location.href = '/html/riparazioni-archivio.html';
     return;
   }
 
@@ -174,7 +174,7 @@ async function caricaRiparazione(numero) {
   } catch (err) {
     console.error('Errore caricamento riparazione:', err);
     alert('Errore: ' + err.message);
-    window.location.href = '/riparazioni-archivio.html';
+    window.location.href = '/html/riparazioni-archivio.html';
   }
 }
 
@@ -257,7 +257,7 @@ function navigaPrev() {
     renderDettaglio();
     aggiornaNavigazione();
     // Aggiorna URL senza reload
-    window.history.pushState({}, '', `/riparazioni-dettaglio.html?numero=${encodeURIComponent(prev.Numero)}`);
+    window.history.pushState({}, '', `/html/riparazioni-dettaglio.html?numero=${encodeURIComponent(prev.Numero)}`);
   }
 }
 
@@ -270,7 +270,7 @@ function navigaNext() {
     renderDettaglio();
     aggiornaNavigazione();
     // Aggiorna URL senza reload
-    window.history.pushState({}, '', `/riparazioni-dettaglio.html?numero=${encodeURIComponent(next.Numero)}`);
+    window.history.pushState({}, '', `/html/riparazioni-dettaglio.html?numero=${encodeURIComponent(next.Numero)}`);
   }
 }
 

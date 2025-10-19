@@ -151,7 +151,7 @@ function formatData(dataStr) {
 
 // Apri dettaglio scheda
 function apriDettaglio(numero) {
-  window.location.href = `/riparazioni-dettaglio.html?numero=${encodeURIComponent(numero)}`;
+  window.location.href = `/html/riparazioni-dettaglio.html?numero=${encodeURIComponent(numero)}`;
 }
 
 // Ricarica quando si torna alla pagina (per vedere modifiche)

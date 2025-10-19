@@ -81,7 +81,7 @@ function caricaDaCache(codice) {
 
   if (!codice) {
     alert('Codice ricambio mancante');
-    window.location.href = '/magazzino.html';
+    window.location.href = '/html/magazzino.html';
     return;
   }
 
@@ -127,7 +127,7 @@ async function caricaRicambio(codice) {
   } catch (err) {
     console.error('Errore caricamento ricambio:', err);
     alert('Errore: ' + err.message);
-    window.location.href = '/magazzino.html';
+    window.location.href = '/html/magazzino.html';
   }
 }
 
@@ -275,7 +275,7 @@ async function eliminaRicambio() {
 
     if (result.success) {
       alert('Ricambio eliminato con successo!');
-      window.location.href = '/magazzino.html';
+      window.location.href = '/html/magazzino.html';
     } else {
       alert('Errore: ' + (result.error || 'Errore sconosciuto'));
       popupEliminaConferma.disabled = false;

@@ -1,13 +1,12 @@
 /* Elettromeccanica Maranzan - PWA Service Worker */
-const CACHE_NAME = 'em-maranzan-v2';
+const CACHE_NAME = 'em-maranzan-v3';
 const PRECACHE_URLS = [
   '/private.html',
-  '/magazzino.html',
+  '/html/magazzino.html',
   '/css/app.css',
   '/js/magazzino.js',
   '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/offline.html'
+  '/icons/icon-512.png'
 ];
 
 // install: precache degli asset locali
@@ -61,9 +60,9 @@ self.addEventListener('fetch', (event) => {
   if (
     isSameOrigin &&
     (
-      url.pathname === '/private.html'   ||
-      url.pathname === '/magazzino.html' ||
-      url.pathname === '/css/app.css'    ||
+      url.pathname === '/private.html'        ||
+      url.pathname.startsWith('/html/')       ||
+      url.pathname === '/css/app.css'         ||
       url.pathname === '/js/magazzino.js'
     )
   ) {
@@ -138,10 +137,10 @@ async function handleNavigation(request) {
     // Fallback to app shells
     const shell1 = await cache.match('/private.html');
     if (shell1) return shell1;
-    const shell2 = await cache.match('/magazzino.html');
+    const shell2 = await cache.match('/html/magazzino.html');
     if (shell2) return shell2;
-    // Last resort: offline page
-    return (await cache.match('/offline.html')) || new Response('Offline', { status: 503 });
+    // Last resort: basic offline message
+    return new Response('Offline', { status: 503 });
   }
 }
 
