@@ -202,11 +202,11 @@ body {
 .coda-item-remove {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
-  border: 1px solid var(--error);
-  background: transparent;
-  color: var(--error);
-  font-size: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--btn-secondary-bg);
+  color: var(--fg);
+  font-size: 20px;
   line-height: 1;
   cursor: pointer;
   display: flex;
@@ -219,6 +219,7 @@ body {
 .coda-item-remove:hover {
   background: var(--error);
   color: #ffffff;
+  border-color: var(--error);
 }
 
 .coda-actions {
