@@ -135,12 +135,18 @@
       const text = await res.text();
       DATA = parseCSV(text);
       buildShelves();
-
-      // Salva in cache centralizzata
-      cacheManager.set('magazzino', DATA);
     }catch(e){
       console.error("Errore caricamento CSV:", e);
       DATA = [];
+    }
+
+    // Salva in cache centralizzata (separato dal try/catch principale)
+    try {
+      if (typeof cacheManager !== 'undefined' && DATA.length > 0) {
+        cacheManager.set('magazzino', DATA);
+      }
+    } catch (e) {
+      console.warn('Impossibile salvare cache magazzino:', e);
     }
   }
 
