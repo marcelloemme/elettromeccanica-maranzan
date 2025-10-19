@@ -14,8 +14,31 @@ let tutteRiparazioni = [];
 let filtroAttivo = 'tutti'; // 'tutti' | 'incompleti'
 let searchQuery = '';
 
-// Init
+// Cache
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minuti
+
+// Init (ottimizzato con cache)
 (async () => {
+  // 1. Prova cache prima per mostrare dati istantaneamente
+  const cached = caricaDaCache();
+  if (cached && cached.length > 0) {
+    tutteRiparazioni = cached;
+    console.log('Riparazioni caricate da cache:', tutteRiparazioni.length);
+    renderTabella();
+
+    // Nascondi loading
+    loadingOverlay.classList.add('hidden');
+    appMain.style.opacity = '1';
+    appMain.style.transition = 'opacity 0.3s ease';
+
+    setupEventListeners();
+
+    // 2. Aggiorna in background per avere dati freschi
+    caricaRiparazioniBackground();
+    return;
+  }
+
+  // 3. Fallback: nessuna cache, carica da API
   await caricaRiparazioni();
   setupEventListeners();
 
@@ -160,3 +183,41 @@ window.addEventListener('pageshow', (event) => {
     caricaRiparazioni();
   }
 });
+
+// Carica da cache localStorage (se valida)
+function caricaDaCache() {
+  try {
+    const cached = localStorage.getItem('riparazioni_cache');
+    const timestamp = localStorage.getItem('riparazioni_cache_timestamp');
+
+    if (!cached || !timestamp) {
+      console.log('Nessuna cache trovata');
+      return null;
+    }
+
+    const age = Date.now() - parseInt(timestamp);
+    if (age > CACHE_DURATION) {
+      console.log('Cache scaduta (age:', Math.round(age / 1000), 'secondi)');
+      localStorage.removeItem('riparazioni_cache');
+      localStorage.removeItem('riparazioni_cache_timestamp');
+      return null;
+    }
+
+    console.log('Cache valida (age:', Math.round(age / 1000), 'secondi)');
+    return JSON.parse(cached);
+  } catch (e) {
+    console.error('Errore lettura cache:', e);
+    return null;
+  }
+}
+
+// Carica riparazioni in background (aggiornamento silenzioso)
+async function caricaRiparazioniBackground() {
+  try {
+    console.log('Aggiornamento cache in background...');
+    await caricaRiparazioni();
+    console.log('Cache aggiornata in background');
+  } catch (err) {
+    console.warn('Aggiornamento background fallito (non critico):', err);
+  }
+}

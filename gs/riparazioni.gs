@@ -14,6 +14,8 @@ function doGet(e) {
     switch(action) {
       case 'getRiparazioni':
         return getRiparazioni(e);
+      case 'getNextNumero':
+        return getNextNumero();
       case 'getClienti':
         return getClienti();
       case 'getRiparazione':
@@ -319,6 +321,28 @@ function updateOrAddCliente(nome, telefono) {
   if (!found) {
     sheet.appendRow([nome, telefono]);
   }
+}
+
+/**
+ * Ottiene solo il prossimo numero (leggero, per form nuova riparazione)
+ */
+function getNextNumero() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_NAME_RIPARAZIONI);
+
+  if (!sheet) {
+    return jsonResponse({ error: 'Foglio Riparazioni non trovato' }, 404);
+  }
+
+  const anno = new Date().getFullYear();
+  const ultimoProgressivo = getUltimoProgressivo(sheet, anno);
+  const nuovoProgressivo = ultimoProgressivo + 1;
+  const nextNumero = `${anno % 100}/${String(nuovoProgressivo).padStart(4, '0')}`;
+
+  return jsonResponse({
+    nextNumero: nextNumero,
+    timestamp: Date.now()
+  });
 }
 
 // ===== UTILITY =====
