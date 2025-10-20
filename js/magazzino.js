@@ -497,9 +497,19 @@
     }, { passive: true });
   }
 
+  // Carica CSV in background (non bloccante)
+  async function loadCSVBackground() {
+    try {
+      await loadCSV();
+      updateResults();  // Re-render con dati freschi
+    } catch (e) {
+      console.warn('Background CSV update fallito (non critico):', e);
+    }
+  }
+
   // Aggiorna database GitHub in background (con throttle)
   async function triggerDatabaseUpdate() {
-    const THROTTLE_DURATION = 5 * 60 * 1000; // 5 minuti
+    const THROTTLE_DURATION = 10 * 60 * 1000; // 10 minuti (ridotto spam GitHub)
     const LAST_TRIGGER_KEY = 'magazzino_last_update_trigger';
 
     try {
@@ -526,19 +536,39 @@
     }
   }
 
-  // Init
+  // Init (ottimizzato cache-first)
   (async () => {
-    // Triggera aggiornamento database in background (throttled)
-    triggerDatabaseUpdate();
+    // 1. Prova cache prima per mostrare dati istantaneamente
+    const cached = window.cacheManager?.get('magazzino');
 
-    // Carica CSV
+    if (cached && cached.length > 0) {
+      // Cache valida → mostra SUBITO
+      DATA = cached;
+      buildShelves();
+
+      const savedTheme = getSavedTheme();
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        applyTheme(savedTheme);
+      }
+
+      updateResults();
+
+      // 2. Triggera aggiornamenti in background (non bloccanti)
+      triggerDatabaseUpdate();  // GitHub workflow (throttled 10 min)
+      loadCSVBackground();      // CSV refresh silenzioso
+
+      return;
+    }
+
+    // 3. Fallback: nessuna cache, carica da rete
+    triggerDatabaseUpdate();
     await loadCSV();
 
     const savedTheme = getSavedTheme();
     if (savedTheme === 'dark' || savedTheme === 'light') {
       applyTheme(savedTheme);
     }
-    // Mostra messaggio iniziale all'avvio
+
     updateResults();
   })();
 })();

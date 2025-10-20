@@ -15,9 +15,9 @@ class CacheManager {
 
     // Durata cache per ogni tipo di dato (in millisecondi)
     this.durations = {
-      riparazioni: 5 * 60 * 1000,      // 5 minuti
-      clienti: 10 * 60 * 1000,         // 10 minuti
-      magazzino: 5 * 60 * 1000         // 5 minuti
+      riparazioni: 15 * 60 * 1000,     // 15 minuti (sessioni lavoro più lunghe)
+      clienti: 10 * 60 * 1000,         // 10 minuti (dati stabili)
+      magazzino: 30 * 60 * 1000        // 30 minuti (uso intensivo ripetuto)
     };
   }
 

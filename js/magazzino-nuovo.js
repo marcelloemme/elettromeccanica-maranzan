@@ -197,8 +197,21 @@ async function salvaTutto() {
       // Chiudi popup
       popupConferma.classList.add('hidden');
 
-      // Invalida cache magazzino per forzare ricaricamento fresco
-      cacheManager.invalidate('magazzino');
+      // Aggiorna cache locale aggiungendo i nuovi ricambi (invece di invalidare)
+      // Questo garantisce che i ricambi siano visibili SUBITO al prossimo accesso
+      const cached = cacheManager.get('magazzino') || [];
+      const nuoviRicambi = coda.map(r => ({
+        codice: r.codice,
+        descrizione: r.descrizione,
+        scaffale: r.scaffale
+      }));
+
+      // Aggiungi nuovi ricambi alla cache esistente e riordina per codice
+      const cacheAggiornata = [...nuoviRicambi, ...cached]
+        .sort((a, b) => a.codice.localeCompare(b.codice));
+
+      cacheManager.set('magazzino', cacheAggiornata);
+      console.log(`[Magazzino] Cache aggiornata: +${nuoviRicambi.length} ricambi (totale: ${cacheAggiornata.length})`);
 
       // Triggera aggiornamento database GitHub (bypassa throttle)
       triggerDatabaseUpdateNow();
