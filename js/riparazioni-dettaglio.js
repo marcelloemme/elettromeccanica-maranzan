@@ -200,7 +200,7 @@ function aggiornaNavigazione() {
 // Setup event listeners
 function setupEventListeners() {
   btnModifica.addEventListener('click', apriModifica);
-  btnArchivio.addEventListener('click', () => window.location.href = '/riparazioni-archivio.html');
+  btnArchivio.addEventListener('click', () => window.location.href = '/html/riparazioni-archivio.html');
   btnPrev.addEventListener('click', navigaPrev);
   btnNext.addEventListener('click', navigaNext);
 
@@ -373,15 +373,29 @@ async function salvaModifiche(dati) {
       popupConfermaModifica.classList.add('hidden');
       popupModifica.classList.add('hidden');
 
-      // Invalida cache per forzare ricaricamento fresco
+      // Invalida cache per forzare ricaricamento fresco al prossimo accesso archivio
       cacheManager.invalidate('riparazioni');
 
-      // Aspetta un attimo per dare tempo a Google Sheets di aggiornare
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Aggiorna dati localmente senza ricaricare da API
+      // (evita errore "scheda non trovata" se Google Sheets non è ancora aggiornato)
+      riparazioneCorrente = {
+        Numero: dati.numero,
+        'Data Consegna': dati.dataConsegna,
+        Cliente: dati.cliente,
+        Telefono: dati.telefono,
+        Attrezzi: dati.attrezzi,
+        Completato: dati.completato
+      };
 
-      // Ricarica i dati senza refresh completo della pagina
-      await caricaTutteRiparazioni();
-      await caricaRiparazione(dati.numero);
+      // Aggiorna anche in tutteRiparazioni se presente
+      const index = tutteRiparazioni.findIndex(r => r.Numero === dati.numero);
+      if (index !== -1) {
+        tutteRiparazioni[index] = riparazioneCorrente;
+      }
+
+      // Renderizza i dati aggiornati
+      renderDettaglio();
+      aggiornaNavigazione();
 
       alert('Modifiche salvate con successo!');
 
