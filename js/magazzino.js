@@ -730,6 +730,32 @@
     pullCurrentY = 0;
   }, { passive: true });
 
+  // Fix iOS PWA: forza ricalcolo safe-area per tastierino
+  function fixKeypadPosition() {
+    const inputZone = document.querySelector('.input-zone');
+    if (!inputZone) return;
+
+    // Forza reflow con doppio requestAnimationFrame
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // Trigger repaint forzando lettura computed style
+        const _ = inputZone.offsetHeight;
+        inputZone.style.transform = 'translateZ(0)'; // Force GPU composite
+      });
+    });
+  }
+
+  // Applica fix dopo load e dopo resize viewport
+  window.addEventListener('load', () => {
+    setTimeout(fixKeypadPosition, 100);
+    setTimeout(fixKeypadPosition, 300);
+  });
+
+  // Fix anche quando viewport cambia (orientamento, tastiera iOS)
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', fixKeypadPosition);
+  }
+
   // Init (ottimizzato cache-first)
   (async () => {
     // 1. Prova cache prima per mostrare dati istantaneamente
@@ -751,6 +777,9 @@
       triggerDatabaseUpdate();  // GitHub workflow (throttled 10 min)
       loadCSVBackground();      // CSV refresh silenzioso
 
+      // Fix tastierino dopo render
+      fixKeypadPosition();
+
       return;
     }
 
@@ -764,5 +793,8 @@
     }
 
     updateResults();
+
+    // Fix tastierino dopo render
+    fixKeypadPosition();
   })();
 })();
