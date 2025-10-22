@@ -614,6 +614,72 @@
     }
   }, { passive: true });
 
+  // Forza trigger workflow (bypassa throttle come batch insert)
+  async function forceTriggerWorkflow() {
+    const LAST_TRIGGER_KEY = 'magazzino_last_update_trigger';
+    try {
+      // Reset throttle per trigger immediato
+      localStorage.removeItem(LAST_TRIGGER_KEY);
+
+      // Triggera workflow
+      await fetch("https://aggiorna.marcellomaranzan.workers.dev/");
+
+      // Salva timestamp
+      localStorage.setItem(LAST_TRIGGER_KEY, Date.now().toString());
+      console.log('[PTR] Workflow triggered (throttle bypassed)');
+    } catch (err) {
+      console.error('[PTR] Errore trigger workflow:', err);
+    }
+  }
+
+  // Polling per verificare se CSV è stato aggiornato
+  async function waitForCSVUpdate(maxWaitMs = 180000) { // 3 minuti max
+    const startTime = Date.now();
+    const pollInterval = 10000; // 10 secondi
+    let lastETag = null;
+
+    // Ottieni ETag corrente
+    try {
+      const resp = await fetch('/magazzino.csv', { method: 'HEAD', cache: 'no-store' });
+      lastETag = resp.headers.get('ETag') || resp.headers.get('Last-Modified');
+    } catch (e) {
+      console.warn('[PTR] Non posso ottenere ETag iniziale');
+    }
+
+    return new Promise((resolve) => {
+      const checkInterval = setInterval(async () => {
+        const elapsed = Date.now() - startTime;
+
+        // Timeout dopo maxWaitMs
+        if (elapsed > maxWaitMs) {
+          clearInterval(checkInterval);
+          console.log('[PTR] Timeout polling (3 min)');
+          resolve(false);
+          return;
+        }
+
+        // Controlla se CSV è cambiato
+        try {
+          const resp = await fetch('/magazzino.csv', { method: 'HEAD', cache: 'no-store' });
+          const currentETag = resp.headers.get('ETag') || resp.headers.get('Last-Modified');
+
+          if (currentETag && lastETag && currentETag !== lastETag) {
+            clearInterval(checkInterval);
+            console.log('[PTR] CSV aggiornato! (ETag changed)');
+            resolve(true);
+            return;
+          }
+
+          // Aggiorna indicatore con tempo trascorso
+          const seconds = Math.floor(elapsed / 1000);
+          refreshIndicator.innerHTML = `⟳ Aggiornamento in corso... (${seconds}s)`;
+        } catch (e) {
+          console.warn('[PTR] Errore controllo CSV:', e);
+        }
+      }, pollInterval);
+    });
+  }
+
   resultsArea.addEventListener('touchend', async (e) => {
     if (!isPulling || refreshing) return;
 
@@ -627,26 +693,33 @@
     if (pullDistance >= PULL_THRESHOLD && scrollTop <= 0) {
       console.log('[PTR] REFRESH TRIGGERED!');
       refreshing = true;
-      refreshIndicator.innerHTML = '⟳ Aggiornamento...';
+      refreshIndicator.innerHTML = '⟳ Aggiornamento in corso...';
       refreshIndicator.style.transform = 'translateY(0)';
 
       try {
-        // Invalida cache e forza reload
+        // 1. Invalida cache locale
         window.cacheManager?.invalidate('magazzino');
-        await triggerDatabaseUpdate();
 
-        // Attendi un attimo per dare tempo al workflow di partire
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // 2. Forza trigger workflow (bypassa throttle)
+        await forceTriggerWorkflow();
 
+        // 3. Aspetta che CSV venga aggiornato (polling intelligente)
+        const updated = await waitForCSVUpdate();
+
+        // 4. Ricarica CSV (nuovo o timeout)
         await loadCSV();
         updateResults();
 
-        refreshIndicator.innerHTML = '✓ Aggiornato';
-        await new Promise(resolve => setTimeout(resolve, 800));
+        if (updated) {
+          refreshIndicator.innerHTML = '✓ Aggiornato!';
+        } else {
+          refreshIndicator.innerHTML = '⚠ Timeout. Riprova tra 1 min.';
+        }
+        await new Promise(resolve => setTimeout(resolve, 1500));
       } catch (e) {
-        console.error('Errore durante refresh:', e);
+        console.error('[PTR] Errore durante refresh:', e);
         refreshIndicator.innerHTML = '✗ Errore';
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 1500));
       }
 
       refreshing = false;
