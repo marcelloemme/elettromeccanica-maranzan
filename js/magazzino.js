@@ -538,7 +538,7 @@
 
   // ---- Pull-to-refresh: swipe down dalla cima per forzare aggiornamento ----
   let refreshing = false;
-  const PULL_THRESHOLD = 80; // pixel da trascinare per attivare refresh
+  const PULL_THRESHOLD = 60; // pixel da trascinare per attivare refresh (ridotto per iPad)
   let pullStartY = 0;
   let pullCurrentY = 0;
   let isPulling = false;
@@ -586,12 +586,18 @@
     // Mostra indicatore solo se swipe verso il basso
     if (pullDistance > 0 && window.scrollY === 0) {
       const progress = Math.min(pullDistance / PULL_THRESHOLD, 1);
-      refreshIndicator.style.transform = `translateY(${-100 + (progress * 100)}%)`;
+      const translateY = -100 + (progress * 100);
+      refreshIndicator.style.transform = `translateY(${translateY}%)`;
 
+      // Aggiorna testo in base alla distanza trascinata
       if (pullDistance >= PULL_THRESHOLD) {
-        refreshIndicator.innerHTML = '↑ Rilascia per aggiornare';
+        if (refreshIndicator.innerHTML !== '↑ Rilascia per aggiornare') {
+          refreshIndicator.innerHTML = '↑ Rilascia per aggiornare';
+        }
       } else {
-        refreshIndicator.innerHTML = '↓ Trascina per aggiornare';
+        if (refreshIndicator.innerHTML !== '↓ Trascina per aggiornare') {
+          refreshIndicator.innerHTML = '↓ Trascina per aggiornare';
+        }
       }
     }
   }, { passive: true });
