@@ -192,7 +192,7 @@
 
     // Mostra messaggio iniziale quando l'input è vuoto
     if (!q) {
-      topResultsEl.innerHTML = '<div style="padding:6px 8px; font-size:18px;">Digita per iniziare la ricerca del codice. Visualizza il contenuto degli scaffali con il formato A01.</div>';
+      topResultsEl.innerHTML = '<div style="padding:6px 8px; font-size:18px;">Digita per iniziare la ricerca del codice. Visualizza il contenuto degli scaffali con il formato A01. Visualizzando uno scaffale, scorri a destra o a sinistra per passare agli altri scaffali. Nel caso i dati non fossero ancora aggiornati a seguito di modifiche o inserimenti, scorri dall\'alto verso il basso per forzare l\'aggiornamento.</div>';
       return;
     }
 
