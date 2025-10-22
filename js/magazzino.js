@@ -565,7 +565,7 @@
     z-index: 9999;
     pointer-events: none;
   `;
-  refreshIndicator.innerHTML = '↓ Trascina per aggiornare';
+  refreshIndicator.innerHTML = '↓ Trascina x aggiornare';
   document.body.appendChild(refreshIndicator);
 
   const resultsArea = document.querySelector('.app') || document.body;
@@ -592,12 +592,12 @@
 
       // Aggiorna testo in base alla distanza trascinata
       if (pullDistance >= PULL_THRESHOLD) {
-        if (refreshIndicator.innerHTML !== '↑ Rilascia per aggiornare') {
-          refreshIndicator.innerHTML = '↑ Rilascia per aggiornare';
+        if (refreshIndicator.innerHTML !== '↑ Rilascia x aggiornare') {
+          refreshIndicator.innerHTML = '↑ Rilascia x aggiornare';
         }
       } else {
-        if (refreshIndicator.innerHTML !== '↓ Trascina per aggiornare') {
-          refreshIndicator.innerHTML = '↓ Trascina per aggiornare';
+        if (refreshIndicator.innerHTML !== '↓ Trascina x aggiornare') {
+          refreshIndicator.innerHTML = '↓ Trascina x aggiornare';
         }
       }
     }
