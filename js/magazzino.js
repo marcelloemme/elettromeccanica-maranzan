@@ -733,27 +733,62 @@
   // Fix iOS PWA: forza ricalcolo safe-area per tastierino
   function fixKeypadPosition() {
     const inputZone = document.querySelector('.input-zone');
-    if (!inputZone) return;
+    if (!inputZone) {
+      console.log('[KEYPAD] .input-zone non trovato');
+      return;
+    }
+
+    console.log('[KEYPAD] Fixing position...');
 
     // Forza reflow con doppio requestAnimationFrame
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         // Trigger repaint forzando lettura computed style
-        const _ = inputZone.offsetHeight;
-        inputZone.style.transform = 'translateZ(0)'; // Force GPU composite
+        const height = inputZone.offsetHeight;
+        const bottom = window.getComputedStyle(inputZone).bottom;
+        const paddingBottom = window.getComputedStyle(inputZone).paddingBottom;
+
+        console.log('[KEYPAD] Before fix - bottom:', bottom, 'paddingBottom:', paddingBottom, 'height:', height);
+
+        // Force GPU composite + reflow
+        inputZone.style.transform = 'translateZ(0)';
+
+        // Forza ricalcolo rimuovendo e riaggiungendo padding
+        const currentPadding = inputZone.style.paddingBottom;
+        inputZone.style.paddingBottom = 'calc(0.3rem + env(safe-area-inset-bottom, 0px) + 0.01px)';
+        const _ = inputZone.offsetHeight; // Force reflow
+        inputZone.style.paddingBottom = 'calc(0.3rem + env(safe-area-inset-bottom, 0px))';
+
+        const newBottom = window.getComputedStyle(inputZone).bottom;
+        const newPaddingBottom = window.getComputedStyle(inputZone).paddingBottom;
+        console.log('[KEYPAD] After fix - bottom:', newBottom, 'paddingBottom:', newPaddingBottom);
       });
     });
   }
 
   // Applica fix dopo load e dopo resize viewport
   window.addEventListener('load', () => {
-    setTimeout(fixKeypadPosition, 100);
-    setTimeout(fixKeypadPosition, 300);
+    console.log('[KEYPAD] Window loaded, scheduling fixes...');
+    setTimeout(() => {
+      console.log('[KEYPAD] Fix at 100ms');
+      fixKeypadPosition();
+    }, 100);
+    setTimeout(() => {
+      console.log('[KEYPAD] Fix at 300ms');
+      fixKeypadPosition();
+    }, 300);
+    setTimeout(() => {
+      console.log('[KEYPAD] Fix at 500ms');
+      fixKeypadPosition();
+    }, 500);
   });
 
   // Fix anche quando viewport cambia (orientamento, tastiera iOS)
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', fixKeypadPosition);
+    window.visualViewport.addEventListener('resize', () => {
+      console.log('[KEYPAD] Viewport resized');
+      fixKeypadPosition();
+    });
   }
 
   // Init (ottimizzato cache-first)
