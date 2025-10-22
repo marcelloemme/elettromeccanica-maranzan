@@ -68,12 +68,38 @@
 
 </script>
   <script async src="https://docs.opencv.org/4.x/opencv.js" type="text/javascript"></script>
-  <script src="/js/cache-manager.js"></script>
-  <script src="/js/magazzino.js"></script>
+  <script src="/js/cache-manager.js?v=7"></script>
+  <script src="/js/magazzino.js?v=7"></script>
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' })
+        .then(reg => {
+          // Forza check per nuova versione ogni volta
+          reg.update();
+
+          // Se c'è un SW in attesa, attivalo subito
+          if (reg.waiting) {
+            reg.waiting.postMessage('SKIP_WAITING');
+          }
+
+          // Ascolta nuovi SW in attesa e ricarica
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // Nuovo SW disponibile, ricarica pagina per attivarlo
+                console.log('Nuovo Service Worker disponibile, ricarico...');
+                window.location.reload();
+              }
+            });
+          });
+        })
         .catch(console.error);
+
+      // Ricarica quando il nuovo SW prende il controllo
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+      });
     }
 
     // Swipe da sinistra per tornare a /private
