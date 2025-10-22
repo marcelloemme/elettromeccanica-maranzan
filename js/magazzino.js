@@ -591,8 +591,8 @@
 
     console.log('[PTR] touchmove pullDistance:', pullDistance, 'scrollTop:', scrollTop);
 
-    // Mostra indicatore solo se swipe verso il basso
-    if (pullDistance > 0 && scrollTop === 0) {
+    // Mostra indicatore solo se swipe verso il basso (accetta scrollTop negativo per rubber band iOS)
+    if (pullDistance > 0 && scrollTop <= 0) {
       const progress = Math.min(pullDistance / PULL_THRESHOLD, 1);
       const translateY = -100 + (progress * 100);
       refreshIndicator.style.transform = `translateY(${translateY}%)`;
@@ -623,8 +623,8 @@
     console.log('[PTR] touchend pullDistance:', pullDistance, 'threshold:', PULL_THRESHOLD, 'scrollTop:', scrollTop);
     isPulling = false;
 
-    // Se trascinato abbastanza, attiva refresh
-    if (pullDistance >= PULL_THRESHOLD && scrollTop === 0) {
+    // Se trascinato abbastanza, attiva refresh (accetta scrollTop negativo per rubber band iOS)
+    if (pullDistance >= PULL_THRESHOLD && scrollTop <= 0) {
       console.log('[PTR] REFRESH TRIGGERED!');
       refreshing = true;
       refreshIndicator.innerHTML = '⟳ Aggiornamento...';
