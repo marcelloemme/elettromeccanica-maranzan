@@ -538,7 +538,7 @@
 
   // ---- Pull-to-refresh: swipe down dalla cima per forzare aggiornamento ----
   let refreshing = false;
-  const PULL_THRESHOLD = 60; // pixel da trascinare per attivare refresh (ridotto per iPad)
+  const PULL_THRESHOLD = 90; // pixel da trascinare per attivare refresh
   let pullStartY = 0;
   let pullCurrentY = 0;
   let isPulling = false;
