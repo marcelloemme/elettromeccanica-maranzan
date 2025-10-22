@@ -552,6 +552,7 @@
     left: 0;
     right: 0;
     height: 60px;
+    padding-top: env(safe-area-inset-top, 0px);
     background: linear-gradient(180deg, rgba(0,123,255,0.9) 0%, rgba(0,123,255,0) 100%);
     display: flex;
     align-items: center;
