@@ -572,9 +572,13 @@
 
   resultsArea.addEventListener('touchstart', (e) => {
     // Attiva pull-to-refresh solo se siamo in cima alla pagina
-    if (window.scrollY === 0 && !refreshing) {
+    const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+    console.log('[PTR] touchstart scrollTop:', scrollTop, 'refreshing:', refreshing);
+
+    if (scrollTop === 0 && !refreshing) {
       pullStartY = e.touches[0].clientY;
       isPulling = true;
+      console.log('[PTR] Pull started at Y:', pullStartY);
     }
   }, { passive: true });
 
@@ -583,21 +587,28 @@
 
     pullCurrentY = e.touches[0].clientY;
     const pullDistance = pullCurrentY - pullStartY;
+    const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+
+    console.log('[PTR] touchmove pullDistance:', pullDistance, 'scrollTop:', scrollTop);
 
     // Mostra indicatore solo se swipe verso il basso
-    if (pullDistance > 0 && window.scrollY === 0) {
+    if (pullDistance > 0 && scrollTop === 0) {
       const progress = Math.min(pullDistance / PULL_THRESHOLD, 1);
       const translateY = -100 + (progress * 100);
       refreshIndicator.style.transform = `translateY(${translateY}%)`;
+
+      console.log('[PTR] Showing indicator, progress:', progress, 'translateY:', translateY);
 
       // Aggiorna testo in base alla distanza trascinata
       if (pullDistance >= PULL_THRESHOLD) {
         if (refreshIndicator.innerHTML !== '↑ Rilascia x aggiornare') {
           refreshIndicator.innerHTML = '↑ Rilascia x aggiornare';
+          console.log('[PTR] Changed to RELEASE');
         }
       } else {
         if (refreshIndicator.innerHTML !== '↓ Trascina x aggiornare') {
           refreshIndicator.innerHTML = '↓ Trascina x aggiornare';
+          console.log('[PTR] Changed to DRAG');
         }
       }
     }
@@ -607,10 +618,14 @@
     if (!isPulling || refreshing) return;
 
     const pullDistance = pullCurrentY - pullStartY;
+    const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+
+    console.log('[PTR] touchend pullDistance:', pullDistance, 'threshold:', PULL_THRESHOLD, 'scrollTop:', scrollTop);
     isPulling = false;
 
     // Se trascinato abbastanza, attiva refresh
-    if (pullDistance >= PULL_THRESHOLD && window.scrollY === 0) {
+    if (pullDistance >= PULL_THRESHOLD && scrollTop === 0) {
+      console.log('[PTR] REFRESH TRIGGERED!');
       refreshing = true;
       refreshIndicator.innerHTML = '⟳ Aggiornamento...';
       refreshIndicator.style.transform = 'translateY(0)';
