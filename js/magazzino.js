@@ -509,7 +509,7 @@
 
   // Aggiorna database GitHub in background (con throttle)
   async function triggerDatabaseUpdate() {
-    const THROTTLE_DURATION = 10 * 60 * 1000; // 10 minuti (ridotto spam GitHub)
+    const THROTTLE_DURATION = 5 * 60 * 1000; // 5 minuti (sincronizzato con durata cache)
     const LAST_TRIGGER_KEY = 'magazzino_last_update_trigger';
 
     try {

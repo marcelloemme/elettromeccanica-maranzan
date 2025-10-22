@@ -17,7 +17,7 @@ class CacheManager {
     this.durations = {
       riparazioni: 15 * 60 * 1000,     // 15 minuti (sessioni lavoro più lunghe)
       clienti: 10 * 60 * 1000,         // 10 minuti (dati stabili)
-      magazzino: 30 * 60 * 1000        // 30 minuti (uso intensivo ripetuto)
+      magazzino: 5 * 60 * 1000         // 5 minuti (aggiornamenti più frequenti)
     };
   }
 
