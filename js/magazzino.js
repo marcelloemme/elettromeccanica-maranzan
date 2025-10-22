@@ -509,7 +509,7 @@
 
   // Aggiorna database GitHub in background (con throttle)
   async function triggerDatabaseUpdate() {
-    const THROTTLE_DURATION = 5 * 60 * 1000; // 5 minuti (sincronizzato con durata cache)
+    const THROTTLE_DURATION = 10 * 60 * 1000; // 10 minuti (ridotto spam GitHub)
     const LAST_TRIGGER_KEY = 'magazzino_last_update_trigger';
 
     try {
@@ -535,6 +535,105 @@
       // Fallback silenzioso: continua con il CSV in cache
     }
   }
+
+  // ---- Pull-to-refresh: swipe down dalla cima per forzare aggiornamento ----
+  let refreshing = false;
+  const PULL_THRESHOLD = 80; // pixel da trascinare per attivare refresh
+  let pullStartY = 0;
+  let pullCurrentY = 0;
+  let isPulling = false;
+
+  // Crea indicatore visivo per pull-to-refresh
+  const refreshIndicator = document.createElement('div');
+  refreshIndicator.id = 'refresh-indicator';
+  refreshIndicator.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(180deg, rgba(0,123,255,0.9) 0%, rgba(0,123,255,0) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    transform: translateY(-100%);
+    transition: transform 0.2s ease-out;
+    z-index: 9999;
+    pointer-events: none;
+  `;
+  refreshIndicator.innerHTML = '↓ Trascina per aggiornare';
+  document.body.appendChild(refreshIndicator);
+
+  const resultsArea = document.querySelector('.app') || document.body;
+
+  resultsArea.addEventListener('touchstart', (e) => {
+    // Attiva pull-to-refresh solo se siamo in cima alla pagina
+    if (window.scrollY === 0 && !refreshing) {
+      pullStartY = e.touches[0].clientY;
+      isPulling = true;
+    }
+  }, { passive: true });
+
+  resultsArea.addEventListener('touchmove', (e) => {
+    if (!isPulling || refreshing) return;
+
+    pullCurrentY = e.touches[0].clientY;
+    const pullDistance = pullCurrentY - pullStartY;
+
+    // Mostra indicatore solo se swipe verso il basso
+    if (pullDistance > 0 && window.scrollY === 0) {
+      const progress = Math.min(pullDistance / PULL_THRESHOLD, 1);
+      refreshIndicator.style.transform = `translateY(${-100 + (progress * 100)}%)`;
+
+      if (pullDistance >= PULL_THRESHOLD) {
+        refreshIndicator.innerHTML = '↑ Rilascia per aggiornare';
+      } else {
+        refreshIndicator.innerHTML = '↓ Trascina per aggiornare';
+      }
+    }
+  }, { passive: true });
+
+  resultsArea.addEventListener('touchend', async (e) => {
+    if (!isPulling || refreshing) return;
+
+    const pullDistance = pullCurrentY - pullStartY;
+    isPulling = false;
+
+    // Se trascinato abbastanza, attiva refresh
+    if (pullDistance >= PULL_THRESHOLD && window.scrollY === 0) {
+      refreshing = true;
+      refreshIndicator.innerHTML = '⟳ Aggiornamento...';
+      refreshIndicator.style.transform = 'translateY(0)';
+
+      try {
+        // Invalida cache e forza reload
+        window.cacheManager?.invalidate('magazzino');
+        await triggerDatabaseUpdate();
+
+        // Attendi un attimo per dare tempo al workflow di partire
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        await loadCSV();
+        updateResults();
+
+        refreshIndicator.innerHTML = '✓ Aggiornato';
+        await new Promise(resolve => setTimeout(resolve, 800));
+      } catch (e) {
+        console.error('Errore durante refresh:', e);
+        refreshIndicator.innerHTML = '✗ Errore';
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+
+      refreshing = false;
+    }
+
+    // Nascondi indicatore
+    refreshIndicator.style.transform = 'translateY(-100%)';
+    pullCurrentY = 0;
+  }, { passive: true });
 
   // Init (ottimizzato cache-first)
   (async () => {
