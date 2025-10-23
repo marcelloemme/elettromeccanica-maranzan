@@ -320,16 +320,16 @@ body.touch-app {
 #results-area {
   flex: 1;
   overflow-y: auto;
-  padding: calc(0.3em + env(safe-area-inset-top)) 0.2em 0;
+  padding: env(safe-area-inset-top, 0) 0.2em 0;
   padding-bottom: 180px;
 }
 
 .block {
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.4rem;
 }
 
 .block h3 {
-  margin: 0.3rem 0 0.2rem 0;
+  margin: 0.2rem 0 0.2rem 0;
   padding-left: 6px;
   font-weight: 600;
   font-size: 18px;
@@ -339,7 +339,7 @@ body.touch-app {
 .block div {
   font-size: 18px;
   padding-left: 6px !important;
-  margin: 0.3rem 0 0.2rem 0;
+  margin: 0.2rem 0 0.2rem 0;
 }
 
 #top-results h3,

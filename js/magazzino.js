@@ -730,33 +730,9 @@
     pullCurrentY = 0;
   }, { passive: true });
 
-  // Fix iOS PWA: forza repaint con micro-scroll
-  function forceIOSRepaint() {
-    const currentScroll = window.scrollY;
-
-    // Se già scrollato, non fare niente
-    if (currentScroll > 0) return;
-
-    // Scroll veloce down e up per triggerare repaint
-    window.scrollTo({ top: 15, behavior: 'auto' });
-
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'auto' });
-    }, 50);
-  }
-
-  // Trigger al caricamento e dopo render (solo in PWA mode)
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-                       (navigator.standalone) ||
-                       document.referrer.includes('android-app://');
-
-  if (isStandalone) {
-    // Dopo window load (aspetta rendering completo)
-    window.addEventListener('load', () => {
-      setTimeout(forceIOSRepaint, 500);
-      setTimeout(forceIOSRepaint, 800);
-    });
-  }
+  // Nota: iOS PWA non calcola env(safe-area-inset-bottom) all'avvio.
+  // Il tastierino parte leggermente troppo in alto ma si sistema al primo
+  // scroll/interaction. Questo è un limite noto di iOS PWA.
 
   // Init (ottimizzato cache-first)
   (async () => {
@@ -779,11 +755,6 @@
       triggerDatabaseUpdate();  // GitHub workflow (throttled 10 min)
       loadCSVBackground();      // CSV refresh silenzioso
 
-      // 3. Fix tastierino dopo render (solo PWA)
-      if (isStandalone) {
-        setTimeout(forceIOSRepaint, 100);
-      }
-
       return;
     }
 
@@ -797,10 +768,5 @@
     }
 
     updateResults();
-
-    // Fix tastierino dopo render (solo PWA)
-    if (isStandalone) {
-      setTimeout(forceIOSRepaint, 100);
-    }
   })();
 })();
