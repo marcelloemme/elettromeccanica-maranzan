@@ -730,7 +730,7 @@
     pullCurrentY = 0;
   }, { passive: true });
 
-  // Fix iOS PWA: forza ricalcolo safe-area per tastierino
+  // Fix iOS PWA: forza bottom con safe-area
   function fixKeypadPosition() {
     const inputZone = document.querySelector('.input-zone');
     if (!inputZone) {
@@ -740,30 +740,28 @@
 
     console.log('[KEYPAD] Fixing position...');
 
-    // Forza reflow con doppio requestAnimationFrame
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        // Trigger repaint forzando lettura computed style
-        const height = inputZone.offsetHeight;
-        const bottom = window.getComputedStyle(inputZone).bottom;
-        const paddingBottom = window.getComputedStyle(inputZone).paddingBottom;
+    // Ottieni safe-area-inset-bottom tramite CSS variabile temporanea
+    const testDiv = document.createElement('div');
+    testDiv.style.cssText = 'position:fixed;bottom:env(safe-area-inset-bottom,0);visibility:hidden;';
+    document.body.appendChild(testDiv);
+    const safeAreaBottom = parseFloat(window.getComputedStyle(testDiv).bottom) || 0;
+    document.body.removeChild(testDiv);
 
-        console.log('[KEYPAD] Before fix - bottom:', bottom, 'paddingBottom:', paddingBottom, 'height:', height);
+    const beforeBottom = window.getComputedStyle(inputZone).bottom;
+    console.log('[KEYPAD] Before fix - bottom:', beforeBottom, 'safe-area detected:', safeAreaBottom + 'px');
 
-        // Force GPU composite + reflow
-        inputZone.style.transform = 'translateZ(0)';
+    // Imposta bottom direttamente invece di affidarsi a env() che iOS non calcola
+    if (safeAreaBottom > 0) {
+      inputZone.style.bottom = safeAreaBottom + 'px';
+      console.log('[KEYPAD] Applied bottom:', safeAreaBottom + 'px (from safe-area)');
+    } else {
+      // Fallback: usa valore tipico iPad (34px)
+      inputZone.style.bottom = '34px';
+      console.log('[KEYPAD] Applied bottom: 34px (fallback)');
+    }
 
-        // Forza ricalcolo rimuovendo e riaggiungendo padding
-        const currentPadding = inputZone.style.paddingBottom;
-        inputZone.style.paddingBottom = 'calc(0.3rem + env(safe-area-inset-bottom, 0px) + 0.01px)';
-        const _ = inputZone.offsetHeight; // Force reflow
-        inputZone.style.paddingBottom = 'calc(0.3rem + env(safe-area-inset-bottom, 0px))';
-
-        const newBottom = window.getComputedStyle(inputZone).bottom;
-        const newPaddingBottom = window.getComputedStyle(inputZone).paddingBottom;
-        console.log('[KEYPAD] After fix - bottom:', newBottom, 'paddingBottom:', newPaddingBottom);
-      });
-    });
+    const afterBottom = window.getComputedStyle(inputZone).bottom;
+    console.log('[KEYPAD] After fix - bottom:', afterBottom);
   }
 
   // Applica fix dopo load e dopo resize viewport
