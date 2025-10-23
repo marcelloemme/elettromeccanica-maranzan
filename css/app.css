@@ -325,11 +325,11 @@ body.touch-app {
 }
 
 .block {
-  margin-bottom: 0.2rem;
+  margin-bottom: 0;
 }
 
 .block h3 {
-  margin: 0.1rem 0;
+  margin: 0;
   padding-left: 6px;
   font-weight: 600;
   font-size: 18px;
@@ -339,7 +339,7 @@ body.touch-app {
 .block div {
   font-size: 18px;
   padding-left: 6px !important;
-  margin: 0.1rem 0;
+  margin: 0;
 }
 
 #top-results h3,
