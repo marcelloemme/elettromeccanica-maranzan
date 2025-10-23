@@ -730,9 +730,27 @@
     pullCurrentY = 0;
   }, { passive: true });
 
-  // Nota: iOS PWA non calcola env(safe-area-inset-bottom) all'avvio.
-  // Il tastierino parte leggermente troppo in alto ma si sistema al primo
-  // scroll/interaction dell'utente. Non c'è un fix JavaScript affidabile.
+  // Fix iOS PWA: forza repaint con micro-scroll invisibile
+  function forceIOSRepaint() {
+    // Scroll di 1px e torna a 0 per forzare iOS a ricalcolare env()
+    window.scrollTo(0, 1);
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+    });
+  }
+
+  // Trigger al caricamento (solo in PWA mode)
+  window.addEventListener('load', () => {
+    // Controlla se in PWA standalone mode
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                         (navigator.standalone) ||
+                         document.referrer.includes('android-app://');
+
+    if (isStandalone) {
+      setTimeout(forceIOSRepaint, 100);
+      setTimeout(forceIOSRepaint, 300);
+    }
+  });
 
   // Init (ottimizzato cache-first)
   (async () => {
