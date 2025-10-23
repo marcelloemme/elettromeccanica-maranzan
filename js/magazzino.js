@@ -730,64 +730,9 @@
     pullCurrentY = 0;
   }, { passive: true });
 
-  // Fix iOS PWA: forza bottom con safe-area
-  function fixKeypadPosition() {
-    const inputZone = document.querySelector('.input-zone');
-    if (!inputZone) {
-      console.log('[KEYPAD] .input-zone non trovato');
-      return;
-    }
-
-    console.log('[KEYPAD] Fixing position...');
-
-    // Ottieni safe-area-inset-bottom tramite CSS variabile temporanea
-    const testDiv = document.createElement('div');
-    testDiv.style.cssText = 'position:fixed;bottom:env(safe-area-inset-bottom,0);visibility:hidden;';
-    document.body.appendChild(testDiv);
-    const safeAreaBottom = parseFloat(window.getComputedStyle(testDiv).bottom) || 0;
-    document.body.removeChild(testDiv);
-
-    const beforeBottom = window.getComputedStyle(inputZone).bottom;
-    console.log('[KEYPAD] Before fix - bottom:', beforeBottom, 'safe-area detected:', safeAreaBottom + 'px');
-
-    // Imposta bottom direttamente invece di affidarsi a env() che iOS non calcola
-    if (safeAreaBottom > 0) {
-      inputZone.style.bottom = safeAreaBottom + 'px';
-      console.log('[KEYPAD] Applied bottom:', safeAreaBottom + 'px (from safe-area)');
-    } else {
-      // Fallback: usa valore tipico iPad (34px)
-      inputZone.style.bottom = '34px';
-      console.log('[KEYPAD] Applied bottom: 34px (fallback)');
-    }
-
-    const afterBottom = window.getComputedStyle(inputZone).bottom;
-    console.log('[KEYPAD] After fix - bottom:', afterBottom);
-  }
-
-  // Applica fix dopo load e dopo resize viewport
-  window.addEventListener('load', () => {
-    console.log('[KEYPAD] Window loaded, scheduling fixes...');
-    setTimeout(() => {
-      console.log('[KEYPAD] Fix at 100ms');
-      fixKeypadPosition();
-    }, 100);
-    setTimeout(() => {
-      console.log('[KEYPAD] Fix at 300ms');
-      fixKeypadPosition();
-    }, 300);
-    setTimeout(() => {
-      console.log('[KEYPAD] Fix at 500ms');
-      fixKeypadPosition();
-    }, 500);
-  });
-
-  // Fix anche quando viewport cambia (orientamento, tastiera iOS)
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', () => {
-      console.log('[KEYPAD] Viewport resized');
-      fixKeypadPosition();
-    });
-  }
+  // Nota: iOS PWA non calcola env(safe-area-inset-bottom) all'avvio.
+  // Il tastierino parte leggermente troppo in alto ma si sistema al primo
+  // scroll/interaction dell'utente. Non c'è un fix JavaScript affidabile.
 
   // Init (ottimizzato cache-first)
   (async () => {
@@ -810,9 +755,6 @@
       triggerDatabaseUpdate();  // GitHub workflow (throttled 10 min)
       loadCSVBackground();      // CSV refresh silenzioso
 
-      // Fix tastierino dopo render
-      fixKeypadPosition();
-
       return;
     }
 
@@ -826,8 +768,5 @@
     }
 
     updateResults();
-
-    // Fix tastierino dopo render
-    fixKeypadPosition();
   })();
 })();
