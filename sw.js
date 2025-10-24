@@ -1,11 +1,11 @@
 /* Elettromeccanica Maranzan - PWA Service Worker */
-const CACHE_NAME = 'em-maranzan-v26';
+const CACHE_NAME = 'em-maranzan-v27';
 const PRECACHE_URLS = [
   '/private.html',
   '/html/magazzino.html',
   '/css/app.css?v=24',
-  '/js/magazzino.js',
-  '/js/cache-manager.js',
+  '/js/magazzino.js?v=24',
+  '/js/cache-manager.js?v=24',
   '/icons/icon-192.png',
   '/icons/icon-512.png'
 ];
@@ -77,7 +77,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Per librerie esterne (es. OpenCV) -> prova rete e metti in cache best-effort
+  // Per librerie esterne -> prova rete e metti in cache best-effort
   if (!isSameOrigin) {
     event.respondWith(networkThenCache(request));
     return;

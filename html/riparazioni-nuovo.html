@@ -23,8 +23,9 @@
   </div>
 
   <main class="app" style="opacity: 0;">
-    <header class="header">
+    <header class="header" style="position: relative;">
       <h1>Nuova Riparazione</h1>
+      <span class="menu-inside" id="burger-menu" role="button" aria-label="Torna all'archivio" tabindex="0" style="cursor: pointer; position: absolute; right: 16px; top: 50%; transform: translateY(-50%);">☰</span>
     </header>
 
     <form id="form-nuova" class="form-container">
@@ -91,7 +92,7 @@
   <script src="/js/riparazioni-nuovo.js"></script>
 
   <script>
-    // Swipe da sinistra per tornare a /private
+    // Swipe da sinistra per tornare all'archivio riparazioni
     (() => {
       const EDGE_THRESHOLD = 50;
       const SWIPE_MIN_DISTANCE = 100;
@@ -112,7 +113,7 @@
         const dy = Math.abs(touch.clientY - startY);
         if (dx > SWIPE_MIN_DISTANCE && dy < 100) {
           if (navigator.vibrate) navigator.vibrate(50);
-          window.location.href = '/private.html';
+          window.location.href = '/html/riparazioni-archivio.html';
         }
         isEdgeSwipe = false;
       }, { passive: true });

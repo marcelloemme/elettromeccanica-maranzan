@@ -71,6 +71,22 @@ async function caricaRiparazioni() {
 
 // Setup event listeners
 function setupEventListeners() {
+  // Burger menu -> torna a /private
+  const burgerMenu = document.getElementById('burger-menu');
+  if (burgerMenu) {
+    burgerMenu.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(10);
+      window.location.href = '/private.html';
+    });
+    burgerMenu.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (navigator.vibrate) navigator.vibrate(10);
+        window.location.href = '/private.html';
+      }
+    });
+  }
+
   // Toggle filtri
   toggleBtns.forEach(btn => {
     btn.addEventListener('click', () => {

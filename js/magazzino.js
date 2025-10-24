@@ -3,14 +3,12 @@
   const topResultsEl = document.getElementById('top-results');
   const suggestionsEl = document.getElementById('suggestions');
   const keypad = document.querySelector('.keypad');
-  const cameraBtn = document.getElementById('camera-button');
-  const fileInput = document.getElementById('qr-file-input');
+  const burgerMenu = document.getElementById('burger-menu');
   const bodyEl = document.querySelector('body.touch-app') || document.body;
 
   let DATA = [];
   let LAST_QUERY = null; // null invece di "" per mostrare il messaggio iniziale
   let SHELVES = []; // elenco scaffali normalizzati, ordinati
-  let placeholderTimer = null;
 
   const THEME_KEY = 'themeOverride'; // 'dark' | 'light'
   function applyTheme(mode){
@@ -112,23 +110,6 @@
     updateResults();
   }
 
-  function waitForOpenCVReady(){
-    return new Promise((resolve, reject) => {
-      // If OpenCV is already loaded (cv.Mat exists), resolve immediately
-      if (window.cv && cv.Mat) return resolve();
-      const start = Date.now();
-      const interval = setInterval(() => {
-        if (window.cv && cv.Mat){
-          clearInterval(interval);
-          resolve();
-        } else if (Date.now() - start > 10000) {
-          clearInterval(interval);
-          reject(new Error('OpenCV non pronto (timeout)'));
-        }
-      }, 50);
-    });
-  }
-
   async function loadCSV(){
     try{
       const res = await fetch(`/magazzino.csv?t=${Date.now()}`, { cache:'no-store' });
@@ -223,151 +204,17 @@
     }
   }
 
-  async function decodeQRFromFile(file){
-    if (!file) return null;
-    await waitForOpenCVReady();
-
-    const imgURL = URL.createObjectURL(file);
-    try{
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      const loaded = new Promise((res, rej) => {
-        img.onload = () => res();
-        img.onerror = (e) => rej(e);
-      });
-      img.src = imgURL;
-      await loaded;
-
-      // Riduci per performance se molto grande
-      const maxSide = 1280;
-      let { width, height } = img;
-      const scale = Math.min(1, maxSide / Math.max(width, height));
-      const cw = Math.max(1, Math.round(width * scale));
-      const ch = Math.max(1, Math.round(height * scale));
-
-      const canvas = document.createElement('canvas');
-      canvas.width = cw; canvas.height = ch;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, cw, ch);
-
-      const src = cv.imread(canvas);
-      const detector = new cv.QRCodeDetector();
-
-      // Try 1: original
-      let points = new cv.Mat();
-      let straight = new cv.Mat();
-      let result = detector.detectAndDecode(src, points, straight);
-      points.delete(); straight.delete();
-
-      // If not found, preprocess (grayscale + equalize + light blur)
-      if (!result || !result.trim().length) {
-        let gray = new cv.Mat();
-        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-
-        // Contrast boost (prefer CLAHE if available, else equalizeHist)
-        let enhanced = new cv.Mat();
-        if (cv.createCLAHE) {
-          try {
-            const clahe = new cv.CLAHE(2.0, new cv.Size(8, 8));
-            clahe.apply(gray, enhanced);
-            clahe.delete();
-          } catch (_) {
-            cv.equalizeHist(gray, enhanced);
-          }
-        } else {
-          cv.equalizeHist(gray, enhanced);
-        }
-
-        // Light denoise to reduce JPEG artifacts
-        let blurred = new cv.Mat();
-        cv.GaussianBlur(enhanced, blurred, new cv.Size(3, 3), 0, 0, cv.BORDER_DEFAULT);
-
-        points = new cv.Mat();
-        straight = new cv.Mat();
-        result = detector.detectAndDecode(blurred, points, straight);
-
-        // Cleanup intermats
-        gray.delete(); enhanced.delete(); blurred.delete();
-        points.delete(); straight.delete();
-      }
-
-      // Last try: adaptive threshold (binary) which sometimes helps on low-contrast prints
-      if (!result || !result.trim().length) {
-        let gray2 = new cv.Mat();
-        cv.cvtColor(src, gray2, cv.COLOR_RGBA2GRAY);
-        let bin = new cv.Mat();
-        cv.adaptiveThreshold(
-          gray2,
-          bin,
-          255,
-          cv.ADAPTIVE_THRESH_GAUSSIAN_C,
-          cv.THRESH_BINARY,
-          31,
-          2
-        );
-        points = new cv.Mat();
-        straight = new cv.Mat();
-        result = detector.detectAndDecode(bin, points, straight);
-        gray2.delete(); bin.delete();
-        points.delete(); straight.delete();
-      }
-
-      src.delete();
-      detector.delete();
-
-      if (result && typeof result === 'string' && result.trim().length) {
-        return result.trim();
-      }
-      return null;
-    } finally {
-      URL.revokeObjectURL(imgURL);
-    }
-  }
-
-  // Hook emoji fotocamera -> input file
-  if (cameraBtn && fileInput){
-    cameraBtn.addEventListener('click', () => {
+  // Hook burger menu -> torna a /private
+  if (burgerMenu){
+    burgerMenu.addEventListener('click', () => {
       if (navigator.vibrate) navigator.vibrate(10);
-      fileInput.click();
+      window.location.href = '/private.html';
     });
-    cameraBtn.addEventListener('keydown', (e) => {
+    burgerMenu.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' '){
         e.preventDefault();
-        fileInput.click();
-      }
-    });
-
-    fileInput.addEventListener('change', async (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      try{
-        const code = await decodeQRFromFile(file);
-        if (code){
-          inputEl.value = code;
-          updateResults();
-        } else {
-          console.warn('QR non riconosciuto');
-          const prevPh = inputEl.getAttribute('placeholder') || '';
-          // Clear any previous timer to avoid races
-          if (placeholderTimer) {
-            clearTimeout(placeholderTimer);
-            placeholderTimer = null;
-          }
-          // Aggiunge stato di errore (gestito dal CSS)
-          inputEl.classList.add('error');
-          inputEl.setAttribute('placeholder', 'QR non riconosciuto.');
-          // Dopo 2.5s ripristina placeholder e stato
-          placeholderTimer = setTimeout(() => {
-            inputEl.classList.remove('error');
-            inputEl.setAttribute('placeholder', prevPh || 'Codice ricambio');
-            placeholderTimer = null;
-          }, 2500);
-        }
-      } catch(err){
-        console.error('Errore durante la scansione QR:', err);
-      } finally {
-        // reset per poter ricaricare lo stesso file se serve
-        fileInput.value = '';
+        if (navigator.vibrate) navigator.vibrate(10);
+        window.location.href = '/private.html';
       }
     });
   }

@@ -135,7 +135,7 @@
   <script src="/js/riparazioni-dettaglio.js"></script>
 
   <script>
-    // Swipe da sinistra per tornare a /private
+    // Swipe da sinistra per tornare all'archivio riparazioni
     (() => {
       const EDGE_THRESHOLD = 50;
       const SWIPE_MIN_DISTANCE = 100;
@@ -156,7 +156,7 @@
         const dy = Math.abs(touch.clientY - startY);
         if (dx > SWIPE_MIN_DISTANCE && dy < 100) {
           if (navigator.vibrate) navigator.vibrate(50);
-          window.location.href = '/private.html';
+          window.location.href = '/html/riparazioni-archivio.html';
         }
         isEdgeSwipe = false;
       }, { passive: true });
