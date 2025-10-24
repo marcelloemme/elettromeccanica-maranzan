@@ -425,12 +425,17 @@ body.touch-app {
   position: absolute;
   right: 12px;
   top: 50%;
-  transform: translateY(-56%);
+  transform: translateY(-50%);
   pointer-events: auto;
   cursor: pointer;
-  font-size: 18px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: inherit;
+}
+
+.menu-inside svg {
+  display: block;
 }
 
 .kbd-toggle {
