@@ -80,6 +80,7 @@ Codice,descrizione,scaffale
 140T36-8,scatola ingranaggi,H07
 140T37-6,scatola ingranaggi,H07
 141338-5,albero motore,D05
+142112-4,coperchio scatola ing.,V11
 142289-5,ammortizzatore,D04
 143035-9,scatola cuscinetto,H09
 143250-5,testa completa,H07
@@ -237,6 +238,7 @@ Codice,descrizione,scaffale
 212208-6,cuscinetto NK 15/16,L03
 212502-6,cuscinetto,N01
 213027-3,paraolio,F02
+213032-0,guarnizione piccola,Z04
 213047-7,anello,L14
 213063-9,guarnizione,A09
 213068-9,anello gomma,V02
@@ -262,6 +264,8 @@ Codice,descrizione,scaffale
 213270-4,anello x HM1100,Q08
 213273-8,sigillo olio,S07
 213274-6,guarnizione,I01
+213283-5,anello 19 x HR3200C,T02
+213296-6,anello 34 HR5201C,Y03
 213303-5,sigillo olio,L03
 213309-3,guarnizione,E01
 213311-6,anello,Q05
@@ -270,6 +274,7 @@ Codice,descrizione,scaffale
 213370-0,sigillo,B09
 213373-4,anello,A03
 213374-2,guarnizione or,F01
+213379-2,anello 21 x AN621,Y06
 213381-5,guarnizione,H01
 213383-1,anello,L04
 213385-7,anello x HR2400,A07
@@ -291,6 +296,7 @@ Codice,descrizione,scaffale
 213510-0,anello,Q13
 213512-6,guarnizione,L08
 213523-1,guarnizione,R09
+213554-0,guarnizione 44,X07
 213601-7,guarnizione,B09
 213611-4,anello,Z05
 213655-4,guarnizione,L03
@@ -423,6 +429,7 @@ Codice,descrizione,scaffale
 227505-7,ingranaggio,G10
 227509-9,ingranaggio x HR4001,F15
 227512-0,ingranaggio,R10
+227514-6,ingranaggio 38,T12
 227542-1,ingranaggio,Q15
 227592-6,ingranaggio,K01
 227597-8,ingranaggio,K01
@@ -500,6 +507,7 @@ Codice,descrizione,scaffale
 241659-6,ventola x BO5000,M01
 241660-1,puleggia,V05
 241663-5,ventola,Y10
+241673-2,ventola x BO5030,K10
 241881-5,ventola,G11
 242042-0,tappo,M01
 242502-2,tappo olio,L07
@@ -517,6 +525,7 @@ Codice,descrizione,scaffale
 252134-7,dado M8,K08
 252624,leva,V04
 252640-2,manopola,O06
+252640-8,manopola M8,E06
 253052-2,rondella,R01
 253186-1,rondella,H06
 253215-0,rondella,R15
@@ -665,6 +674,7 @@ Codice,descrizione,scaffale
 322652-0,frizione,O09
 322653-8,con di pressione,O09
 322691-0,albero ingr.,U05
+322718-6,bussola x 6940D,S06
 322743-7,ingranaggio,Q01
 322754-2,incudine x 6950,Q03
 322806-9,battente,R05
@@ -760,6 +770,7 @@ Codice,descrizione,scaffale
 345238-3,piastra base,U07
 345342-8,pinza fermacarta,U09
 345454-7,molla freno,G03
+345479-1,guida per pattino,K01
 345702-4,guida BPT350,G08
 345998-7,piastrina,X06
 346176-2,piastra blocco,I07
@@ -789,6 +800,7 @@ Codice,descrizione,scaffale
 414312-9,leva int.,M08
 414708-4,leva interruttore,I09
 414990-5,spinotto,M02
+415302-5,coperchio scatola ing.,E06
 415443-7,piastra guida,S09
 415491-6,tasto,B02
 415515-8,anello cambio,S07
@@ -827,6 +839,7 @@ Codice,descrizione,scaffale
 416571-1,leva cambio,P10
 416573-7,manicotto,Z05
 416575-3,coperchio carcassa,R16
+416733-1,anello cambio x HK0500,K11
 416927-8,anello guida,P03
 416929-4,pistone,P11
 416933-3,portaounte,P05
@@ -898,6 +911,7 @@ Codice,descrizione,scaffale
 421323-7,copri interruttore,E02
 421336-8,coperchio antipolvere,L06
 421392-8,guarnizione,A03
+421479-6,anello 19 x 9541,Q04
 421494-0,anello gomma,A02
 421541-7,coperchio cannone,C03
 421570-0,anello,R09
@@ -979,6 +993,7 @@ Codice,descrizione,scaffale
 456699-7,coperchio,D07
 519226-8,indotto bhr202,K08
 519235-7,indotto bhr2161,X04
+529146-8,statore x DUR364L,T15
 529187-4,statore bhr242,K03
 531043-6,interruttore,D04
 531045-2,interruttore,C06
@@ -1131,6 +1146,7 @@ Codice,descrizione,scaffale
 638445-8,porta spazzole,Z06
 638461-0,statore,Z08
 638462-8,porta spazzole,D09
+638470-9,int. x TD020D,K05
 638494-5,portaspazzole,Q12
 638495-3,statore x BTW251,R11
 638499-5,ventola,X02
@@ -1151,6 +1167,7 @@ Codice,descrizione,scaffale
 638884-2,interruttore,K04
 638887-6,interruttore,K03
 638895-7,supporto spazzole,K11
+638907-6,portaspazzole BJR182,X06
 638921-2,porta spazzole,R12
 638947-4,supporto interruttore,Y09
 643550-8,tappo spazzole,Y06
@@ -1381,20 +1398,3 @@ P-09101,protezione gomma,M02
 P-15970,lampadina,R02
 PN1301025,albero flessibile,R13
 TP00000113,motore,F03
-415302-5,coperchio scatola ing.,E06
-252640-8,manopola M8,E06
-345479-1,guida per pattino,K01
-638470-9,int. x TD020D,K05
-241673-2,ventola x BO5030,K10
-vuoto,vuoto,K11
-vuoto,vuoto,Q04
-vuoto,vuoto,S06
-vuoto,vuoto,T02
-vuoto,vuoto,T12
-vuoto,vuoto,T15
-vuoto,vuoto,V11
-vuoto,vuoto,X06
-vuoto,vuoto,X07
-vuoto,vuoto,Y03
-vuoto,vuoto,Y06
-vuoto,vuoto,Z04
