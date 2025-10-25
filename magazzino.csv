@@ -1381,11 +1381,11 @@ P-09101,protezione gomma,M02
 P-15970,lampadina,R02
 PN1301025,albero flessibile,R13
 TP00000113,motore,F03
-vuoto,vuoto,E06
-vuoto,vuoto,E06
-vuoto,vuoto,K01
-vuoto,vuoto,K05
-vuoto,vuoto,K10
+415302-5,coperchio scatola ing.,E06
+252640-8,manopola M8,E06
+345479-1,guida per pattino,K01
+638470-9,int. x TD020D,K05
+241673-2,ventola x BO5030,K10
 vuoto,vuoto,K11
 vuoto,vuoto,Q04
 vuoto,vuoto,S06
