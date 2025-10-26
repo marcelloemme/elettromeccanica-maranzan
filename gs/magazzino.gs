@@ -156,20 +156,10 @@ function batchAddRicambi(data) {
   const rangeInizio = ultimaRigaConCodice + 1;
   sheet.getRange(rangeInizio, 1, daInserire.length, 3).setValues(daInserire);
 
-  // Traccia scaffali modificati per cartellini - BATCH ULTRA-OTTIMIZZATO
-  try {
-    const scaffaliModificati = new Set();
-    for (let i = 0; i < daInserire.length; i++) {
-      const scaffale = daInserire[i][2] ? daInserire[i][2].toString().trim().toUpperCase() : '';
-      if (scaffale) scaffaliModificati.add(scaffale);
-    }
-    if (scaffaliModificati.size > 0) {
-      aggiornaModificaScaffaliBatch_(Array.from(scaffaliModificati));
-    }
-  } catch(e) {
-    Logger.log('⚠️ Errore tracking batch: ' + e.toString());
-    // Ignora errori tracciamento per non bloccare API
-  }
+  // 🧪 TEST DIAGNOSTICO: tracking temporaneamente DISABILITATO
+  // Verifichiamo se il timeout è causato dal tracking
+  // TODO: riabilitare dopo aver identificato il problema
+  Logger.log('⚠️ Tracking batch DISABILITATO per test - ' + daInserire.length + ' ricambi inseriti');
 
   return createResponse({
     success: true,
