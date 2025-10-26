@@ -1,4 +1,5 @@
 // Google Apps Script - Magazzino CRUD con BATCH INSERT
+const SPREADSHEET_ID = '1wFamrwzFNNz5iHenqVpdAHb5Dhvv5xYx5XPimjax9As';
 const SHEET_NAME = 'Magazzino';
 
 function doGet(e) {
@@ -27,7 +28,7 @@ function doPost(e) {
 }
 
 function getRicambi() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
   const lastRow = sheet.getLastRow();
 
   if (lastRow <= 1) {
@@ -52,7 +53,7 @@ function getRicambi() {
 }
 
 function getRicambio(codice) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
   const lastRow = sheet.getLastRow();
 
   if (lastRow <= 1) {
@@ -79,7 +80,7 @@ function getRicambio(codice) {
 
 // BATCH INSERT: inserisce tutti i ricambi in una sola operazione
 function batchAddRicambi(data) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
   const ricambi = data.ricambi;
 
   if (!ricambi || ricambi.length === 0) {
@@ -179,7 +180,7 @@ function batchAddRicambi(data) {
 
 // Single insert (fallback)
 function addRicambio(data) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
 
   if (!data.codice || data.codice.trim() === '') {
     return createResponse({ error: 'Codice obbligatorio' });
@@ -239,7 +240,7 @@ function addRicambio(data) {
 }
 
 function updateRicambio(data) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
   const lastRow = sheet.getLastRow();
 
   if (lastRow <= 1) {
@@ -274,7 +275,7 @@ function updateRicambio(data) {
 }
 
 function deleteRicambio(data) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
   const lastRow = sheet.getLastRow();
 
   if (lastRow <= 1) {
@@ -321,7 +322,7 @@ function createResponse(obj) {
 function aggiornaModificaScaffale_(scaffale) {
   if (!scaffale) return;
 
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   let sheet = ss.getSheetByName('Stato Stampe');
 
   // Se il foglio non esiste, crealo (inizializzazione automatica)
