@@ -156,11 +156,20 @@ function batchAddRicambi(data) {
   const rangeInizio = ultimaRigaConCodice + 1;
   sheet.getRange(rangeInizio, 1, daInserire.length, 3).setValues(daInserire);
 
-  // ⚠️ TRACKING DISABILITATO NEL BATCH per evitare timeout
-  // Il tracking automatico funziona solo per:
-  // - Modifiche manuali dal foglio (onEdit trigger)
-  // - API singole: addRicambio, updateRicambio, deleteRicambio
-  // Per batch insert, stampa manualmente tutti i nuovi scaffali
+  // Traccia scaffali modificati per cartellini - BATCH ULTRA-OTTIMIZZATO
+  try {
+    const scaffaliModificati = new Set();
+    for (let i = 0; i < daInserire.length; i++) {
+      const scaffale = daInserire[i][2] ? daInserire[i][2].toString().trim().toUpperCase() : '';
+      if (scaffale) scaffaliModificati.add(scaffale);
+    }
+    if (scaffaliModificati.size > 0) {
+      aggiornaModificaScaffaliBatch_(Array.from(scaffaliModificati));
+    }
+  } catch(e) {
+    Logger.log('⚠️ Errore tracking batch: ' + e.toString());
+    // Ignora errori tracciamento per non bloccare API
+  }
 
   return createResponse({
     success: true,
@@ -307,8 +316,8 @@ function createResponse(obj) {
 }
 
 /**
- * BATCH OTTIMIZZATO: Aggiorna multipli scaffali in una volta sola
- * Riduce letture/scritture da N chiamate a 1 sola
+ * BATCH ULTRA-OTTIMIZZATO: Aggiorna in-memory e scrive 1 sola volta
+ * Strategia: modifica array in memoria, poi setValues UNA SOLA VOLTA
  */
 function aggiornaModificaScaffaliBatch_(scaffaliArray) {
   if (!scaffaliArray || scaffaliArray.length === 0) return;
@@ -316,70 +325,67 @@ function aggiornaModificaScaffaliBatch_(scaffaliArray) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   let sheet = ss.getSheetByName('Stato Stampe');
 
-  // Se il foglio non esiste, crealo
+  // Se il foglio non esiste, crealo MINIMALE
   if (!sheet) {
     sheet = ss.insertSheet('Stato Stampe');
     sheet.appendRow(['Scaffale', 'Ultima Stampa', 'Ultima Modifica', 'Da Stampare']);
     sheet.setFrozenRows(1);
   }
 
-  // 1️⃣ LETTURA (1 volta sola)
-  const data = sheet.getDataRange().getValues();
+  // 1️⃣ LETTURA (1 volta)
+  const dataRange = sheet.getDataRange();
+  const data = dataRange.getValues();
+  const backgrounds = dataRange.getBackgrounds();
+  const fontWeights = dataRange.getFontWeights();
   const now = new Date();
 
-  // Mappa scaffale esistente → rowIndex
-  const scaffaleToRow = new Map();
+  // Mappa scaffale → rowIndex (0-based)
+  const scaffaleToIndex = new Map();
   for (let i = 1; i < data.length; i++) {
-    scaffaleToRow.set(data[i][0], i);
+    scaffaleToIndex.set(data[i][0], i);
   }
 
-  // Prepara aggiornamenti e nuove righe
-  const updates = []; // {row, values, colors}
+  // Lista scaffali nuovi da aggiungere
   const newRows = [];
+  let modified = false;
 
+  // 2️⃣ MODIFICA IN-MEMORY
   for (const scaffale of scaffaliArray) {
-    if (scaffaleToRow.has(scaffale)) {
-      // Scaffale esistente: aggiorna
-      const rowIndex = scaffaleToRow.get(scaffale);
-      updates.push({
-        row: rowIndex + 1,
-        scaffale: scaffale
-      });
+    if (scaffaleToIndex.has(scaffale)) {
+      // Scaffale esistente: modifica array
+      const idx = scaffaleToIndex.get(scaffale);
+      data[idx][2] = now; // Ultima Modifica
+      data[idx][3] = 'SI'; // Da Stampare
+      backgrounds[idx][2] = '#ffcccc';
+      backgrounds[idx][3] = '#ffcccc';
+      fontWeights[idx][3] = 'bold';
+      modified = true;
     } else {
       // Scaffale nuovo: aggiungi
       newRows.push([scaffale, '', now, 'SI']);
     }
   }
 
-  // 2️⃣ SCRITTURA batch esistenti - OPERAZIONI MULTIPLE IN BATCH
-  if (updates.length > 0) {
-    // Raggruppa le righe da aggiornare per fare batch operations
-    updates.forEach(upd => {
-      const row = upd.row;
-      // Batch: aggiorna 2 celle insieme (colonne C e D)
-      sheet.getRange(row, 3, 1, 2).setValues([[now, 'SI']]);
-      sheet.getRange(row, 3, 1, 2).setBackgrounds([['#ffcccc', '#ffcccc']]);
-      sheet.getRange(row, 4).setFontWeight('bold');
-    });
+  // 3️⃣ SCRITTURA (massimo 3 operazioni totali)
+  if (modified) {
+    // Scrivi TUTTO il foglio modificato in una volta
+    dataRange.setValues(data);
+    dataRange.setBackgrounds(backgrounds);
+    dataRange.setFontWeights(fontWeights);
   }
 
-  // 3️⃣ INSERIMENTO batch nuovi
   if (newRows.length > 0) {
     const lastRow = sheet.getLastRow();
     sheet.getRange(lastRow + 1, 1, newRows.length, 4).setValues(newRows);
 
-    // Colora le nuove righe - BATCH OPERATION
-    const numNewRows = newRows.length;
-    const redBackgrounds = Array(numNewRows).fill(['#ffffff', '#ffffff', '#ffcccc', '#ffcccc']);
-    sheet.getRange(lastRow + 1, 1, numNewRows, 4).setBackgrounds(redBackgrounds);
-
-    // Grassetto solo colonna D
-    const fontWeights = Array(numNewRows).fill([null, null, null, 'bold']);
-    sheet.getRange(lastRow + 1, 1, numNewRows, 4).setFontWeights(fontWeights);
+    // Colori per nuove righe
+    const redBg = Array(newRows.length).fill(null).map(() => ['#ffffff', '#ffffff', '#ffcccc', '#ffcccc']);
+    const boldFw = Array(newRows.length).fill(null).map(() => ['normal', 'normal', 'normal', 'bold']);
+    sheet.getRange(lastRow + 1, 1, newRows.length, 4).setBackgrounds(redBg);
+    sheet.getRange(lastRow + 1, 1, newRows.length, 4).setFontWeights(boldFw);
   }
 
-  // ⚡ SKIP RIORDINAMENTO NEL BATCH - si riordinerà al prossimo onEdit o stampa
-  // Questo elimina l'operazione più lenta (sort di tutto il foglio)
+  // ⚡ NO SORTING - troppo lento, si riordina manualmente o con onEdit
 }
 
 /**
