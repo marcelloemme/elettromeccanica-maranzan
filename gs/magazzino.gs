@@ -80,6 +80,16 @@ function getRicambio(codice) {
 
 // BATCH INSERT: inserisce tutti i ricambi in una sola operazione
 function batchAddRicambi(data) {
+  // 🧪 TEST ESTREMO: risposta immediata senza fare NULLA
+  return createResponse({
+    success: true,
+    message: '🧪 TEST: risposta immediata (nessun dato salvato)',
+    count: data.ricambi ? data.ricambi.length : 0,
+    test: true
+  });
+
+  // CODICE ORIGINALE COMMENTATO PER TEST
+  /*
   const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
   const ricambi = data.ricambi;
 
@@ -167,6 +177,7 @@ function batchAddRicambi(data) {
     count: daInserire.length,
     startRow: rangeInizio
   });
+  */
 }
 
 // Single insert (fallback)
