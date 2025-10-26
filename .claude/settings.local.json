@@ -5,7 +5,14 @@
       "Bash(git commit -m \"$(cat <<''EOF''\nRefactor: rimozione QR code e aggiunta burger menu coerente\n\n## Magazzino\n- Rimossa funzionalità QR code completa (OpenCV, scanner)\n- Sostituita icona fotocamera con burger menu ☰ → /private\n- Rinominata classe CSS camera-inside → menu-inside\n- Pulito codice JS (decodeQRFromFile, waitForOpenCVReady)\n\n## Riparazioni\n- Aggiunto burger menu ☰ a riparazioni-archivio → /private\n- Aggiunto burger menu ☰ a riparazioni-nuovo → archivio\n- Modificato swipe in dettaglio/nuovo → archivio (prima /private)\n- Navigazione coerente: archivio ↔ private, dettaglio/nuovo ↔ archivio\n\n## Service Worker\n- Versione cache v26 → v27 (invalida cache vecchia)\n- Aggiornati parametri cache busting JS: ?v=23 → ?v=24\n- Garantito aggiornamento immediato PWA iOS\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git push:*)",
       "Bash(git commit:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git stash:*)",
+      "Bash(git reset:*)",
+      "Bash(git pull:*)",
+      "Bash(cat:*)",
+      "Bash(python3:*)",
+      "Bash(time curl -L -X POST 'https://script.google.com/macros/s/AKfycbzehfqeiRRdO_Qh_4Av05QuLzjYxtY6VUZTV7PFM26_xguhI0GPrh01ykmXwSjClydN/exec' )",
+      "Bash(time curl:*)"
     ],
     "deny": [],
     "ask": []
