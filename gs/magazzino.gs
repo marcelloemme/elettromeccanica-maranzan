@@ -155,6 +155,20 @@ function batchAddRicambi(data) {
   const rangeInizio = ultimaRigaConCodice + 1;
   sheet.getRange(rangeInizio, 1, daInserire.length, 3).setValues(daInserire);
 
+  // Traccia scaffali modificati per cartellini
+  try {
+    const scaffaliModificati = new Set();
+    for (let i = 0; i < daInserire.length; i++) {
+      const scaffale = daInserire[i][2] ? daInserire[i][2].toString().trim().toUpperCase() : '';
+      if (scaffale) scaffaliModificati.add(scaffale);
+    }
+    for (const scaffale of scaffaliModificati) {
+      aggiornaModificaScaffale_(scaffale);
+    }
+  } catch(e) {
+    // Ignora errori tracciamento per non bloccare API
+  }
+
   return createResponse({
     success: true,
     message: daInserire.length + ' ricambi aggiunti',
@@ -208,6 +222,15 @@ function addRicambio(data) {
   sheet.getRange(rigaDiInserimento, 2).setValue(nuovaDescrizione);
   sheet.getRange(rigaDiInserimento, 3).setValue(nuovoScaffale);
 
+  // Traccia scaffale modificato per cartellini
+  try {
+    if (nuovoScaffale) {
+      aggiornaModificaScaffale_(nuovoScaffale.toUpperCase());
+    }
+  } catch(e) {
+    // Ignora errori tracciamento per non bloccare API
+  }
+
   return createResponse({
     success: true,
     message: 'Ricambio aggiunto',
@@ -232,6 +255,17 @@ function updateRicambio(data) {
       sheet.getRange(row, 1).setValue(data.codice.trim());
       sheet.getRange(row, 2).setValue(data.descrizione ? data.descrizione.trim() : '');
       sheet.getRange(row, 3).setValue(data.scaffale ? data.scaffale.trim() : '');
+
+      // Traccia scaffale modificato per cartellini
+      try {
+        const scaffale = data.scaffale ? data.scaffale.trim().toUpperCase() : '';
+        if (scaffale) {
+          aggiornaModificaScaffale_(scaffale);
+        }
+      } catch(e) {
+        // Ignora errori tracciamento per non bloccare API
+      }
+
       return createResponse({ success: true, message: 'Ricambio aggiornato' });
     }
   }
@@ -253,6 +287,18 @@ function deleteRicambio(data) {
     const codiceEsistente = codici[i][0] ? codici[i][0].toString().trim() : '';
     if (codiceEsistente === data.codice) {
       const row = i + 2;
+
+      // Traccia scaffale modificato PRIMA di eliminare la riga
+      try {
+        const scaffaleValue = sheet.getRange(row, 3).getValue();
+        const scaffale = scaffaleValue ? scaffaleValue.toString().trim().toUpperCase() : '';
+        if (scaffale) {
+          aggiornaModificaScaffale_(scaffale);
+        }
+      } catch(e) {
+        // Ignora errori tracciamento per non bloccare API
+      }
+
       sheet.deleteRow(row);
       return createResponse({ success: true, message: 'Ricambio eliminato' });
     }
@@ -265,4 +311,61 @@ function createResponse(obj) {
   return ContentService
     .createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Aggiorna timestamp modifica per uno scaffale nel foglio "Stato Stampe"
+ * Evidenzia in rosso le colonne C e D quando marca come modificato
+ * Usato sia da onEdit() che dalle API CRUD
+ */
+function aggiornaModificaScaffale_(scaffale) {
+  if (!scaffale) return;
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName('Stato Stampe');
+
+  // Se il foglio non esiste, crealo (inizializzazione automatica)
+  if (!sheet) {
+    sheet = ss.insertSheet('Stato Stampe');
+    sheet.appendRow(['Scaffale', 'Ultima Stampa', 'Ultima Modifica', 'Da Stampare']);
+    sheet.setFrozenRows(1);
+  }
+
+  const data = sheet.getDataRange().getValues();
+  const now = new Date();
+  let found = false;
+
+  // Cerca scaffale esistente
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === scaffale) {
+      const rowNum = i + 1;
+
+      // Aggiorna valori
+      sheet.getRange(rowNum, 3).setValue(now); // Ultima Modifica
+      sheet.getRange(rowNum, 4).setValue('SI'); // Da Stampare = SI
+
+      // Evidenzia in rosso colonne C e D
+      sheet.getRange(rowNum, 3).setBackground('#ffcccc'); // Rosso chiaro
+      sheet.getRange(rowNum, 4).setBackground('#ffcccc').setFontWeight('bold');
+
+      found = true;
+      break;
+    }
+  }
+
+  // Se scaffale non esiste, aggiungilo
+  if (!found) {
+    sheet.appendRow([scaffale, '', now, 'SI']);
+    const lastRow = sheet.getLastRow();
+
+    // Evidenzia in rosso la nuova riga (colonne C e D)
+    sheet.getRange(lastRow, 3).setBackground('#ffcccc');
+    sheet.getRange(lastRow, 4).setBackground('#ffcccc').setFontWeight('bold');
+
+    // Riordina automaticamente dopo aver aggiunto nuovo scaffale
+    if (lastRow > 2) {
+      const range = sheet.getRange(2, 1, lastRow - 1, 4);
+      range.sort({column: 1, ascending: true});
+    }
+  }
 }

@@ -1,8 +1,104 @@
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('Cartellini')
-    .addItem('Genera PDF A4 (griglia 3×3)…', 'generaCartelliniA4Grid')
+    .addItem('🖨️ Stampa cartellini nuovi/modificati', 'checkScaffaliDaStampare_')
+    .addItem('🖨️ Stampa cartellini manualmente', 'generaCartelliniA4Grid')
+    .addSeparator()
+    .addItem('Inizializza tracciamento stampe', 'initStatoStampe_')
+    .addItem('Marca tutti come stampati', 'marcaTuttiStampati_')
     .addToUi();
+}
+
+/**
+ * Controlla se ci sono scaffali da stampare e mostra notifica
+ */
+function checkScaffaliDaStampare_() {
+  try {
+    var daStampare = getScaffaliDaStampare_();
+
+    if (daStampare.length === 0) return; // Nessuna modifica
+
+    var ui = SpreadsheetApp.getUi();
+    var lista = daStampare.join(', ');
+    var messaggio = 'Modifiche non stampate agli scomparti:\n\n' + lista + '\n\nStampare nuovi cartellini?';
+
+    var risposta = ui.alert(
+      '🖨️ Cartellini da stampare',
+      messaggio,
+      ui.ButtonSet.YES_NO
+    );
+
+    if (risposta === ui.Button.YES) {
+      // Genera PDF solo per scaffali modificati
+      generaPDFScaffali_(daStampare);
+    }
+  } catch(error) {
+    // Ignora errori silenziosamente
+  }
+}
+
+/**
+ * Genera PDF per lista specifica di scaffali
+ */
+function generaPDFScaffali_(scaffali) {
+  if (!scaffali || scaffali.length === 0) return;
+
+  var pdf = buildSlidesA4GridPdf_(SLIDES_TEMPLATE_A4_ID, scaffali);
+
+  if (pdf) {
+    // Marca scaffali come stampati
+    marcaScaffaliStampati_(scaffali);
+
+    // Mostra dialog con link
+    var pdfUrl = pdf.getUrl();
+    var html = HtmlService.createHtmlOutput(
+      '<div style="padding:20px;font-family:Arial,sans-serif;">' +
+      '<p style="margin-bottom:15px;">✅ PDF generato con successo!</p>' +
+      '<p style="margin-bottom:15px;">📁 <b>' + scaffali.length + ' scaffali</b> stampati: ' + scaffali.join(', ') + '</p>' +
+      '<p style="margin-bottom:15px;">📄 File: <b>' + pdf.getName() + '</b></p>' +
+      '<p><a href="' + pdfUrl + '" target="_blank" style="display:inline-block;background:#1a73e8;color:white;padding:10px 20px;text-decoration:none;border-radius:4px;">📄 Apri PDF</a></p>' +
+      '</div>'
+    ).setWidth(500).setHeight(220);
+    SpreadsheetApp.getUi().showModelessDialog(html, 'Cartellini generati');
+  }
+}
+
+/**
+ * Marca tutti gli scaffali come stampati (reset completo)
+ */
+function marcaTuttiStampati_() {
+  var ui = SpreadsheetApp.getUi();
+  var risposta = ui.alert(
+    'Marca tutti come stampati',
+    'Questa operazione marca tutti gli scaffali come già stampati.\n\nContinuare?',
+    ui.ButtonSet.YES_NO
+  );
+
+  if (risposta !== ui.Button.YES) return;
+
+  var ss = SpreadsheetApp.getActive();
+  var sheet = ss.getSheetByName('Stato Stampe');
+  if (!sheet) {
+    ui.alert('Foglio "Stato Stampe" non trovato. Inizializzalo prima.');
+    return;
+  }
+
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return;
+
+  var now = new Date();
+
+  // Imposta tutte le righe come stampate e rimuovi evidenziazione
+  for (var i = 2; i <= lastRow; i++) {
+    sheet.getRange(i, 2).setValue(now); // Ultima Stampa
+    sheet.getRange(i, 4).setValue('NO'); // Da Stampare = NO
+
+    // Rimuovi evidenziazione rossa
+    sheet.getRange(i, 3).setBackground('#ffffff');
+    sheet.getRange(i, 4).setBackground('#ffffff').setFontWeight('normal');
+  }
+
+  ui.alert('✅ Tutti gli scaffali marcati come stampati.');
 }
 
 var SLIDES_TEMPLATE_ID = '117qDq6tuoNwAeCuYFqA5UygRmQ7p28YLgMdNWvp-TKw'; // Template 6x9 cm
@@ -77,15 +173,22 @@ function generaCartelliniA4Grid(){
 
   var pdf = buildSlidesA4GridPdf_(SLIDES_TEMPLATE_A4_ID, filters);
   if (pdf){
+    // Marca scaffali come stampati
+    if (filters && filters.length > 0) {
+      marcaScaffaliStampati_(filters);
+    }
+
     // Mostra dialog con link cliccabile
     var pdfUrl = pdf.getUrl();
+    var numScaffali = filters ? filters.length : 'tutti';
     var html = HtmlService.createHtmlOutput(
       '<div style="padding:20px;font-family:Arial,sans-serif;">' +
       '<p style="margin-bottom:15px;">✅ PDF A4 (griglia 3×3) generato con successo!</p>' +
-      '<p style="margin-bottom:15px;">📁 Salvato in: <b>' + pdf.getName() + '</b></p>' +
+      '<p style="margin-bottom:15px;">📁 <b>' + numScaffali + ' scaffali</b> stampati</p>' +
+      '<p style="margin-bottom:15px;">📄 File: <b>' + pdf.getName() + '</b></p>' +
       '<p><a href="' + pdfUrl + '" target="_blank" style="display:inline-block;background:#1a73e8;color:white;padding:10px 20px;text-decoration:none;border-radius:4px;">📄 Apri PDF</a></p>' +
       '</div>'
-    ).setWidth(400).setHeight(180);
+    ).setWidth(400).setHeight(200);
     ui.showModelessDialog(html, 'Cartellini A4 generati');
   }
 }
@@ -701,4 +804,214 @@ function buildSlidesA4GridPdf_(templateId, scaffoldFilter){
   driveMoveToFolder_(pdfFile.getId(), targetFolderId);
   driveTrashFile_(copyId);
   return pdfFile;
+}
+
+// ===== SISTEMA TRACCIAMENTO STAMPE =====
+
+/**
+ * Inizializza o aggiorna il foglio "Stato Stampe"
+ * Struttura: Scaffale | Ultima Stampa | Ultima Modifica | Da Stampare
+ */
+function initStatoStampe_() {
+  var ss = SpreadsheetApp.getActive();
+  var sheet = ss.getSheetByName('Stato Stampe');
+
+  // Crea foglio se non esiste
+  if (!sheet) {
+    sheet = ss.insertSheet('Stato Stampe');
+    sheet.appendRow(['Scaffale', 'Ultima Stampa', 'Ultima Modifica', 'Da Stampare']);
+    sheet.getRange('A1:D1').setFontWeight('bold').setBackground('#f3f3f3');
+    sheet.setFrozenRows(1);
+    sheet.setColumnWidth(1, 100);
+    sheet.setColumnWidth(2, 180);
+    sheet.setColumnWidth(3, 180);
+    sheet.setColumnWidth(4, 120);
+  }
+
+  // Leggi tutti gli scaffali dal foglio "Per codice"
+  var dataSheet = ss.getSheetByName('Per codice');
+  if (!dataSheet) return;
+
+  var lastRow = dataSheet.getLastRow();
+  if (lastRow < 2) return;
+
+  var data = dataSheet.getRange(2, 3, lastRow - 1, 1).getValues(); // Colonna C = Scaffale
+  var scaffaliEsistenti = {};
+
+  for (var i = 0; i < data.length; i++) {
+    var scaffale = (data[i][0] || '').toString().trim().toUpperCase();
+    if (scaffale) scaffaliEsistenti[scaffale] = true;
+  }
+
+  // Leggi scaffali già tracciati
+  var statoData = sheet.getDataRange().getValues();
+  var trackedScaffali = {};
+
+  for (var j = 1; j < statoData.length; j++) {
+    var s = statoData[j][0];
+    if (s) trackedScaffali[s] = true;
+  }
+
+  // Aggiungi nuovi scaffali non ancora tracciati
+  var now = new Date();
+  for (var scaffale in scaffaliEsistenti) {
+    if (!trackedScaffali.hasOwnProperty(scaffale)) {
+      sheet.appendRow([scaffale, '', now, 'SI']);
+    }
+  }
+
+  // Ordina tutti gli scaffali alfabeticamente (A-Z)
+  if (sheet.getLastRow() > 1) {
+    var range = sheet.getRange(2, 1, sheet.getLastRow() - 1, 4);
+    range.sort({column: 1, ascending: true});
+  }
+
+  return sheet;
+}
+
+/**
+ * Ritorna lista scaffali con modifiche non stampate
+ */
+function getScaffaliDaStampare_() {
+  var ss = SpreadsheetApp.getActive();
+  var sheet = ss.getSheetByName('Stato Stampe');
+
+  if (!sheet) {
+    initStatoStampe_();
+    sheet = ss.getSheetByName('Stato Stampe');
+    if (!sheet) return [];
+  }
+
+  var data = sheet.getDataRange().getValues();
+  var daStampare = [];
+
+  for (var i = 1; i < data.length; i++) {
+    var scaffale = data[i][0];
+    var flag = data[i][3]; // Colonna D: Da Stampare
+
+    if (flag === 'SI' || flag === true) {
+      daStampare.push(scaffale);
+    }
+  }
+
+  return daStampare.sort(function(a, b) { return a.localeCompare(b, 'it'); });
+}
+
+/**
+ * Marca scaffali come stampati
+ * Rimuove evidenziazione rossa
+ */
+function marcaScaffaliStampati_(scaffali) {
+  if (!scaffali || scaffali.length === 0) return;
+
+  var ss = SpreadsheetApp.getActive();
+  var sheet = ss.getSheetByName('Stato Stampe');
+  if (!sheet) return;
+
+  var data = sheet.getDataRange().getValues();
+  var now = new Date();
+  var scaffaliSet = {};
+
+  for (var i = 0; i < scaffali.length; i++) {
+    scaffaliSet[scaffali[i]] = true;
+  }
+
+  for (var j = 1; j < data.length; j++) {
+    var scaffale = data[j][0];
+    if (scaffaliSet.hasOwnProperty(scaffale)) {
+      var rowNum = j + 1;
+
+      // Aggiorna valori
+      sheet.getRange(rowNum, 2).setValue(now); // Ultima Stampa
+      sheet.getRange(rowNum, 4).setValue('NO'); // Da Stampare = NO
+
+      // Rimuovi evidenziazione rossa (sfondo bianco)
+      sheet.getRange(rowNum, 3).setBackground('#ffffff');
+      sheet.getRange(rowNum, 4).setBackground('#ffffff').setFontWeight('normal');
+    }
+  }
+}
+
+/**
+ * Aggiorna timestamp modifica per uno scaffale
+ * Evidenzia in rosso le colonne C e D quando marca come modificato
+ */
+function aggiornaModificaScaffale_(scaffale) {
+  if (!scaffale) return;
+
+  var ss = SpreadsheetApp.getActive();
+  var sheet = ss.getSheetByName('Stato Stampe');
+
+  if (!sheet) {
+    initStatoStampe_();
+    sheet = ss.getSheetByName('Stato Stampe');
+  }
+  if (!sheet) return;
+
+  var data = sheet.getDataRange().getValues();
+  var now = new Date();
+  var found = false;
+
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] === scaffale) {
+      var rowNum = i + 1;
+
+      // Aggiorna valori
+      sheet.getRange(rowNum, 3).setValue(now); // Ultima Modifica
+      sheet.getRange(rowNum, 4).setValue('SI'); // Da Stampare = SI
+
+      // Evidenzia in rosso colonne C e D
+      sheet.getRange(rowNum, 3).setBackground('#ffcccc'); // Rosso chiaro
+      sheet.getRange(rowNum, 4).setBackground('#ffcccc').setFontWeight('bold');
+
+      found = true;
+      break;
+    }
+  }
+
+  // Se scaffale non esiste, aggiungilo
+  if (!found) {
+    sheet.appendRow([scaffale, '', now, 'SI']);
+    var lastRow = sheet.getLastRow();
+
+    // Evidenzia in rosso la nuova riga (colonne C e D)
+    sheet.getRange(lastRow, 3).setBackground('#ffcccc');
+    sheet.getRange(lastRow, 4).setBackground('#ffcccc').setFontWeight('bold');
+
+    // Riordina automaticamente dopo aver aggiunto nuovo scaffale
+    if (lastRow > 2) {
+      var range = sheet.getRange(2, 1, lastRow - 1, 4);
+      range.sort({column: 1, ascending: true});
+    }
+  }
+}
+
+/**
+ * Trigger automatico modifiche manuali
+ * Traccia modifiche a QUALSIASI colonna (Codice, Descrizione, Scaffale)
+ */
+function onEdit(e) {
+  try {
+    var sheet = e.source.getActiveSheet();
+    var sheetName = sheet.getName();
+
+    // Traccia solo modifiche ai fogli Magazzino o "Per codice"
+    if (sheetName !== 'Magazzino' && sheetName !== 'Per codice') return;
+
+    var range = e.range;
+    var row = range.getRow();
+
+    // Ignora header
+    if (row < 2) return;
+
+    // Prendi lo scaffale dalla colonna C della riga modificata
+    var scaffaleCell = sheet.getRange(row, 3);
+    var scaffale = (scaffaleCell.getValue() || '').toString().trim().toUpperCase();
+
+    if (scaffale) {
+      aggiornaModificaScaffale_(scaffale);
+    }
+  } catch(error) {
+    // Ignora errori silenziosamente per non bloccare edit
+  }
 }
