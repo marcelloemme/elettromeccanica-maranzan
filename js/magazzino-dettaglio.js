@@ -1,5 +1,5 @@
 // API Endpoint
-const API_URL = 'https://script.google.com/macros/s/AKfycbxfDB-Pj3j0QcV8_cbbHP-M34phJZ0WpgFbkXCyPcOISuA-C_xb5jYqoLTISH_7V8vf/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzehfqeiRRdO_Qh_4Av05QuLzjYxtY6VUZTV7PFM26_xguhI0GPrh01ykmXwSjClydN/exec';
 
 // Elementi DOM
 const titolo = document.getElementById('titolo-codice');
