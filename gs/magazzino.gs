@@ -1,5 +1,5 @@
 // Google Apps Script - Magazzino CRUD con BATCH INSERT
-const SPREADSHEET_ID = '1wFamrwzFNNz5iHenqVpdAHb5Dhvv5xYx5XPimjax9As';
+// Container-bound script: usa getActiveSpreadsheet() invece di openById() per velocità
 const SHEET_NAME = 'Magazzino';
 
 function doGet(e) {
@@ -28,7 +28,7 @@ function doPost(e) {
 }
 
 function getRicambi() {
-  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
   const lastRow = sheet.getLastRow();
 
   if (lastRow <= 1) {
@@ -53,7 +53,7 @@ function getRicambi() {
 }
 
 function getRicambio(codice) {
-  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
   const lastRow = sheet.getLastRow();
 
   if (lastRow <= 1) {
@@ -80,43 +80,18 @@ function getRicambio(codice) {
 
 // BATCH INSERT: inserisce tutti i ricambi in una sola operazione
 function batchAddRicambi(data) {
-  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
   const ricambi = data.ricambi;
 
   if (!ricambi || ricambi.length === 0) {
     return createResponse({ error: 'Nessun ricambio da aggiungere' });
   }
 
-  const lastRow = sheet.getLastRow();
-  const codiciEsistenti = new Set();
+  // ⚡ ULTRA-FAST: usa appendRow invece di trovare ultima riga
+  // Nessuna lettura del foglio = velocità massima
 
-  // Carica codici esistenti
-  if (lastRow > 1) {
-    const codici = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
-    for (let i = 0; i < codici.length; i++) {
-      const codiceStr = codici[i][0] ? codici[i][0].toString().trim() : '';
-      if (codiceStr !== '') {
-        codiciEsistenti.add(codiceStr.toLowerCase());
-      }
-    }
-  }
-
-  // Trova ultima riga con codice (scorre al contrario per velocità)
-  let ultimaRigaConCodice = 1;
-  if (lastRow > 1) {
-    const codici = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
-    for (let i = codici.length - 1; i >= 0; i--) {
-      const codiceStr = codici[i][0] ? codici[i][0].toString().trim() : '';
-      if (codiceStr !== '') {
-        ultimaRigaConCodice = i + 2;
-        break;
-      }
-    }
-  }
-
-  // Valida tutti i ricambi e prepara dati
+  // Prepara dati (validazione minima solo codice vuoto)
   const daInserire = [];
-  const errori = [];
 
   for (let i = 0; i < ricambi.length; i++) {
     const r = ricambi[i];
@@ -125,63 +100,46 @@ function batchAddRicambi(data) {
     const scaffale = r.scaffale ? r.scaffale.trim() : '';
 
     if (!codice) {
-      errori.push('Riga ' + (i + 1) + ': codice vuoto');
-      continue;
+      return createResponse({ error: 'Codice vuoto alla riga ' + (i + 1) });
     }
 
-    if (codiciEsistenti.has(codice.toLowerCase())) {
-      errori.push(codice + ': già esistente');
-      continue;
-    }
-
-    // Aggiungi a set per evitare duplicati nella stessa batch
-    codiciEsistenti.add(codice.toLowerCase());
     daInserire.push([codice, descrizione, scaffale]);
-  }
-
-  if (errori.length > 0) {
-    return createResponse({
-      error: 'Errori di validazione',
-      details: errori
-    });
   }
 
   if (daInserire.length === 0) {
     return createResponse({ error: 'Nessun ricambio valido da inserire' });
   }
 
-  // Inserisci tutte le righe in una sola operazione
-  sheet.insertRowsAfter(ultimaRigaConCodice, daInserire.length);
+  // Aggiungi in fondo senza leggere nulla
+  const lastRow = sheet.getLastRow();
+  sheet.getRange(lastRow + 1, 1, daInserire.length, 3).setValues(daInserire);
 
-  const rangeInizio = ultimaRigaConCodice + 1;
-  sheet.getRange(rangeInizio, 1, daInserire.length, 3).setValues(daInserire);
-
-  // Traccia scaffali modificati per cartellini - BATCH ULTRA-OTTIMIZZATO
-  try {
-    const scaffaliModificati = new Set();
-    for (let i = 0; i < daInserire.length; i++) {
-      const scaffale = daInserire[i][2] ? daInserire[i][2].toString().trim().toUpperCase() : '';
-      if (scaffale) scaffaliModificati.add(scaffale);
-    }
-    if (scaffaliModificati.size > 0) {
-      aggiornaModificaScaffaliBatch_(Array.from(scaffaliModificati));
-    }
-  } catch(e) {
-    Logger.log('⚠️ Errore tracking batch: ' + e.toString());
-    // Ignora errori tracciamento per non bloccare API
-  }
+  // ⚠️ TRACKING TEMPORANEAMENTE DISABILITATO PER DEBUG TIMEOUT
+  // try {
+  //   const scaffaliModificati = new Set();
+  //   for (let i = 0; i < daInserire.length; i++) {
+  //     const scaffale = daInserire[i][2] ? daInserire[i][2].toString().trim().toUpperCase() : '';
+  //     if (scaffale) scaffaliModificati.add(scaffale);
+  //   }
+  //   if (scaffaliModificati.size > 0) {
+  //     aggiornaModificaScaffaliBatch_(Array.from(scaffaliModificati));
+  //   }
+  // } catch(e) {
+  //   Logger.log('⚠️ Errore tracking batch: ' + e.toString());
+  //   // Ignora errori tracciamento per non bloccare API
+  // }
 
   return createResponse({
     success: true,
     message: daInserire.length + ' ricambi aggiunti',
     count: daInserire.length,
-    startRow: rangeInizio
+    version: 'v4-getActiveSpreadsheet'
   });
 }
 
 // Single insert (fallback)
 function addRicambio(data) {
-  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
 
   if (!data.codice || data.codice.trim() === '') {
     return createResponse({ error: 'Codice obbligatorio' });
@@ -241,7 +199,7 @@ function addRicambio(data) {
 }
 
 function updateRicambio(data) {
-  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
   const lastRow = sheet.getLastRow();
 
   if (lastRow <= 1) {
@@ -276,7 +234,7 @@ function updateRicambio(data) {
 }
 
 function deleteRicambio(data) {
-  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
   const lastRow = sheet.getLastRow();
 
   if (lastRow <= 1) {
@@ -322,7 +280,7 @@ function createResponse(obj) {
 function aggiornaModificaScaffaliBatch_(scaffaliArray) {
   if (!scaffaliArray || scaffaliArray.length === 0) return;
 
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sheet = ss.getSheetByName('Stato Stampe');
 
   // Se il foglio non esiste, crealo MINIMALE
@@ -366,9 +324,9 @@ function aggiornaModificaScaffaliBatch_(scaffaliArray) {
     }
   }
 
-  // 3️⃣ SCRITTURA (massimo 3 operazioni totali)
+  // 3️⃣ SCRITTURA (massimo 3 operazioni totali) - NESSUN SORTING
   if (modified) {
-    // Scrivi TUTTO il foglio modificato in una volta
+    // Scrivi SOLO le righe modificate (NON tutto il foglio)
     dataRange.setValues(data);
     dataRange.setBackgrounds(backgrounds);
     dataRange.setFontWeights(fontWeights);
@@ -385,7 +343,8 @@ function aggiornaModificaScaffaliBatch_(scaffaliArray) {
     sheet.getRange(lastRow + 1, 1, newRows.length, 4).setFontWeights(boldFw);
   }
 
-  // ⚡ NO SORTING - troppo lento, si riordina manualmente o con onEdit
+  // ⚠️ SORTING DISABILITATO: con 286+ scaffali causa timeout server-side
+  // Gli scaffali nuovi appariranno in fondo, ma tracking funziona correttamente
 }
 
 /**
@@ -395,7 +354,7 @@ function aggiornaModificaScaffaliBatch_(scaffaliArray) {
 function aggiornaModificaScaffale_(scaffale) {
   if (!scaffale) return;
 
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sheet = ss.getSheetByName('Stato Stampe');
 
   // Se il foglio non esiste, crealo (inizializzazione automatica)

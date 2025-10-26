@@ -1,5 +1,5 @@
 // API Endpoint
-const API_URL = 'https://script.google.com/macros/s/AKfycbzehfqeiRRdO_Qh_4Av05QuLzjYxtY6VUZTV7PFM26_xguhI0GPrh01ykmXwSjClydN/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwCZ-Vi2k7_5o_T-lZ4_56rDhhmrDlhDWcL1LpN2NHdPSXgUzZuU17D-zWtYD3RNuQl/exec';
 
 // Elementi DOM
 const formNuovo = document.getElementById('form-nuovo');
