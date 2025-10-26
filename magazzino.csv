@@ -1398,4 +1398,6 @@ P-09101,protezione gomma,M02
 P-15970,lampadina,R02
 PN1301025,albero flessibile,R13
 TP00000113,motore,F03
-565656-5,Descrizome,M99
+111111-1,Descrizione,A00
+222222-2,Descrizione,A00
+TEST-CURL-SPEED-001,Test velocità deployment,Z99
