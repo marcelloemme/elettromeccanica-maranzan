@@ -183,9 +183,9 @@ async function salvaTutto() {
   btnSalvaTutto.disabled = true;
 
   try {
-    // Timeout 25s (Google Apps Script ha timeout 30s)
+    // Timeout 60s per consentire tracking + riordinamento
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 25000);
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     const res = await fetch(`${API_URL}?action=batchAddRicambi`, {
       method: 'POST',
