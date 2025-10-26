@@ -1,11 +1,12 @@
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('Cartellini')
-    .addItem('Genera PDF 6×9 (Slides, 1 per pagina)…', 'generaCartelliniSlides')
+    .addItem('Genera PDF A4 (griglia 3×3)…', 'generaCartelliniA4Grid')
     .addToUi();
 }
 
-var SLIDES_TEMPLATE_ID = '117qDq6tuoNwAeCuYFqA5UygRmQ7p28YLgMdNWvp-TKw';
+var SLIDES_TEMPLATE_ID = '117qDq6tuoNwAeCuYFqA5UygRmQ7p28YLgMdNWvp-TKw'; // Template 6x9 cm
+var SLIDES_TEMPLATE_A4_ID = '1TT55LCwRtPmWQ1ORxMm4yuZYkT3ZTX27shF2BcMmRe0'; // Template A4 (21x29.7 cm)
 
 function generaCartelliniSlides(){
   var ui = SpreadsheetApp.getUi();
@@ -35,9 +36,57 @@ function generaCartelliniSlides(){
 
   var pdf = buildSlides6x9Pdf_(SLIDES_TEMPLATE_ID, filters);
   if (pdf){
-    var html = HtmlService.createHtmlOutput('<script>window.open("'+pdf.getUrl()+'","_blank");google.script.host.close();</script>').setWidth(10).setHeight(10);
-    ui.showModelessDialog(html, 'Apro il PDF…');
-    ui.alert('PDF generato', 'Lo trovi nella stessa cartella del foglio (o in Root).', ui.ButtonSet.OK);
+    // Mostra dialog con link cliccabile
+    var pdfUrl = pdf.getUrl();
+    var html = HtmlService.createHtmlOutput(
+      '<div style="padding:20px;font-family:Arial,sans-serif;">' +
+      '<p style="margin-bottom:15px;">✅ PDF generato con successo!</p>' +
+      '<p style="margin-bottom:15px;">📁 Salvato in: <b>' + pdf.getName() + '</b></p>' +
+      '<p><a href="' + pdfUrl + '" target="_blank" style="display:inline-block;background:#1a73e8;color:white;padding:10px 20px;text-decoration:none;border-radius:4px;">📄 Apri PDF</a></p>' +
+      '</div>'
+    ).setWidth(400).setHeight(180);
+    ui.showModelessDialog(html, 'Cartellini generati');
+  }
+}
+
+function generaCartelliniA4Grid(){
+  var ui = SpreadsheetApp.getUi();
+
+  // 1) Leggi eventuale elenco da foglio SELEZIONE (colonna A)
+  var fromSheet = getSelectedShelves_(); // array oppure null
+
+  // 2) Chiedi opzionalmente intervalli/elenco via prompt (A01-A03, F01, AA01-AC02, …)
+  var res = ui.prompt('Cartellini A4 (griglia 3×3)', 'Lascia vuoto per usare solo SELEZIONE (o TUTTI se SELEZIONE è vuoto). Oppure inserisci elenco/INTERVALLI separati da virgole: es. A01-A03, F01, AA01-AC02', ui.ButtonSet.OK_CANCEL);
+  if (res.getSelectedButton() !== ui.Button.OK) return;
+  var typed = String(res.getResponseText()||'').trim();
+  var fromTyped = typed ? parseShelfFilters_(typed) : null; // array oppure null
+
+  // 3) Merge + dedup
+  var filters = null;
+  if (fromSheet && fromTyped){
+    var seen = {}; filters = [];
+    for (var i=0;i<fromSheet.length;i++){ var v1 = fromSheet[i]; if (!seen[v1]){ seen[v1]=true; filters.push(v1); } }
+    for (var j=0;j<fromTyped.length;j++){ var v2 = fromTyped[j]; if (!seen[v2]){ seen[v2]=true; filters.push(v2); } }
+  } else if (fromSheet){
+    filters = fromSheet;
+  } else if (fromTyped){
+    filters = fromTyped;
+  } else {
+    filters = null; // nessun filtro => TUTTI
+  }
+
+  var pdf = buildSlidesA4GridPdf_(SLIDES_TEMPLATE_A4_ID, filters);
+  if (pdf){
+    // Mostra dialog con link cliccabile
+    var pdfUrl = pdf.getUrl();
+    var html = HtmlService.createHtmlOutput(
+      '<div style="padding:20px;font-family:Arial,sans-serif;">' +
+      '<p style="margin-bottom:15px;">✅ PDF A4 (griglia 3×3) generato con successo!</p>' +
+      '<p style="margin-bottom:15px;">📁 Salvato in: <b>' + pdf.getName() + '</b></p>' +
+      '<p><a href="' + pdfUrl + '" target="_blank" style="display:inline-block;background:#1a73e8;color:white;padding:10px 20px;text-decoration:none;border-radius:4px;">📄 Apri PDF</a></p>' +
+      '</div>'
+    ).setWidth(400).setHeight(180);
+    ui.showModelessDialog(html, 'Cartellini A4 generati');
   }
 }
 
@@ -271,9 +320,13 @@ function openSlidesWithRetry_(id){
 }
 
 function buildSlides6x9Pdf_(templateId, scaffoldFilter){
-  // 1) Leggi dati
+  // 1) Leggi dati dal foglio "Per codice" (ordinato per codice crescente)
   var ss = SpreadsheetApp.getActive();
-  var sh = ss.getActiveSheet();
+  var sh = ss.getSheetByName('Per codice');
+  if (!sh){
+    SpreadsheetApp.getUi().alert('Errore: Foglio "Per codice" non trovato!');
+    return null;
+  }
   var last = sh.getLastRow();
   if (last < 2){ SpreadsheetApp.getUi().alert('Nessun dato.'); return null; }
   var data = sh.getRange(2,1,last-1,3).getValues(); // A=codice, B=descrizione, C=scaffale
@@ -417,5 +470,235 @@ function buildSlides6x9Pdf_(templateId, scaffoldFilter){
   var pdfFile = DriveApp.createFile(pdfBlob); // crea in Root
   driveMoveToFolder_(pdfFile.getId(), targetFolderId); // sposta nella stessa cartella del foglio, se esiste
   driveTrashFile_(copyId); // cestina la presentazione temporanea
+  return pdfFile;
+}
+
+function buildSlidesA4GridPdf_(templateId, scaffoldFilter){
+  // 1) Leggi dati dal foglio "Per codice" (ordinato per codice crescente)
+  var ss = SpreadsheetApp.getActive();
+  var sh = ss.getSheetByName('Per codice');
+  if (!sh){
+    SpreadsheetApp.getUi().alert('Errore: Foglio "Per codice" non trovato!');
+    return null;
+  }
+  var last = sh.getLastRow();
+  if (last < 2){ SpreadsheetApp.getUi().alert('Nessun dato.'); return null; }
+  var data = sh.getRange(2,1,last-1,3).getValues(); // A=codice, B=descrizione, C=scaffale
+  var byShelf = {};
+  for (var r=0; r<data.length; r++){
+    var code = (data[r][0]||'').toString().trim();
+    var desc = (data[r][1]||'').toString().trim();
+    var shelf = (data[r][2]||'').toString().trim().toUpperCase();
+    if (!shelf) continue;
+    if (!code && !desc) continue;
+    if (scaffoldFilter && scaffoldFilter.indexOf(shelf) === -1) continue;
+    if (!byShelf[shelf]) byShelf[shelf] = [];
+    byShelf[shelf].push({code:code, desc:desc});
+  }
+  var shelves = Object.keys(byShelf).sort(function(a,b){ return a.localeCompare(b,'it'); });
+  if (shelves.length === 0){ SpreadsheetApp.getUi().alert('Nessuno scaffale trovato con questi criteri.'); return null; }
+
+  // 2) Verifica che il template A4 sia configurato
+  if (templateId === 'INSERISCI_QUI_ID_TEMPLATE_A4'){
+    SpreadsheetApp.getUi().alert(
+      'Template A4 non configurato',
+      'Per usare la versione A4 griglia:\n\n' +
+      '1. Crea una presentazione Google Slides vuota\n' +
+      '2. File → Imposta pagina → Personalizzato → 21 × 29.7 cm\n' +
+      '3. Salva e copia l\'ID dalla URL\n' +
+      '4. Incolla l\'ID nella riga 10 di cartellini.gs (SLIDES_TEMPLATE_A4_ID)',
+      SpreadsheetApp.getUi().ButtonSet.OK
+    );
+    return null;
+  }
+
+  // 3) Copia template A4 e apri Slides
+  var ts = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd_HH-mm-ss');
+  var baseName = 'Cartellini_A4_Grid_' + ts;
+  var targetFolderId = getSpreadsheetParentFolderId_();
+  var copyId = driveCopyFile_(templateId, baseName, targetFolderId);
+  Utilities.sleep(1000);
+  var pres = openSlidesWithRetry_(copyId);
+  if (!pres){
+    SpreadsheetApp.getUi().alert('Slides non disponibile al momento. Riprova fra qualche secondo.');
+    driveTrashFile_(copyId);
+    return null;
+  }
+
+  // 4) Misure e configurazione
+  var PT_PER_CM = 28.3464567;
+  var PAGE_W = 21 * PT_PER_CM;     // A4 width
+  var PAGE_H = 29.7 * PT_PER_CM;   // A4 height
+
+  // Rimuovi slide vuota del template
+  var slides = pres.getSlides();
+  if (slides.length > 0){
+    slides[0].remove();
+  }
+  var CARD_W = 6 * PT_PER_CM;      // 6 cm
+  var CARD_H = 9 * PT_PER_CM;      // 9 cm
+  var GRID_W = CARD_W * 3;         // 18 cm
+  var GRID_H = CARD_H * 3;         // 27 cm
+  var MARGIN_X = (PAGE_W - GRID_W) / 2; // 1.5 cm
+  var MARGIN_Y = (PAGE_H - GRID_H) / 2; // 1.35 cm
+  var CARD_MARGIN = 0.3 * PT_PER_CM; // margine interno cartellino 3 mm
+  var font = 'Roboto';
+  var titleSize = 11;
+  var baseBodySize = 11;
+  var CROSSHAIR_SIZE = 10; // lunghezza crocino in pt
+  var CROSSHAIR_WIDTH = 0.5; // spessore linea
+
+  // 5) Dividi scaffali in gruppi di 9 (griglia 3×3)
+  var groups = [];
+  for (var i=0; i<shelves.length; i+=9){
+    groups.push(shelves.slice(i, Math.min(i+9, shelves.length)));
+  }
+
+  // 6) Genera una slide A4 per ogni gruppo di 9 scaffali
+  for (var g=0; g<groups.length; g++){
+    var group = groups[g];
+    var slide = pres.appendSlide(SlidesApp.PredefinedLayout.BLANK);
+
+    // Disegna crocini di taglio (griglia 4×4 inclusi i 4 angoli esterni)
+    var crosshairColor = '#999999';
+    for (var row=0; row<4; row++){
+      for (var col=0; col<4; col++){
+        var crossX = MARGIN_X + col * CARD_W;
+        var crossY = MARGIN_Y + row * CARD_H;
+
+        // Linea orizzontale del crocino
+        var hLine = slide.insertLine(
+          SlidesApp.LineCategory.STRAIGHT,
+          crossX - CROSSHAIR_SIZE/2, crossY,
+          crossX + CROSSHAIR_SIZE/2, crossY
+        );
+        hLine.setWeight(CROSSHAIR_WIDTH);
+        hLine.getLineFill().setSolidFill(crosshairColor);
+
+        // Linea verticale del crocino
+        var vLine = slide.insertLine(
+          SlidesApp.LineCategory.STRAIGHT,
+          crossX, crossY - CROSSHAIR_SIZE/2,
+          crossX, crossY + CROSSHAIR_SIZE/2
+        );
+        vLine.setWeight(CROSSHAIR_WIDTH);
+        vLine.getLineFill().setSolidFill(crosshairColor);
+      }
+    }
+
+    // Disegna i 9 cartellini (o meno se ultimo gruppo)
+    for (var idx=0; idx<group.length; idx++){
+      var shelf = group[idx];
+      var col = idx % 3;
+      var row = Math.floor(idx / 3);
+
+      var cardX = MARGIN_X + col * CARD_W;
+      var cardY = MARGIN_Y + row * CARD_H;
+
+      // TITLE BOX (ridotta all'80% e centrata)
+      var TITLE_BOX_H = 30;
+      var INSET_FIX_PT = 6;
+      var BOX_WIDTH_PERCENT = 0.8; // 80% della larghezza cartellino (~4.8 cm)
+      var titleBoxWidth = CARD_W * BOX_WIDTH_PERCENT;
+      var titleOffsetX = (CARD_W - titleBoxWidth) / 2; // centra la box
+
+      var titleTb = slide.insertTextBox('', cardX + titleOffsetX, cardY + CARD_MARGIN, titleBoxWidth, TITLE_BOX_H);
+      titleTb.setLeft(cardX + titleOffsetX - INSET_FIX_PT);
+      titleTb.setTop(cardY + CARD_MARGIN - INSET_FIX_PT);
+      titleTb.setWidth(titleBoxWidth + 2*INSET_FIX_PT);
+      titleTb.setHeight(TITLE_BOX_H + 2*INSET_FIX_PT);
+      try { titleTb.getLine().setWeight(0); titleTb.getLine().getLineFill().setTransparent(); } catch(e) {}
+      var titleTf = titleTb.getText();
+      titleTf.setText('');
+      var titleRange = titleTf.appendText(shelf);
+      titleRange.getTextStyle().setBold(true).setUnderline(true).setFontFamily(font).setFontSize(titleSize).setForegroundColor('#000000');
+      titleTf.appendText('\n');
+      var titleSpacer = titleTf.appendText(' ');
+      titleSpacer.getTextStyle().setFontFamily(font).setFontSize(8).setForegroundColor('#000000').setBold(false).setItalic(false).setUnderline(false);
+
+      // CONTENT BOX (ridotta all'80% e centrata)
+      var contentTop = cardY + CARD_MARGIN + TITLE_BOX_H;
+      var contentHeight = CARD_H - 2*CARD_MARGIN - TITLE_BOX_H;
+      var contentBoxWidth = CARD_W * BOX_WIDTH_PERCENT;
+      var contentOffsetX = (CARD_W - contentBoxWidth) / 2; // centra la box
+
+      var contentTb = slide.insertTextBox('', cardX + contentOffsetX, contentTop, contentBoxWidth, contentHeight);
+      contentTb.setLeft(cardX + contentOffsetX - INSET_FIX_PT);
+      contentTb.setTop(contentTop - INSET_FIX_PT);
+      contentTb.setWidth(contentBoxWidth + 2*INSET_FIX_PT);
+      contentTb.setHeight(contentHeight + 2*INSET_FIX_PT);
+      try { contentTb.getLine().setWeight(0); contentTb.getLine().getLineFill().setTransparent(); } catch(e) {}
+      var tf = contentTb.getText();
+      tf.setText('');
+
+      // Raggruppa per descrizione
+      var items = byShelf[shelf] || [];
+      var groupsMap = {};
+      var order = [];
+      for (var ii=0; ii<items.length; ii++){
+        var code = (items[ii].code||'').toString();
+        var desc = (items[ii].desc||'').toString();
+        if (!groupsMap.hasOwnProperty(desc)){ groupsMap[desc] = []; order.push(desc); }
+        groupsMap[desc].push(code);
+      }
+
+      // Auto-fitting dimensione font
+      var nCodes = 0; for (var k in groupsMap){ if (groupsMap.hasOwnProperty(k)) nCodes += groupsMap[k].length; }
+      var nDescs = order.length;
+      var nSpacers = Math.max(0, order.length - 1);
+      var contentHeightPt = contentHeight;
+      var LINE_FACTOR = 1.24;
+      var minBody = 7.5;
+      var step = 0.1;
+      function totalHeightEstimate(bodySize){
+        var descSize = Math.max(minBody - 1, bodySize - 1);
+        var codesHeight = nCodes * bodySize * LINE_FACTOR;
+        var descsHeight = nDescs * descSize * LINE_FACTOR;
+        var spacersHeight = nSpacers * 9;
+        return codesHeight + descsHeight + spacersHeight;
+      }
+      var bodySizeFitted = baseBodySize;
+      while (totalHeightEstimate(bodySizeFitted) > contentHeightPt && bodySizeFitted > minBody){
+        bodySizeFitted = Math.max(minBody, +(bodySizeFitted - step).toFixed(2));
+      }
+      var descSizeFitted = Math.max(minBody - 1, +(bodySizeFitted - 1).toFixed(2));
+
+      // Scrivi gruppi
+      for (var gi=0; gi<order.length; gi++){
+        var d = order[gi];
+        var codesArr = groupsMap[d] || [];
+        for (var ci=0; ci<codesArr.length; ci++){
+          var codeStr = codesArr[ci];
+          var codeRange = tf.appendText(codeStr);
+          codeRange.getTextStyle().setFontFamily(font).setFontSize(bodySizeFitted).setUnderline(false).setBold(false).setForegroundColor('#000000');
+          tf.appendText('\n');
+        }
+        var descRange = tf.appendText(d);
+        descRange.getTextStyle().setFontFamily(font).setFontSize(descSizeFitted).setUnderline(false).setBold(false).setItalic(true).setForegroundColor('#000000');
+        if (gi < order.length - 1){
+          tf.appendText('\n');
+          var spacerRange = tf.appendText(' ');
+          spacerRange.getTextStyle().setFontFamily(font).setFontSize(8).setForegroundColor('#000000').setBold(false).setItalic(false).setUnderline(false);
+          tf.appendText('\n');
+        }
+      }
+    }
+  }
+
+  // 7) Esporta PDF
+  var _saved = false;
+  for (var _i=0; _i<3; _i++){
+    try { pres.saveAndClose(); _saved = true; break; } catch(e){ Utilities.sleep(500); }
+  }
+  if (!_saved){
+    SpreadsheetApp.getUi().alert('Errore di salvataggio Slides. Riprova.');
+    driveTrashFile_(copyId);
+    return null;
+  }
+  var pdfBlob = driveExportPdf_(copyId);
+  pdfBlob.setName(baseName + '.pdf');
+  var pdfFile = DriveApp.createFile(pdfBlob);
+  driveMoveToFolder_(pdfFile.getId(), targetFolderId);
+  driveTrashFile_(copyId);
   return pdfFile;
 }

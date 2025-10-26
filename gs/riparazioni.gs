@@ -1,4 +1,5 @@
 // ===== CONFIGURAZIONE =====
+const SPREADSHEET_ID = '122xQdmQb02UH6evZE382t0s6oRDIoiOhF5cYAAmEvY0'; // ID foglio Riparazioni
 const SHEET_NAME_RIPARAZIONI = 'Riparazioni';
 const SHEET_NAME_CLIENTI = 'Clienti';
 
@@ -56,7 +57,7 @@ function doPost(e) {
  * Ottiene tutte le riparazioni (con filtri opzionali)
  */
 function getRiparazioni(e) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(SHEET_NAME_RIPARAZIONI);
 
   if (!sheet) {
@@ -127,7 +128,7 @@ function getRiparazione(e) {
     return jsonResponse({ error: 'Numero riparazione mancante' }, 400);
   }
 
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(SHEET_NAME_RIPARAZIONI);
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
@@ -161,7 +162,7 @@ function getRiparazione(e) {
  * Crea una nuova riparazione
  */
 function createRiparazione(data) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(SHEET_NAME_RIPARAZIONI);
 
   // Genera numero progressivo
@@ -202,7 +203,7 @@ function createRiparazione(data) {
  * Aggiorna una riparazione esistente
  */
 function updateRiparazione(data) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(SHEET_NAME_RIPARAZIONI);
   const allData = sheet.getDataRange().getValues();
 
@@ -238,7 +239,7 @@ function updateRiparazione(data) {
  * Ottiene tutti i clienti (per autocomplete) - CON DEDUPLICAZIONE
  */
 function getClienti() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   let sheet = ss.getSheetByName(SHEET_NAME_CLIENTI);
 
   // Crea foglio se non esiste
@@ -287,7 +288,7 @@ function getClienti() {
  * Aggiunge/aggiorna un cliente - CON CONTROLLO DUPLICATI MIGLIORATO
  */
 function updateOrAddCliente(nome, telefono) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   let sheet = ss.getSheetByName(SHEET_NAME_CLIENTI);
 
   if (!sheet) {
@@ -327,7 +328,7 @@ function updateOrAddCliente(nome, telefono) {
  * Ottiene solo il prossimo numero (leggero, per form nuova riparazione)
  */
 function getNextNumero() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(SHEET_NAME_RIPARAZIONI);
 
   if (!sheet) {
