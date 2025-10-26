@@ -156,20 +156,11 @@ function batchAddRicambi(data) {
   const rangeInizio = ultimaRigaConCodice + 1;
   sheet.getRange(rangeInizio, 1, daInserire.length, 3).setValues(daInserire);
 
-  // Traccia scaffali modificati per cartellini - BATCH OTTIMIZZATO
-  try {
-    const scaffaliModificati = new Set();
-    for (let i = 0; i < daInserire.length; i++) {
-      const scaffale = daInserire[i][2] ? daInserire[i][2].toString().trim().toUpperCase() : '';
-      if (scaffale) scaffaliModificati.add(scaffale);
-    }
-    if (scaffaliModificati.size > 0) {
-      aggiornaModificaScaffaliBatch_(Array.from(scaffaliModificati));
-    }
-  } catch(e) {
-    Logger.log('⚠️ Errore tracking batch: ' + e.toString());
-    // Ignora errori tracciamento per non bloccare API
-  }
+  // ⚠️ TRACKING DISABILITATO NEL BATCH per evitare timeout
+  // Il tracking automatico funziona solo per:
+  // - Modifiche manuali dal foglio (onEdit trigger)
+  // - API singole: addRicambio, updateRicambio, deleteRicambio
+  // Per batch insert, stampa manualmente tutti i nuovi scaffali
 
   return createResponse({
     success: true,
