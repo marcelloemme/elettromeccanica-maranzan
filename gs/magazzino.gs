@@ -167,6 +167,7 @@ function batchAddRicambi(data) {
       aggiornaModificaScaffale_(scaffale);
     }
   } catch(e) {
+    Logger.log('⚠️ Errore tracking batch: ' + e.toString());
     // Ignora errori tracciamento per non bloccare API
   }
 

@@ -183,13 +183,27 @@ async function salvaTutto() {
   btnSalvaTutto.disabled = true;
 
   try {
+    // Timeout 25s (Google Apps Script ha timeout 30s)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
+
     const res = await fetch(`${API_URL}?action=batchAddRicambi`, {
       method: 'POST',
       body: JSON.stringify({
         action: 'batchAddRicambi',
         ricambi: coda
-      })
+      }),
+      signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
+
+    // Verifica status HTTP
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('HTTP Error:', res.status, errorText);
+      throw new Error(`HTTP ${res.status}: ${errorText.substring(0, 100)}`);
+    }
 
     const result = await res.json();
 
@@ -239,8 +253,15 @@ async function salvaTutto() {
       btnSalvaTutto.disabled = false;
     }
   } catch (err) {
-    showToast('❌ Errore di connessione', 'error');
-    console.error('Errore:', err);
+    // Differenzia tra timeout e altri errori
+    if (err.name === 'AbortError') {
+      showToast('⏱️ Timeout - Verifica se dati salvati', 'error');
+      console.error('Timeout dopo 25s:', err);
+    } else {
+      showToast('❌ Errore: ' + err.message, 'error');
+      console.error('Errore salvaTutto:', err);
+    }
+
     popupConfermaSalva.disabled = false;
     popupConfermaSalva.textContent = 'Conferma';
     btnSalvaTutto.disabled = false;
