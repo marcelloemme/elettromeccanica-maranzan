@@ -84,6 +84,7 @@ Codice,descrizione,scaffale
 142289-5,ammortizzatore,D04
 143035-9,scatola cuscinetto,H09
 143250-5,testa completa,H07
+143416-7,interruttore DTW1001,N04
 143935-3,impugnatura,E16
 143957-3,carcassa battente,H09
 143975-1,interruttore,B08
@@ -574,6 +575,7 @@ Codice,descrizione,scaffale
 265264-5,bullone,C09
 265322-7,bullone,C01
 265341-3,bullone M5x75,C01
+265355-2,bullone,N04
 265439-6,vite,R06
 265844-7,bullone,L06
 266154-5,vite,O09
@@ -655,6 +657,7 @@ Codice,descrizione,scaffale
 321685-2,pistone,F04
 321723-0,albero,G04
 321725-6,albero eccentrico,G06
+321726-4,albero eccentrico,N04
 321733-7,coperchio frontale,G05
 321855-3,albero eccentrico,F04
 321859-5,ferma punta x HK1800,C03
@@ -715,6 +718,7 @@ Codice,descrizione,scaffale
 324639-8,vite ad alette,T13
 324711-6,boccola,G07
 325125-2,asta porta lama,I06
+325322-0,albero,N05
 325464-0,battente,N09
 325549-2,spinotto,C06
 325551-5,albero x 8419-B2,V04
@@ -936,6 +940,7 @@ Codice,descrizione,scaffale
 421958-4,raccordo  ,T14
 422032-1,manicotto gomma,N15
 422269-0,anello,E05
+422584-2,protezione gomma,N04
 422750-1,sede cuscinetto,I08
 423026-9,soletta spugna,A08
 423029-3,soletta carbone,N09
@@ -947,6 +952,7 @@ Codice,descrizione,scaffale
 423314-4,soletta sughero,F11
 423315-2,soletta,U01
 423317-8,soletta carbone,F11
+424039-3,coperchio pulsante,N05
 424056-3,bussola,X04
 424109-8,protezione,P13
 424128-4,tappo spazzola,Y09
@@ -1126,6 +1132,7 @@ Codice,descrizione,scaffale
 632J70-7,statore,F06
 632J71-5,indotto,E07
 632J76-5,interruttore,F07
+632K98-1,supporto interruttore,N03
 632P75-3,contatto batteria,B04
 635511-1,statore,V11
 638138-7,motore,T07
@@ -1196,6 +1203,7 @@ Codice,descrizione,scaffale
 643955-2,terminale,F10
 643964-1,porta spazzole x BHR200,E10
 643995-0,porta spazzole,T15
+644809-6,terminale,N03
 646658-4,resistenza,Y07
 649066-1,trasmormatore,G01
 649132-4,trasformatore x DC1201,B01
@@ -1397,11 +1405,6 @@ P-08414,porta mandrino,M03
 P-09101,protezione gomma,M02
 P-15970,lampadina,R02
 PN1301025,albero flessibile,R13
-632K98-1,supporto interruttore,N03
-644809-6,terminale,N03
-321726-4,albero eccentrico,N04
-143416-7,interruttore DTW1001,N04
-263355-2,bullone,N04
-422584-2,protezione gomma,N04
-325322-0,albero,N05
-424039-3,coperhio pulsante,N05
+210012-0,cuscinetto,N05
+216040-0,sfere,N05
+222018-3,puleggia,N05
