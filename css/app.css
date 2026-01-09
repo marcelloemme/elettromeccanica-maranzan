@@ -1077,6 +1077,38 @@ button:active {
   .table td {
     padding: 0.5rem 0.25rem;
   }
+
+  /* Larghezze colonne ottimizzate per mobile */
+  .table .td-numero,
+  .table th:nth-child(1) {
+    width: 20%;
+  }
+
+  .table .td-data,
+  .table th:nth-child(2) {
+    width: 20%;
+  }
+
+  .table .td-cliente,
+  .table th:nth-child(3) {
+    width: 45%;
+  }
+
+  .table .td-stato,
+  .table th:nth-child(4) {
+    width: 15%;
+    text-align: center;
+  }
+
+  /* Nascondi testo dei badge su mobile, mostra solo emoji */
+  .badge {
+    padding: 0;
+    background: none;
+    border: none;
+    font-size: 20px;
+    display: inline-block;
+    line-height: 1;
+  }
 }
 
 /* Empty message */

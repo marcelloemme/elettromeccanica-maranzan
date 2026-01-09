@@ -160,9 +160,12 @@ function renderTabella() {
     // Prova diverse varianti del nome campo
     const dataConsegna = r['Data Consegna'] || r['Data consegna'] || r.DataConsegna || r['Data'];
     const data = formatData(dataConsegna);
+
+    // Su mobile mostra solo emoji, su desktop mostra badge con testo
+    const isMobile = window.innerWidth <= 768;
     const stato = r.Completato ?
-      '<span class="badge completato-si">Completato</span>' :
-      '<span class="badge completato-no">In corso</span>';
+      (isMobile ? '<span class="badge completato-si">🟢</span>' : '<span class="badge completato-si">Completato</span>') :
+      (isMobile ? '<span class="badge completato-no">🔴</span>' : '<span class="badge completato-no">In corso</span>');
 
     return `
       <tr onclick="apriDettaglio('${r.Numero}')">
@@ -204,6 +207,11 @@ window.addEventListener('pageshow', (event) => {
   if (event.persisted) {
     caricaRiparazioni();
   }
+});
+
+// Ri-renderizza quando si ridimensiona (rotazione mobile)
+window.addEventListener('resize', () => {
+  renderTabella();
 });
 
 // Carica riparazioni in background (aggiornamento silenzioso)
