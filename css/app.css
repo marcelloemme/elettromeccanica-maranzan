@@ -1103,8 +1103,9 @@ button:active {
   /* Nascondi testo dei badge su mobile, mostra solo emoji */
   .badge {
     padding: 0;
-    background: none;
+    background: none !important;
     border: none;
+    color: inherit;
     font-size: 20px;
     display: inline-block;
     line-height: 1;
