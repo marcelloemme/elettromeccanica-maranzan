@@ -139,6 +139,23 @@ function renderTabella() {
 
   emptyMessage.classList.add('hidden');
 
+  // Ordina per numero (più recenti in cima)
+  // Formato: "26/0001" -> anno=26, prog=0001
+  riparazioni.sort((a, b) => {
+    const parseNumero = (num) => {
+      const match = String(num).match(/^(\d+)\/(\d+)$/);
+      if (!match) return { anno: 0, prog: 0 };
+      return { anno: parseInt(match[1], 10), prog: parseInt(match[2], 10) };
+    };
+
+    const aNum = parseNumero(a.Numero);
+    const bNum = parseNumero(b.Numero);
+
+    // Prima per anno (decrescente), poi per progressivo (decrescente)
+    if (aNum.anno !== bNum.anno) return bNum.anno - aNum.anno;
+    return bNum.prog - aNum.prog;
+  });
+
   tbody.innerHTML = riparazioni.map(r => {
     // Prova diverse varianti del nome campo
     const dataConsegna = r['Data Consegna'] || r['Data consegna'] || r.DataConsegna || r['Data'];

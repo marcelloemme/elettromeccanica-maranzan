@@ -5,7 +5,9 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbxdsZtism0HvHXBo2ZwmYaf
 const form = document.getElementById('form-nuova');
 const dataConsegnaInput = document.getElementById('data-consegna');
 const clienteInput = document.getElementById('cliente');
+const indirizzoInput = document.getElementById('indirizzo');
 const telefonoInput = document.getElementById('telefono');
+const ddtInput = document.getElementById('ddt');
 const attrezziContainer = document.getElementById('attrezzi-container');
 const addAttrezzoBtn = document.getElementById('add-attrezzo');
 const btnAnnulla = document.getElementById('btn-annulla');
@@ -187,8 +189,8 @@ clienteInput.addEventListener('input', (e) => {
   }
 
   autocompleteList.innerHTML = matches.map(c => `
-    <div class="autocomplete-item" data-nome="${c.nome}" data-telefono="${c.telefono}">
-      ${c.nome} - ${c.telefono}
+    <div class="autocomplete-item" data-nome="${c.nome}" data-telefono="${c.telefono}" data-indirizzo="${c.indirizzo || ''}">
+      ${c.nome} - ${c.telefono}${c.indirizzo ? ' - ' + c.indirizzo : ''}
     </div>
   `).join('');
 
@@ -198,6 +200,7 @@ clienteInput.addEventListener('input', (e) => {
   document.querySelectorAll('.autocomplete-item').forEach(item => {
     item.addEventListener('click', () => {
       clienteInput.value = item.dataset.nome;
+      indirizzoInput.value = item.dataset.indirizzo || '';
       telefonoInput.value = item.dataset.telefono;
       autocompleteList.classList.remove('show');
     });
@@ -248,7 +251,9 @@ form.addEventListener('submit', (e) => {
   // Raccogli dati
   const dataConsegna = dataConsegnaInput.value;
   const cliente = clienteInput.value.trim();
+  const indirizzo = indirizzoInput.value.trim();
   const telefono = telefonoInput.value.trim();
+  const ddt = ddtInput.checked;
 
   // Raccogli attrezzi
   const attrezzi = [];
@@ -267,12 +272,12 @@ form.addEventListener('submit', (e) => {
   }
 
   // Mostra popup conferma
-  mostraPopupConferma({ dataConsegna, cliente, telefono, attrezzi });
+  mostraPopupConferma({ dataConsegna, cliente, indirizzo, telefono, ddt, attrezzi });
 });
 
 // Mostra popup conferma
 function mostraPopupConferma(dati) {
-  const { dataConsegna, cliente, telefono, attrezzi } = dati;
+  const { dataConsegna, cliente, indirizzo, telefono, ddt, attrezzi } = dati;
 
   const dataFormattata = new Date(dataConsegna + 'T00:00:00').toLocaleDateString('it-IT');
   const attrezziHtml = attrezzi.map((a, i) => {
@@ -285,7 +290,9 @@ function mostraPopupConferma(dati) {
   popupRiepilogo.innerHTML = `
     <p><strong>Data consegna:</strong> ${dataFormattata}</p>
     <p><strong>Cliente:</strong> ${cliente}</p>
+    ${indirizzo ? `<p><strong>Indirizzo:</strong> ${indirizzo}</p>` : ''}
     <p><strong>Telefono:</strong> ${telefono}</p>
+    <p><strong>Documento di Trasporto:</strong> ${ddt ? 'Sì' : 'No'}</p>
     ${attrezziHtml}
   `;
 

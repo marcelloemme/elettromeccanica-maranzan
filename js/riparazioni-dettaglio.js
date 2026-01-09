@@ -6,7 +6,9 @@ const titolo = document.getElementById('titolo-numero');
 const detailNumero = document.getElementById('detail-numero');
 const detailData = document.getElementById('detail-data');
 const detailCliente = document.getElementById('detail-cliente');
+const detailIndirizzo = document.getElementById('detail-indirizzo');
 const detailTelefono = document.getElementById('detail-telefono');
+const detailDdt = document.getElementById('detail-ddt');
 const detailAttrezzi = document.getElementById('detail-attrezzi');
 const detailStato = document.getElementById('detail-stato');
 
@@ -19,7 +21,9 @@ const popupModifica = document.getElementById('popup-modifica');
 const formModifica = document.getElementById('form-modifica');
 const editData = document.getElementById('edit-data');
 const editCliente = document.getElementById('edit-cliente');
+const editIndirizzo = document.getElementById('edit-indirizzo');
 const editTelefono = document.getElementById('edit-telefono');
+const editDdt = document.getElementById('edit-ddt');
 const editAttrezziContainer = document.getElementById('edit-attrezzi-container');
 const editAddAttrezzo = document.getElementById('edit-add-attrezzo');
 const editCompletato = document.getElementById('edit-completato');
@@ -152,7 +156,9 @@ function renderDettaglio() {
   detailNumero.textContent = r.Numero;
   detailData.textContent = formatData(r['Data Consegna'] || r['Data consegna'] || r.DataConsegna);
   detailCliente.textContent = r.Cliente || '-';
+  detailIndirizzo.textContent = r.Indirizzo || '-';
   detailTelefono.textContent = r.Telefono || '-';
+  detailDdt.textContent = r.DDT ? 'Sì' : 'No';
 
   // Attrezzi
   const attrezzi = typeof r.Attrezzi === 'string' ? JSON.parse(r.Attrezzi) : (r.Attrezzi || []);
@@ -255,7 +261,9 @@ function apriModifica() {
     editData.value = `${year}-${month}-${day}`;
   }
   editCliente.value = r.Cliente || '';
+  editIndirizzo.value = r.Indirizzo || '';
   editTelefono.value = r.Telefono || '';
+  editDdt.checked = r.DDT || false;
   editCompletato.checked = r.Completato || false;
 
   // Attrezzi
@@ -308,7 +316,9 @@ function handleSubmitModifica(e) {
     numero: riparazioneCorrente.Numero,
     dataConsegna: editData.value,
     cliente: editCliente.value.trim(),
+    indirizzo: editIndirizzo.value.trim(),
     telefono: editTelefono.value.trim(),
+    ddt: editDdt.checked,
     completato: editCompletato.checked,
     attrezzi: []
   };
@@ -345,7 +355,9 @@ function mostraPopupConfermaModifica(dati) {
     <p><strong>Numero:</strong> ${dati.numero}</p>
     <p><strong>Data consegna:</strong> ${dataFormattata}</p>
     <p><strong>Cliente:</strong> ${dati.cliente}</p>
+    ${dati.indirizzo ? `<p><strong>Indirizzo:</strong> ${dati.indirizzo}</p>` : ''}
     <p><strong>Telefono:</strong> ${dati.telefono}</p>
+    <p><strong>Documento di Trasporto:</strong> ${dati.ddt ? 'Sì' : 'No'}</p>
     ${attrezziHtml}
     <p><strong>Stato:</strong> ${dati.completato ? 'Completato' : 'In corso'}</p>
   `;
@@ -382,7 +394,9 @@ async function salvaModifiche(dati) {
         Numero: dati.numero,
         'Data Consegna': dati.dataConsegna,
         Cliente: dati.cliente,
+        Indirizzo: dati.indirizzo,
         Telefono: dati.telefono,
+        DDT: dati.ddt,
         Attrezzi: dati.attrezzi,
         Completato: dati.completato
       };

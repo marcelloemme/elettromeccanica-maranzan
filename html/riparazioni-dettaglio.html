@@ -45,8 +45,18 @@
       </div>
 
       <div class="detail-group">
+        <div class="detail-label">Indirizzo</div>
+        <div class="detail-value" id="detail-indirizzo">-</div>
+      </div>
+
+      <div class="detail-group">
         <div class="detail-label">Telefono</div>
         <div class="detail-value" id="detail-telefono">-</div>
+      </div>
+
+      <div class="detail-group">
+        <div class="detail-label">Documento di Trasporto</div>
+        <div class="detail-value" id="detail-ddt">-</div>
       </div>
 
       <div class="detail-group">
@@ -92,8 +102,20 @@
         </div>
 
         <div class="form-group">
+          <label for="edit-indirizzo">Indirizzo</label>
+          <input type="text" id="edit-indirizzo" />
+        </div>
+
+        <div class="form-group">
           <label for="edit-telefono">Telefono</label>
-          <input type="tel" id="edit-telefono" required />
+          <input type="tel" id="edit-telefono" />
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="edit-ddt" />
+            <span>Documento di Trasporto (DDT)</span>
+          </label>
         </div>
 
         <div class="form-group">

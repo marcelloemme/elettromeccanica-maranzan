@@ -1023,17 +1023,20 @@ button:active {
   background: var(--btn-secondary-bg);
 }
 
-.table .td-numero {
+.table .td-numero,
+.table th:nth-child(1) {
   width: 20%;
   text-align: left;
 }
 
-.table .td-data {
+.table .td-data,
+.table th:nth-child(2) {
   width: 20%;
   text-align: left;
 }
 
-.table .td-cliente {
+.table .td-cliente,
+.table th:nth-child(3) {
   width: 40%;
   text-align: left;
   white-space: nowrap;
@@ -1041,7 +1044,8 @@ button:active {
   text-overflow: ellipsis;
 }
 
-.table .td-stato {
+.table .td-stato,
+.table th:nth-child(4) {
   width: 20%;
   text-align: left;
 }

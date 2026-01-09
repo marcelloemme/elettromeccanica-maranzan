@@ -82,7 +82,7 @@ function getRiparazioni(e) {
         } catch(err) {
           obj[header] = [];
         }
-      } else if (header === 'Completato') {
+      } else if (header === 'Completato' || header === 'DDT') {
         obj[header] = row[i] === true || row[i] === 'TRUE' || row[i] === true;
       } else {
         obj[header] = row[i] || '';
@@ -148,7 +148,7 @@ function getRiparazione(e) {
       } catch(err) {
         riparazione[header] = [];
       }
-    } else if (header === 'Completato') {
+    } else if (header === 'Completato' || header === 'DDT') {
       riparazione[header] = row[i] === true || row[i] === 'TRUE';
     } else {
       riparazione[header] = row[i] || '';
@@ -180,16 +180,18 @@ function createRiparazione(data) {
     numero,                    // A: Numero
     dataConsegna,              // B: Data Consegna
     data.cliente || '',        // C: Cliente
-    data.telefono || '',       // D: Telefono
-    attrezziJson,              // E: Attrezzi (JSON)
-    false                      // F: Completato
+    data.indirizzo || '',      // D: Indirizzo
+    data.telefono || '',       // E: Telefono
+    data.ddt === true,         // F: DDT
+    attrezziJson,              // G: Attrezzi (JSON)
+    false                      // H: Completato
   ];
 
   sheet.appendRow(newRow);
 
-  // Aggiorna/aggiungi cliente se non esiste
-  if (data.cliente && data.telefono) {
-    updateOrAddCliente(data.cliente, data.telefono);
+  // Aggiorna/aggiungi cliente se c'è almeno il nome
+  if (data.cliente) {
+    updateOrAddCliente(data.cliente, data.telefono || '', data.indirizzo);
   }
 
   return jsonResponse({
@@ -215,16 +217,18 @@ function updateRiparazione(data) {
 
   const attrezziJson = JSON.stringify(data.attrezzi || []);
 
-  // Aggiorna campi (mantiene A - Numero, aggiorna B, C, D, E, F)
+  // Aggiorna campi (mantiene A - Numero, aggiorna B, C, D, E, F, G, H)
   sheet.getRange(rowIndex + 1, 2).setValue(data.dataConsegna || allData[rowIndex][1]);
   sheet.getRange(rowIndex + 1, 3).setValue(data.cliente || '');
-  sheet.getRange(rowIndex + 1, 4).setValue(data.telefono || '');
-  sheet.getRange(rowIndex + 1, 5).setValue(attrezziJson);
-  sheet.getRange(rowIndex + 1, 6).setValue(data.completato === true);
+  sheet.getRange(rowIndex + 1, 4).setValue(data.indirizzo || '');
+  sheet.getRange(rowIndex + 1, 5).setValue(data.telefono || '');
+  sheet.getRange(rowIndex + 1, 6).setValue(data.ddt === true);
+  sheet.getRange(rowIndex + 1, 7).setValue(attrezziJson);
+  sheet.getRange(rowIndex + 1, 8).setValue(data.completato === true);
 
-  // Aggiorna cliente se modificato
-  if (data.cliente && data.telefono) {
-    updateOrAddCliente(data.cliente, data.telefono);
+  // Aggiorna cliente se c'è almeno il nome
+  if (data.cliente) {
+    updateOrAddCliente(data.cliente, data.telefono || '', data.indirizzo);
   }
 
   return jsonResponse({
@@ -245,7 +249,7 @@ function getClienti() {
   // Crea foglio se non esiste
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME_CLIENTI);
-    sheet.appendRow(['Nome Cliente', 'Telefono']);
+    sheet.appendRow(['Nome Cliente', 'Telefono', 'Indirizzo']);
     return jsonResponse({ clienti: [] });
   }
 
@@ -262,6 +266,7 @@ function getClienti() {
   rows.forEach(row => {
     const nome = (row[0] || '').toString().trim();
     const telefono = (row[1] || '').toString().trim();
+    const indirizzo = (row[2] || '').toString().trim();
 
     // Salta righe vuote
     if (!nome && !telefono) return;
@@ -271,7 +276,7 @@ function getClienti() {
 
     // Aggiungi solo se non esiste già
     if (!clientiMap.has(chiave)) {
-      clientiMap.set(chiave, { nome, telefono });
+      clientiMap.set(chiave, { nome, telefono, indirizzo });
     }
   });
 
@@ -287,32 +292,35 @@ function getClienti() {
 /**
  * Aggiunge/aggiorna un cliente - CON CONTROLLO DUPLICATI MIGLIORATO
  */
-function updateOrAddCliente(nome, telefono) {
+function updateOrAddCliente(nome, telefono, indirizzo) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   let sheet = ss.getSheetByName(SHEET_NAME_CLIENTI);
 
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME_CLIENTI);
-    sheet.appendRow(['Nome Cliente', 'Telefono']);
+    sheet.appendRow(['Nome Cliente', 'Telefono', 'Indirizzo']);
   }
 
   const data = sheet.getDataRange().getValues();
 
-  // Cerca se esiste già la coppia nome + telefono
+  // Cerca se esiste già il cliente per nome
   let found = false;
   for (let i = 1; i < data.length; i++) {
     const rowNome = (data[i][0] || '').toString().trim();
     const rowTelefono = (data[i][1] || '').toString().trim();
 
-    // Se nome E telefono corrispondono, non fare nulla (già presente)
-    if (rowNome === nome && rowTelefono === telefono) {
-      found = true;
-      break;
-    }
+    // Se il nome corrisponde
+    if (rowNome === nome) {
+      // Aggiorna telefono solo se fornito e diverso
+      if (telefono && rowTelefono !== telefono) {
+        sheet.getRange(i + 1, 2).setValue(telefono);
+      }
 
-    // Se solo il nome corrisponde ma telefono diverso, aggiorna il telefono
-    if (rowNome === nome && rowTelefono !== telefono) {
-      sheet.getRange(i + 1, 2).setValue(telefono);
+      // Aggiorna indirizzo solo se fornito
+      if (indirizzo) {
+        sheet.getRange(i + 1, 3).setValue(indirizzo);
+      }
+
       found = true;
       break;
     }
@@ -320,7 +328,7 @@ function updateOrAddCliente(nome, telefono) {
 
   // Se non trovato, aggiungi nuovo cliente
   if (!found) {
-    sheet.appendRow([nome, telefono]);
+    sheet.appendRow([nome, telefono || '', indirizzo || '']);
   }
 }
 
