@@ -12,6 +12,7 @@ const attrezziContainer = document.getElementById('attrezzi-container');
 const addAttrezzoBtn = document.getElementById('add-attrezzo');
 const btnAnnulla = document.getElementById('btn-annulla');
 const autocompleteList = document.getElementById('autocomplete-list');
+const autocompleteListIndirizzo = document.getElementById('autocomplete-list-indirizzo');
 
 const popupConferma = document.getElementById('popup-conferma');
 const popupRiepilogo = document.getElementById('popup-riepilogo');
@@ -25,6 +26,7 @@ const popupOk = document.getElementById('popup-ok');
 // Stato
 let clienti = [];
 let attrezziCount = 0;
+let paesiUnici = []; // Lista paesi per autocomplete indirizzo
 
 // Init
 (async () => {
@@ -119,10 +121,30 @@ async function loadClienti() {
 
     // Salva in cache centralizzata
     cacheManager.set('clienti', clienti);
+
+    // Estrai paesi unici per autocomplete indirizzo
+    estraiPaesiUnici();
   } catch (err) {
     console.error('Errore caricamento clienti:', err);
     clienti = [];
   }
+}
+
+// Estrae paesi unici dalla lista clienti
+function estraiPaesiUnici() {
+  const paesiSet = new Set();
+
+  clienti.forEach(c => {
+    if (c.indirizzo && c.indirizzo.trim()) {
+      paesiSet.add(c.indirizzo.trim());
+    }
+  });
+
+  paesiUnici = Array.from(paesiSet).sort((a, b) =>
+    a.toLowerCase().localeCompare(b.toLowerCase())
+  );
+
+  console.log('Paesi unici caricati:', paesiUnici.length);
 }
 
 // Normalizza stringa (rimuove accenti e caratteri speciali)
@@ -207,10 +229,47 @@ clienteInput.addEventListener('input', (e) => {
   });
 });
 
+// Autocomplete indirizzo (paesi)
+indirizzoInput.addEventListener('input', (e) => {
+  const query = e.target.value.trim();
+
+  if (query.length < 2) {
+    autocompleteListIndirizzo.classList.remove('show');
+    return;
+  }
+
+  // Filtra paesi che matchano
+  const matches = paesiUnici
+    .filter(paese => paese.toLowerCase().includes(query.toLowerCase()))
+    .slice(0, 10); // Massimo 10 risultati
+
+  if (matches.length === 0) {
+    autocompleteListIndirizzo.classList.remove('show');
+    return;
+  }
+
+  autocompleteListIndirizzo.innerHTML = matches.map(paese => `
+    <div class="autocomplete-item-indirizzo" data-paese="${paese}">
+      ${paese}
+    </div>
+  `).join('');
+
+  autocompleteListIndirizzo.classList.add('show');
+
+  // Event listeners per i suggerimenti
+  document.querySelectorAll('.autocomplete-item-indirizzo').forEach(item => {
+    item.addEventListener('click', () => {
+      indirizzoInput.value = item.dataset.paese;
+      autocompleteListIndirizzo.classList.remove('show');
+    });
+  });
+});
+
 // Chiudi autocomplete quando click fuori
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.form-group')) {
     autocompleteList.classList.remove('show');
+    autocompleteListIndirizzo.classList.remove('show');
   }
 });
 
