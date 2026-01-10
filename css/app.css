@@ -601,8 +601,8 @@ body.touch-app {
 /* Margini ridotti su mobile per riparazioni */
 @media (max-width: 768px) {
   .app:not(.touch-app) {
-    padding-left: 9px;
-    padding-right: 9px;
+    padding-left: 6px;
+    padding-right: 6px;
   }
 }
 
