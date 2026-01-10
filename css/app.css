@@ -964,12 +964,14 @@ button:active {
   margin-bottom: 1.5rem;
 }
 
-.search-box {
+/* Ricerca + filtri stato su una riga */
+.search-filter-row {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
 }
 
-.search-box input {
+.search-input {
   flex: 1;
   font-size: 16px;
   padding: 0.5rem 0.75rem;
@@ -979,31 +981,34 @@ button:active {
   color: var(--fg);
 }
 
-.toggle-group {
-  display: flex;
-  border: 1px solid var(--border-strong);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.toggle-btn {
-  flex: 1;
-  padding: 0.75rem;
+.filter-btn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
   background: var(--btn-secondary-bg);
   color: var(--btn-secondary-fg);
-  border: none;
-  border-right: 1px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
-.toggle-btn:last-child {
-  border-right: none;
-}
-
-.toggle-btn.active {
+.filter-btn.active {
   background: var(--btn-primary-bg);
   color: var(--btn-primary-fg);
+  border-color: var(--btn-primary-bg);
+}
+
+@media (max-width: 768px) {
+  .filter-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
 }
 
 /* Filtro date */

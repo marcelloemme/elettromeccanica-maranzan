@@ -3,7 +3,8 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbxdsZtism0HvHXBo2ZwmYaf
 
 // Elementi DOM
 const searchInput = document.getElementById('search-cliente');
-const toggleBtns = document.querySelectorAll('.toggle-btn');
+const filterIncorso = document.getElementById('filter-incorso');
+const filterCompletato = document.getElementById('filter-completato');
 const tbody = document.getElementById('tbody-riparazioni');
 const emptyMessage = document.getElementById('empty-message');
 const loadingOverlay = document.getElementById('loading-overlay');
@@ -14,7 +15,8 @@ const btnMostraTutto = document.getElementById('btn-mostra-tutto');
 
 // Stato
 let tutteRiparazioni = [];
-let filtroAttivo = 'tutti'; // 'tutti' | 'incompleti'
+let filtroIncorso = false; // Se true, mostra solo in corso
+let filtroCompletato = false; // Se true, mostra solo completate
 let searchQuery = '';
 let dataDal = null; // Data inizio filtro (Date object o null)
 let dataAl = null;  // Data fine filtro (Date object o null)
@@ -99,14 +101,17 @@ function setupEventListeners() {
     });
   }
 
-  // Toggle filtri
-  toggleBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      toggleBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      filtroAttivo = btn.dataset.filter;
-      renderTabella();
-    });
+  // Filtri stato (multi-selezione)
+  filterIncorso.addEventListener('click', () => {
+    filtroIncorso = !filtroIncorso;
+    filterIncorso.classList.toggle('active', filtroIncorso);
+    renderTabella();
+  });
+
+  filterCompletato.addEventListener('click', () => {
+    filtroCompletato = !filtroCompletato;
+    filterCompletato.classList.toggle('active', filtroCompletato);
+    renderTabella();
   });
 
   // Ricerca cliente (con debounce)
@@ -131,10 +136,17 @@ function setupEventListeners() {
 function filtraRiparazioni() {
   let filtrate = [...tutteRiparazioni];
 
-  // Filtro completato/incompleti
-  if (filtroAttivo === 'incompleti') {
+  // Filtro stato (multi-selezione)
+  // - Nessuno selezionato = mostra tutto
+  // - Solo incorso = mostra solo in corso
+  // - Solo completato = mostra solo completate
+  // - Entrambi = mostra tutto
+  if (filtroIncorso && !filtroCompletato) {
     filtrate = filtrate.filter(r => !r.Completato);
+  } else if (!filtroIncorso && filtroCompletato) {
+    filtrate = filtrate.filter(r => r.Completato);
   }
+  // Se entrambi o nessuno: mostra tutto (nessun filtro)
 
   // Filtro ricerca cliente
   if (searchQuery) {
@@ -163,55 +175,9 @@ function filtraRiparazioni() {
   return filtrate;
 }
 
-// Aggiorna contatori nei toggle
-function aggiornaContatori() {
-  // Filtra solo per date e ricerca cliente (ignora toggle completato/incompleti)
-  let riparazioniFiltrate = [...tutteRiparazioni];
-
-  // Filtro ricerca cliente
-  if (searchQuery) {
-    riparazioniFiltrate = riparazioniFiltrate.filter(r =>
-      r.Cliente && r.Cliente.toLowerCase().includes(searchQuery)
-    );
-  }
-
-  // Filtro date
-  if (dataDal || dataAl) {
-    riparazioniFiltrate = riparazioniFiltrate.filter(r => {
-      const dataConsegna = r['Data Consegna'] || r['Data consegna'] || r.DataConsegna;
-      if (!dataConsegna) return false;
-
-      const dataRip = parseDataItaliana(dataConsegna);
-      if (!dataRip) return false;
-
-      if (dataDal && dataRip < dataDal) return false;
-      if (dataAl && dataRip > dataAl) return false;
-
-      return true;
-    });
-  }
-
-  // Conta totale e da completare
-  const totale = riparazioniFiltrate.length;
-  const daCompletare = riparazioniFiltrate.filter(r => !r.Completato).length;
-
-  // Aggiorna testo dei toggle
-  toggleBtns.forEach(btn => {
-    const filtro = btn.dataset.filter;
-    if (filtro === 'tutti') {
-      btn.textContent = `Tutti (${totale})`;
-    } else if (filtro === 'incompleti') {
-      btn.textContent = `Da completare (${daCompletare})`;
-    }
-  });
-}
-
 // Render tabella
 function renderTabella() {
   const riparazioni = filtraRiparazioni();
-
-  // Aggiorna contatori
-  aggiornaContatori();
 
   if (riparazioni.length === 0) {
     tbody.innerHTML = '';

@@ -36,15 +36,11 @@
 
     <!-- Controlli filtri -->
     <div class="controls">
-      <!-- Ricerca per cliente -->
-      <div class="search-box">
-        <input type="text" id="search-cliente" placeholder="Cerca per nome cliente..." />
-      </div>
-
-      <!-- Toggle completato/tutti -->
-      <div class="toggle-group">
-        <button class="toggle-btn active" data-filter="tutti">Tutti</button>
-        <button class="toggle-btn" data-filter="incompleti">Da completare</button>
+      <!-- Ricerca per cliente + filtri stato -->
+      <div class="search-filter-row">
+        <input type="text" id="search-cliente" class="search-input" placeholder="Cerca per nome cliente..." />
+        <button class="filter-btn" id="filter-incorso" data-filter="incorso">🔴</button>
+        <button class="filter-btn" id="filter-completato" data-filter="completato">✅</button>
       </div>
 
       <!-- Filtro date -->
@@ -87,7 +83,7 @@
   </main>
 
   <script src="/js/cache-manager.js"></script>
-  <script src="/js/riparazioni-archivio.js?v=4"></script>
+  <script src="/js/riparazioni-archivio.js?v=5"></script>
 
   <script>
     // Swipe da sinistra per tornare a /private
