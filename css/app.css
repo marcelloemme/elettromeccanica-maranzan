@@ -593,7 +593,7 @@ body.touch-app {
 .app:not(.touch-app) {
   min-height: 100vh;
   min-height: 100dvh;
-  padding: 2rem 1rem calc(0.3em + env(safe-area-inset-bottom, 0));
+  padding: 0 1rem calc(0.3em + env(safe-area-inset-bottom, 0));
   max-width: 800px;
   margin: 0 auto;
 }
@@ -601,15 +601,31 @@ body.touch-app {
 /* Margini ridotti su mobile per riparazioni */
 @media (max-width: 768px) {
   .app:not(.touch-app) {
-    padding-top: calc(0.3em + env(safe-area-inset-top, 0));
     padding-left: 6px;
     padding-right: 6px;
   }
 }
 
+/* Sticky header container */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 100;
+}
+
 .header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 0;
+  padding-top: 2rem;
+  padding-bottom: 1rem;
+  background: var(--bg);
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding-top: calc(0.3em + env(safe-area-inset-top, 0));
+  }
 }
 
 .header h1 {
@@ -962,7 +978,9 @@ button:active {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
+  padding-bottom: 1rem;
+  background: var(--bg);
 }
 
 /* Ricerca + filtri stato su una riga */
@@ -1077,7 +1095,7 @@ button:active {
   }
 
   .filter-btn {
-    width: 80px;
+    width: 75px;
   }
 
   .date-filter {
@@ -1095,7 +1113,7 @@ button:active {
   }
 
   #btn-mostra-tutto {
-    width: calc(160px + 0.5rem);
+    width: calc(150px + 0.5rem);
     padding: 0.5rem 0.7rem;
     font-size: 13px;
   }
@@ -1109,12 +1127,17 @@ button:active {
 
 .table thead {
   border-bottom: 2px solid var(--border-strong);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
 }
 
 .table th {
   text-align: left;
   padding: 0.75rem 0.5rem;
   font-weight: 600;
+  background: var(--bg);
 }
 
 .table tbody tr {
