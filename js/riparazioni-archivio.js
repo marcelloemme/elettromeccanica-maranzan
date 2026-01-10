@@ -21,13 +21,13 @@ let dataAl = null;  // Data fine filtro (Date object o null)
 
 // Init (ottimizzato con cache)
 (async () => {
-  // Imposta filtro date default (ultimi 30 giorni)
-  impostaFiltroDateDefault();
-
   // 1. Prova cache prima per mostrare dati istantaneamente
   const cached = cacheManager.get('riparazioni');
   if (cached && cached.length > 0) {
     tutteRiparazioni = cached;
+
+    // Imposta filtro date DOPO aver caricato i dati
+    impostaFiltroDateDefault();
     renderTabella();
 
     // Nascondi loading
@@ -44,6 +44,11 @@ let dataAl = null;  // Data fine filtro (Date object o null)
 
   // 3. Fallback: nessuna cache, carica da API
   await caricaRiparazioni();
+
+  // Imposta filtro date DOPO aver caricato i dati
+  impostaFiltroDateDefault();
+  renderTabella();
+
   setupEventListeners();
 
   // Nascondi loading
@@ -69,11 +74,10 @@ async function caricaRiparazioni() {
     // Salva in cache centralizzata
     cacheManager.set('riparazioni', tutteRiparazioni);
 
-    renderTabella();
+    // NON chiamare renderTabella() qui - viene chiamato da init
   } catch (err) {
     console.error('Errore caricamento riparazioni:', err);
     tutteRiparazioni = [];
-    renderTabella();
   }
 }
 
