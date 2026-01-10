@@ -230,17 +230,13 @@ clienteInput.addEventListener('input', (e) => {
 });
 
 // Autocomplete indirizzo (paesi)
-indirizzoInput.addEventListener('input', (e) => {
-  const query = e.target.value.trim();
-
-  if (query.length < 2) {
-    autocompleteListIndirizzo.classList.remove('show');
-    return;
-  }
-
+function mostraAutocompleteIndirizzo(query = '') {
   // Filtra paesi che matchano
   const matches = paesiUnici
-    .filter(paese => paese.toLowerCase().includes(query.toLowerCase()))
+    .filter(paese => {
+      if (!query) return true; // Mostra tutti se query vuota
+      return paese.toLowerCase().includes(query.toLowerCase());
+    })
     .slice(0, 10); // Massimo 10 risultati
 
   if (matches.length === 0) {
@@ -263,6 +259,18 @@ indirizzoInput.addEventListener('input', (e) => {
       autocompleteListIndirizzo.classList.remove('show');
     });
   });
+}
+
+// Mostra autocomplete al focus (click sul campo)
+indirizzoInput.addEventListener('focus', () => {
+  const query = indirizzoInput.value.trim();
+  mostraAutocompleteIndirizzo(query);
+});
+
+// Mostra autocomplete mentre si digita (già dal primo carattere)
+indirizzoInput.addEventListener('input', (e) => {
+  const query = e.target.value.trim();
+  mostraAutocompleteIndirizzo(query);
 });
 
 // Chiudi autocomplete quando click fuori
