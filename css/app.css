@@ -1002,6 +1002,14 @@ button:active {
 .date-filter {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+}
+
+.date-filter-left {
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
   flex-wrap: nowrap;
 }
@@ -1029,10 +1037,19 @@ button:active {
   font-family: monospace;
 }
 
-.date-filter .btn-secondary {
+#btn-mostra-tutto {
   padding: 0.6rem 1rem;
   font-size: 14px;
   white-space: nowrap;
+}
+
+/* Testo pulsante responsive */
+#btn-mostra-tutto .text-desktop {
+  display: inline;
+}
+
+#btn-mostra-tutto .text-mobile {
+  display: none;
 }
 
 /* Mobile: compatta ulteriormente */
@@ -1051,9 +1068,18 @@ button:active {
     padding: 0.5rem 0.3rem;
   }
 
-  .date-filter .btn-secondary {
+  #btn-mostra-tutto {
     padding: 0.5rem 0.7rem;
     font-size: 13px;
+  }
+
+  /* Cambia testo su mobile */
+  #btn-mostra-tutto .text-desktop {
+    display: none;
+  }
+
+  #btn-mostra-tutto .text-mobile {
+    display: inline;
   }
 }
 

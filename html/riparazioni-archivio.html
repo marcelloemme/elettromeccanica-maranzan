@@ -49,11 +49,16 @@
 
       <!-- Filtro date -->
       <div class="date-filter">
-        <label for="data-dal">Dal:</label>
-        <input type="text" id="data-dal" class="date-input" placeholder="gg/mm/aaaa" maxlength="10" />
-        <label for="data-al">Al:</label>
-        <input type="text" id="data-al" class="date-input" placeholder="gg/mm/aaaa" maxlength="10" />
-        <button class="btn-secondary" id="btn-mostra-tutto">Mostra tutto</button>
+        <div class="date-filter-left">
+          <label for="data-dal">Dal:</label>
+          <input type="text" id="data-dal" class="date-input" placeholder="gg/mm/aaaa" maxlength="10" />
+          <label for="data-al">Al:</label>
+          <input type="text" id="data-al" class="date-input" placeholder="gg/mm/aaaa" maxlength="10" />
+        </div>
+        <button class="btn-secondary" id="btn-mostra-tutto">
+          <span class="text-desktop">Mostra tutto</span>
+          <span class="text-mobile">Tutto</span>
+        </button>
       </div>
     </div>
 
