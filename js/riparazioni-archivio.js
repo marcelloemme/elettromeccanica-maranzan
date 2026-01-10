@@ -163,9 +163,55 @@ function filtraRiparazioni() {
   return filtrate;
 }
 
+// Aggiorna contatori nei toggle
+function aggiornaContatori() {
+  // Filtra solo per date e ricerca cliente (ignora toggle completato/incompleti)
+  let riparazioniFiltrate = [...tutteRiparazioni];
+
+  // Filtro ricerca cliente
+  if (searchQuery) {
+    riparazioniFiltrate = riparazioniFiltrate.filter(r =>
+      r.Cliente && r.Cliente.toLowerCase().includes(searchQuery)
+    );
+  }
+
+  // Filtro date
+  if (dataDal || dataAl) {
+    riparazioniFiltrate = riparazioniFiltrate.filter(r => {
+      const dataConsegna = r['Data Consegna'] || r['Data consegna'] || r.DataConsegna;
+      if (!dataConsegna) return false;
+
+      const dataRip = parseDataItaliana(dataConsegna);
+      if (!dataRip) return false;
+
+      if (dataDal && dataRip < dataDal) return false;
+      if (dataAl && dataRip > dataAl) return false;
+
+      return true;
+    });
+  }
+
+  // Conta totale e da completare
+  const totale = riparazioniFiltrate.length;
+  const daCompletare = riparazioniFiltrate.filter(r => !r.Completato).length;
+
+  // Aggiorna testo dei toggle
+  toggleBtns.forEach(btn => {
+    const filtro = btn.dataset.filter;
+    if (filtro === 'tutti') {
+      btn.textContent = `Tutti (${totale})`;
+    } else if (filtro === 'incompleti') {
+      btn.textContent = `Da completare (${daCompletare})`;
+    }
+  });
+}
+
 // Render tabella
 function renderTabella() {
   const riparazioni = filtraRiparazioni();
+
+  // Aggiorna contatori
+  aggiornaContatori();
 
   if (riparazioni.length === 0) {
     tbody.innerHTML = '';
