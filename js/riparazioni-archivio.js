@@ -8,14 +8,22 @@ const tbody = document.getElementById('tbody-riparazioni');
 const emptyMessage = document.getElementById('empty-message');
 const loadingOverlay = document.getElementById('loading-overlay');
 const appMain = document.querySelector('.app');
+const dataDalInput = document.getElementById('data-dal');
+const dataAlInput = document.getElementById('data-al');
+const btnMostraTutto = document.getElementById('btn-mostra-tutto');
 
 // Stato
 let tutteRiparazioni = [];
 let filtroAttivo = 'tutti'; // 'tutti' | 'incompleti'
 let searchQuery = '';
+let dataDal = null; // Data inizio filtro (Date object o null)
+let dataAl = null;  // Data fine filtro (Date object o null)
 
 // Init (ottimizzato con cache)
 (async () => {
+  // Imposta filtro date default (ultimi 30 giorni)
+  impostaFiltroDateDefault();
+
   // 1. Prova cache prima per mostrare dati istantaneamente
   const cached = cacheManager.get('riparazioni');
   if (cached && cached.length > 0) {
@@ -106,6 +114,13 @@ function setupEventListeners() {
       renderTabella();
     }, 300);
   });
+
+  // Input date con formattazione automatica
+  setupDateInput(dataDalInput);
+  setupDateInput(dataAlInput);
+
+  // Bottone "Mostra tutto"
+  btnMostraTutto.addEventListener('click', mostraTutto);
 }
 
 // Filtra riparazioni
@@ -122,6 +137,23 @@ function filtraRiparazioni() {
     filtrate = filtrate.filter(r =>
       r.Cliente && r.Cliente.toLowerCase().includes(searchQuery)
     );
+  }
+
+  // Filtro date
+  if (dataDal || dataAl) {
+    filtrate = filtrate.filter(r => {
+      const dataConsegna = r['Data Consegna'] || r['Data consegna'] || r.DataConsegna;
+      if (!dataConsegna) return false;
+
+      const dataRip = parseDataItaliana(dataConsegna);
+      if (!dataRip) return false;
+
+      // Controlla range
+      if (dataDal && dataRip < dataDal) return false;
+      if (dataAl && dataRip > dataAl) return false;
+
+      return true;
+    });
   }
 
   return filtrate;
@@ -221,4 +253,133 @@ async function caricaRiparazioniBackground() {
   } catch (err) {
     console.warn('Aggiornamento background fallito (non critico):', err);
   }
+}
+
+// ===== GESTIONE FILTRO DATE =====
+
+// Imposta filtro date default (ultimi 30 giorni)
+function impostaFiltroDateDefault() {
+  const oggi = new Date();
+  const trentaGiorniFa = new Date();
+  trentaGiorniFa.setDate(oggi.getDate() - 30);
+
+  // Imposta variabili stato
+  dataDal = trentaGiorniFa;
+  dataAl = oggi;
+
+  // Imposta valori input
+  dataDalInput.value = formatDateToInput(trentaGiorniFa);
+  dataAlInput.value = formatDateToInput(oggi);
+}
+
+// Bottone "Mostra tutto" - dal 26/10/2025 a oggi
+function mostraTutto() {
+  const oggi = new Date();
+  const primaScheda = new Date(2025, 9, 26); // 26 ottobre 2025 (mese 9 = ottobre, zero-indexed)
+
+  dataDal = primaScheda;
+  dataAl = oggi;
+
+  dataDalInput.value = formatDateToInput(primaScheda);
+  dataAlInput.value = formatDateToInput(oggi);
+
+  renderTabella();
+}
+
+// Formatta Date object in stringa GG/MM/AAAA per input
+function formatDateToInput(date) {
+  const giorno = String(date.getDate()).padStart(2, '0');
+  const mese = String(date.getMonth() + 1).padStart(2, '0');
+  const anno = date.getFullYear();
+  return `${giorno}/${mese}/${anno}`;
+}
+
+// Parse data italiana (GG/MM/AAAA o YYYY-MM-DD) in Date object
+function parseDataItaliana(dataStr) {
+  if (!dataStr) return null;
+
+  try {
+    // Formato ISO (YYYY-MM-DD)
+    if (dataStr.includes('-')) {
+      return new Date(dataStr);
+    }
+
+    // Formato italiano (GG/MM/AAAA)
+    const [giorno, mese, anno] = dataStr.split('/').map(Number);
+    if (!giorno || !mese || !anno) return null;
+    return new Date(anno, mese - 1, giorno); // mese è zero-indexed
+  } catch {
+    return null;
+  }
+}
+
+// Setup input data con formattazione automatica
+function setupDateInput(input) {
+  let previousValue = '';
+
+  input.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\D/g, ''); // Solo numeri
+
+    // Limita a 8 cifre (GGMMAAAA)
+    if (value.length > 8) {
+      value = value.slice(0, 8);
+    }
+
+    // Formatta GG/MM/AAAA
+    let formatted = '';
+    if (value.length > 0) {
+      formatted += value.slice(0, 2); // GG
+    }
+    if (value.length >= 3) {
+      formatted += '/' + value.slice(2, 4); // MM
+    }
+    if (value.length >= 5) {
+      formatted += '/' + value.slice(4, 8); // AAAA
+    }
+
+    e.target.value = formatted;
+    previousValue = formatted;
+
+    // Aggiorna filtro quando data completa (10 caratteri = GG/MM/AAAA)
+    if (formatted.length === 10) {
+      aggiornaFiltroDate();
+    } else if (formatted.length === 0) {
+      // Se cancellato tutto, rimuovi filtro
+      aggiornaFiltroDate();
+    }
+  });
+
+  // Gestisci backspace per cancellare anche le "/"
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && e.target.value.endsWith('/')) {
+      e.preventDefault();
+      e.target.value = e.target.value.slice(0, -1);
+      aggiornaFiltroDate();
+    }
+  });
+}
+
+// Aggiorna variabili filtro date da input
+function aggiornaFiltroDate() {
+  const dalStr = dataDalInput.value;
+  const alStr = dataAlInput.value;
+
+  // Parse data "Dal"
+  if (dalStr.length === 10) {
+    const [g, m, a] = dalStr.split('/').map(Number);
+    dataDal = new Date(a, m - 1, g);
+  } else {
+    dataDal = null;
+  }
+
+  // Parse data "Al"
+  if (alStr.length === 10) {
+    const [g, m, a] = alStr.split('/').map(Number);
+    dataAl = new Date(a, m - 1, g);
+  } else {
+    dataAl = null;
+  }
+
+  // Renderizza tabella con nuovo filtro
+  renderTabella();
 }

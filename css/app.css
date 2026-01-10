@@ -998,6 +998,65 @@ button:active {
   color: var(--btn-primary-fg);
 }
 
+/* Filtro date */
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+}
+
+.date-filter label {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.date-input {
+  width: 110px;
+  font-size: 14px;
+  padding: 0.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--fg);
+  text-align: center;
+  font-family: monospace;
+}
+
+.date-input::placeholder {
+  color: var(--placeholder);
+  font-family: monospace;
+}
+
+.date-filter .btn-secondary {
+  padding: 0.6rem 1rem;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* Mobile: compatta ulteriormente */
+@media (max-width: 768px) {
+  .date-filter {
+    font-size: 13px;
+  }
+
+  .date-filter label {
+    font-size: 13px;
+  }
+
+  .date-input {
+    width: 95px;
+    font-size: 13px;
+    padding: 0.5rem 0.3rem;
+  }
+
+  .date-filter .btn-secondary {
+    padding: 0.5rem 0.7rem;
+    font-size: 13px;
+  }
+}
+
 /* Tabella archivio responsive */
 .table-container {
   overflow-x: auto;
