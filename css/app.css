@@ -1134,23 +1134,12 @@ button:active {
 
 .table thead {
   border-bottom: 2px solid var(--border-strong);
-  position: sticky;
-  top: 185px;
-  background: var(--bg);
-  z-index: 10;
-}
-
-@media (max-width: 768px) {
-  .table thead {
-    top: 145px;
-  }
 }
 
 .table th {
   text-align: left;
   padding: 0.75rem 0.5rem;
   font-weight: 600;
-  background: var(--bg);
 }
 
 .table tbody tr {
