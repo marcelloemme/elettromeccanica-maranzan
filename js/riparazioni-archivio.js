@@ -276,15 +276,41 @@ function impostaFiltroDateDefault() {
   dataAlInput.value = formatDateToInput(oggi);
 }
 
-// Bottone "Mostra tutto" - dal 26/10/2025 a oggi
+// Bottone "Mostra tutto" - mostra tutte le riparazioni in corso
 function mostraTutto() {
   const oggi = new Date();
-  const primaScheda = new Date(2025, 9, 26); // 26 ottobre 2025 (mese 9 = ottobre, zero-indexed)
 
-  dataDal = primaScheda;
+  // Filtra solo riparazioni in corso (non completate)
+  const riparazioniInCorso = tutteRiparazioni.filter(r => !r.Completato);
+
+  let dataInizio;
+
+  if (riparazioniInCorso.length > 0) {
+    // Trova la data più vecchia tra le riparazioni in corso
+    let dataMinima = null;
+
+    riparazioniInCorso.forEach(r => {
+      const dataConsegna = r['Data Consegna'] || r['Data consegna'] || r.DataConsegna;
+      if (!dataConsegna) return;
+
+      const dataRip = parseDataItaliana(dataConsegna);
+      if (!dataRip) return;
+
+      if (!dataMinima || dataRip < dataMinima) {
+        dataMinima = dataRip;
+      }
+    });
+
+    dataInizio = dataMinima || new Date(2025, 9, 26); // Fallback se parsing fallisce
+  } else {
+    // Nessuna riparazione in corso -> fallback data prima scheda
+    dataInizio = new Date(2025, 9, 26);
+  }
+
+  dataDal = dataInizio;
   dataAl = oggi;
 
-  dataDalInput.value = formatDateToInput(primaScheda);
+  dataDalInput.value = formatDateToInput(dataInizio);
   dataAlInput.value = formatDateToInput(oggi);
 
   renderTabella();
