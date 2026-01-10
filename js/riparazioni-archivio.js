@@ -367,12 +367,17 @@ function mostraTutto() {
   renderTabella();
 }
 
-// Formatta Date object in stringa GG/MM/AAAA per input
+// Formatta Date object in stringa GG/MM/AAAA o GG/MM/AA (mobile) per input
 function formatDateToInput(date) {
   const giorno = String(date.getDate()).padStart(2, '0');
   const mese = String(date.getMonth() + 1).padStart(2, '0');
   const anno = date.getFullYear();
-  return `${giorno}/${mese}/${anno}`;
+
+  // Su mobile usa formato breve GG/MM/AA
+  const isMobile = window.innerWidth <= 768;
+  const annoFormattato = isMobile ? String(anno).slice(-2) : anno;
+
+  return `${giorno}/${mese}/${annoFormattato}`;
 }
 
 // Parse data italiana (GG/MM/AAAA o YYYY-MM-DD) in Date object
@@ -401,12 +406,15 @@ function setupDateInput(input) {
   input.addEventListener('input', (e) => {
     let value = e.target.value.replace(/\D/g, ''); // Solo numeri
 
-    // Limita a 8 cifre (GGMMAAAA)
-    if (value.length > 8) {
-      value = value.slice(0, 8);
+    const isMobile = window.innerWidth <= 768;
+    const maxLength = isMobile ? 6 : 8; // GGMMAA su mobile, GGMMAAAA su desktop
+
+    // Limita cifre in base al dispositivo
+    if (value.length > maxLength) {
+      value = value.slice(0, maxLength);
     }
 
-    // Formatta GG/MM/AAAA
+    // Formatta GG/MM/AA (mobile) o GG/MM/AAAA (desktop)
     let formatted = '';
     if (value.length > 0) {
       formatted += value.slice(0, 2); // GG
@@ -415,14 +423,15 @@ function setupDateInput(input) {
       formatted += '/' + value.slice(2, 4); // MM
     }
     if (value.length >= 5) {
-      formatted += '/' + value.slice(4, 8); // AAAA
+      formatted += '/' + value.slice(4, maxLength); // AA o AAAA
     }
 
     e.target.value = formatted;
     previousValue = formatted;
 
-    // Aggiorna filtro quando data completa (10 caratteri = GG/MM/AAAA)
-    if (formatted.length === 10) {
+    // Aggiorna filtro quando data completa
+    const lengthCompleta = isMobile ? 8 : 10; // GG/MM/AA = 8, GG/MM/AAAA = 10
+    if (formatted.length === lengthCompleta) {
       aggiornaFiltroDate();
     } else if (formatted.length === 0) {
       // Se cancellato tutto, rimuovi filtro
@@ -445,18 +454,22 @@ function aggiornaFiltroDate() {
   const dalStr = dataDalInput.value;
   const alStr = dataAlInput.value;
 
-  // Parse data "Dal"
-  if (dalStr.length === 10) {
+  // Parse data "Dal" - accetta GG/MM/AAAA (10) o GG/MM/AA (8)
+  if (dalStr.length === 10 || dalStr.length === 8) {
     const [g, m, a] = dalStr.split('/').map(Number);
-    dataDal = new Date(a, m - 1, g);
+    // Se anno a 2 cifre, converti in 4 cifre (assumendo 2000+)
+    const annoCompleto = a < 100 ? 2000 + a : a;
+    dataDal = new Date(annoCompleto, m - 1, g);
   } else {
     dataDal = null;
   }
 
-  // Parse data "Al"
-  if (alStr.length === 10) {
+  // Parse data "Al" - accetta GG/MM/AAAA (10) o GG/MM/AA (8)
+  if (alStr.length === 10 || alStr.length === 8) {
     const [g, m, a] = alStr.split('/').map(Number);
-    dataAl = new Date(a, m - 1, g);
+    // Se anno a 2 cifre, converti in 4 cifre (assumendo 2000+)
+    const annoCompleto = a < 100 ? 2000 + a : a;
+    dataAl = new Date(annoCompleto, m - 1, g);
   } else {
     dataAl = null;
   }
