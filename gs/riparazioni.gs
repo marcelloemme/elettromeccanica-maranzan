@@ -184,7 +184,8 @@ function createRiparazione(data) {
     data.telefono || '',       // E: Telefono
     data.ddt === true,         // F: DDT
     attrezziJson,              // G: Attrezzi (JSON)
-    false                      // H: Completato
+    false,                     // H: Completato
+    ''                         // I: Data Completamento (vuoto all'inizio)
   ];
 
   sheet.appendRow(newRow);
@@ -217,14 +218,30 @@ function updateRiparazione(data) {
 
   const attrezziJson = JSON.stringify(data.attrezzi || []);
 
-  // Aggiorna campi (mantiene A - Numero, aggiorna B, C, D, E, F, G, H)
+  // Recupera stato precedente completato
+  const vecchioCompletato = allData[rowIndex][7] === true || allData[rowIndex][7] === 'TRUE';
+  const nuovoCompletato = data.completato === true;
+
+  // Aggiorna campi (mantiene A - Numero, aggiorna B, C, D, E, F, G, H, I)
   sheet.getRange(rowIndex + 1, 2).setValue(data.dataConsegna || allData[rowIndex][1]);
   sheet.getRange(rowIndex + 1, 3).setValue(data.cliente || '');
   sheet.getRange(rowIndex + 1, 4).setValue(data.indirizzo || '');
   sheet.getRange(rowIndex + 1, 5).setValue(data.telefono || '');
   sheet.getRange(rowIndex + 1, 6).setValue(data.ddt === true);
   sheet.getRange(rowIndex + 1, 7).setValue(attrezziJson);
-  sheet.getRange(rowIndex + 1, 8).setValue(data.completato === true);
+  sheet.getRange(rowIndex + 1, 8).setValue(nuovoCompletato);
+
+  // Gestione Data Completamento (colonna I)
+  if (nuovoCompletato && !vecchioCompletato) {
+    // Appena completato → salva data corrente
+    const now = new Date();
+    const dataCompletamento = Utilities.formatDate(now, 'GMT+1', 'yyyy-MM-dd');
+    sheet.getRange(rowIndex + 1, 9).setValue(dataCompletamento);
+  } else if (!nuovoCompletato && vecchioCompletato) {
+    // Ritorna a "in corso" → svuota data completamento
+    sheet.getRange(rowIndex + 1, 9).setValue('');
+  }
+  // Se rimane nello stesso stato (completato→completato o incorso→incorso), non toccare colonna I
 
   // NON aggiorniamo il foglio Clienti durante una modifica
   // (il cliente è già stato inserito alla creazione della scheda)
