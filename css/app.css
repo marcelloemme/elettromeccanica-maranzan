@@ -1135,7 +1135,7 @@ button:active {
 .table thead {
   border-bottom: 2px solid var(--border-strong);
   position: sticky;
-  top: 0;
+  top: var(--sticky-header-height, 200px);
   background: var(--bg);
   z-index: 10;
 }

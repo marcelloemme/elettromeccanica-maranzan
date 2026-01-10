@@ -15,6 +15,19 @@ const dataDalInput = document.getElementById('data-dal');
 const dataAlInput = document.getElementById('data-al');
 const btnMostraTutto = document.getElementById('btn-mostra-tutto');
 
+// Calcola e imposta altezza sticky header per thead
+function updateStickyHeaderHeight() {
+  const stickyHeader = document.querySelector('.sticky-header');
+  if (stickyHeader) {
+    const height = stickyHeader.offsetHeight;
+    document.documentElement.style.setProperty('--sticky-header-height', `${height}px`);
+  }
+}
+
+// Aggiorna altezza sticky header al caricamento e resize
+updateStickyHeaderHeight();
+window.addEventListener('resize', updateStickyHeaderHeight);
+
 // Stato
 let tutteRiparazioni = [];
 let filtroIncorso = false; // Se true, mostra solo in corso
