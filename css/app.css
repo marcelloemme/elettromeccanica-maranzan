@@ -1067,15 +1067,6 @@ button:active {
   text-align: center;
 }
 
-/* Testo pulsante responsive */
-#btn-mostra-tutto .text-desktop {
-  display: inline;
-}
-
-#btn-mostra-tutto .text-mobile {
-  display: none;
-}
-
 /* Mobile: compatta ulteriormente */
 @media (max-width: 768px) {
   .date-filter {
@@ -1093,17 +1084,9 @@ button:active {
   }
 
   #btn-mostra-tutto {
+    width: calc(180px + 0.5rem);
     padding: 0.5rem 0.7rem;
     font-size: 13px;
-  }
-
-  /* Cambia testo su mobile */
-  #btn-mostra-tutto .text-desktop {
-    display: none;
-  }
-
-  #btn-mostra-tutto .text-mobile {
-    display: inline;
   }
 }
 
