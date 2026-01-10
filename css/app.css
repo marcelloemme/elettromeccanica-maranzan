@@ -980,6 +980,9 @@ button:active {
   border-radius: 8px;
   background: var(--input-bg);
   color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .filter-btn {
@@ -1069,6 +1072,14 @@ button:active {
 
 /* Mobile: compatta ulteriormente */
 @media (max-width: 768px) {
+  .search-input {
+    min-width: 0;
+  }
+
+  .filter-btn {
+    width: 80px;
+  }
+
   .date-filter {
     font-size: 13px;
   }
@@ -1084,7 +1095,7 @@ button:active {
   }
 
   #btn-mostra-tutto {
-    width: calc(180px + 0.5rem);
+    width: calc(160px + 0.5rem);
     padding: 0.5rem 0.7rem;
     font-size: 13px;
   }
