@@ -598,6 +598,14 @@ body.touch-app {
   margin: 0 auto;
 }
 
+/* Margini ridotti su mobile per riparazioni */
+@media (max-width: 768px) {
+  .app:not(.touch-app) {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+}
+
 .header {
   text-align: center;
   margin-bottom: 2rem;
@@ -1181,7 +1189,7 @@ button:active {
   /* Larghezze colonne ottimizzate per mobile */
   .table .td-numero,
   .table .th-numero {
-    width: 15%;
+    width: 16%;
   }
 
   .table .td-data-ins,
@@ -1201,7 +1209,7 @@ button:active {
 
   .table .td-stato,
   .table .th-stato {
-    width: 15%;
+    width: 14%;
     text-align: center;
   }
 
