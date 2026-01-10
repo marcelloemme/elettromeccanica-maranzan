@@ -17,15 +17,16 @@ const btnMostraTutto = document.getElementById('btn-mostra-tutto');
 
 // Calcola e imposta altezza sticky header per thead
 function updateStickyHeaderHeight() {
-  const stickyHeader = document.querySelector('.sticky-header');
-  if (stickyHeader) {
-    const height = stickyHeader.offsetHeight;
-    document.documentElement.style.setProperty('--sticky-header-height', `${height}px`);
-  }
+  setTimeout(() => {
+    const stickyHeader = document.querySelector('.sticky-header');
+    if (stickyHeader) {
+      const height = stickyHeader.offsetHeight;
+      document.documentElement.style.setProperty('--sticky-header-height', `${height}px`);
+    }
+  }, 100);
 }
 
-// Aggiorna altezza sticky header al caricamento e resize
-updateStickyHeaderHeight();
+// Aggiorna altezza sticky header al resize
 window.addEventListener('resize', updateStickyHeaderHeight);
 
 // Stato
@@ -54,6 +55,9 @@ let dataAl = null;  // Data fine filtro (Date object o null)
 
     setupEventListeners();
 
+    // Calcola altezza sticky header
+    updateStickyHeaderHeight();
+
     // 2. Aggiorna in background per avere dati freschi
     caricaRiparazioniBackground();
     return;
@@ -67,6 +71,9 @@ let dataAl = null;  // Data fine filtro (Date object o null)
   renderTabella();
 
   setupEventListeners();
+
+  // Calcola altezza sticky header
+  updateStickyHeaderHeight();
 
   // Nascondi loading
   loadingOverlay.classList.add('hidden');
