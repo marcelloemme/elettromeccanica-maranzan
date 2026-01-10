@@ -191,7 +191,7 @@ function createRiparazione(data) {
 
   // Aggiorna/aggiungi cliente se c'è almeno il nome
   if (data.cliente) {
-    updateOrAddCliente(data.cliente, data.telefono || '', data.indirizzo);
+    updateOrAddCliente(data.cliente, data.telefono || '', data.indirizzo || '');
   }
 
   return jsonResponse({
@@ -226,10 +226,8 @@ function updateRiparazione(data) {
   sheet.getRange(rowIndex + 1, 7).setValue(attrezziJson);
   sheet.getRange(rowIndex + 1, 8).setValue(data.completato === true);
 
-  // Aggiorna cliente se c'è almeno il nome
-  if (data.cliente) {
-    updateOrAddCliente(data.cliente, data.telefono || '', data.indirizzo);
-  }
+  // NON aggiorniamo il foglio Clienti durante una modifica
+  // (il cliente è già stato inserito alla creazione della scheda)
 
   return jsonResponse({
     success: true,
