@@ -989,7 +989,7 @@ button:active {
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1012,7 +1012,6 @@ button:active {
 @media (max-width: 768px) {
   .filter-btn {
     padding: 0.5rem 0.4rem;
-    font-size: 18px;
   }
 
   .filter-count {
