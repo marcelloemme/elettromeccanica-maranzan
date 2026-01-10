@@ -982,9 +982,9 @@ button:active {
 }
 
 .filter-btn {
-  width: 44px;
+  min-width: fit-content;
   height: 44px;
-  padding: 0;
+  padding: 0 0.5rem;
   background: var(--btn-secondary-bg);
   color: var(--btn-secondary-fg);
   border: 1px solid var(--border-strong);
@@ -994,7 +994,9 @@ button:active {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.25rem;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .filter-btn.active {
@@ -1003,11 +1005,20 @@ button:active {
   border-color: var(--btn-primary-bg);
 }
 
+.filter-count {
+  font-size: 14px;
+  font-weight: 500;
+}
+
 @media (max-width: 768px) {
   .filter-btn {
-    width: 40px;
     height: 40px;
+    padding: 0 0.4rem;
     font-size: 18px;
+  }
+
+  .filter-count {
+    font-size: 13px;
   }
 }
 

@@ -5,6 +5,8 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbxdsZtism0HvHXBo2ZwmYaf
 const searchInput = document.getElementById('search-cliente');
 const filterIncorso = document.getElementById('filter-incorso');
 const filterCompletato = document.getElementById('filter-completato');
+const countIncorso = document.getElementById('count-incorso');
+const countCompletato = document.getElementById('count-completato');
 const tbody = document.getElementById('tbody-riparazioni');
 const emptyMessage = document.getElementById('empty-message');
 const loadingOverlay = document.getElementById('loading-overlay');
@@ -175,9 +177,49 @@ function filtraRiparazioni() {
   return filtrate;
 }
 
+// Aggiorna contatori filtri
+function aggiornaContatori() {
+  // Applica solo filtri data e ricerca (ignora i filtri stato)
+  let riparazioniFiltrate = [...tutteRiparazioni];
+
+  // Filtro ricerca cliente
+  if (searchQuery) {
+    riparazioniFiltrate = riparazioniFiltrate.filter(r =>
+      r.Cliente && r.Cliente.toLowerCase().includes(searchQuery)
+    );
+  }
+
+  // Filtro date
+  if (dataDal || dataAl) {
+    riparazioniFiltrate = riparazioniFiltrate.filter(r => {
+      const dataConsegna = r['Data Consegna'] || r['Data consegna'] || r.DataConsegna;
+      if (!dataConsegna) return false;
+
+      const dataRip = parseDataItaliana(dataConsegna);
+      if (!dataRip) return false;
+
+      if (dataDal && dataRip < dataDal) return false;
+      if (dataAl && dataRip > dataAl) return false;
+
+      return true;
+    });
+  }
+
+  // Conta in corso e completate
+  const numIncorso = riparazioniFiltrate.filter(r => !r.Completato).length;
+  const numCompletate = riparazioniFiltrate.filter(r => r.Completato).length;
+
+  // Aggiorna testo contatori
+  countIncorso.textContent = `(${numIncorso})`;
+  countCompletato.textContent = `(${numCompletate})`;
+}
+
 // Render tabella
 function renderTabella() {
   const riparazioni = filtraRiparazioni();
+
+  // Aggiorna contatori
+  aggiornaContatori();
 
   if (riparazioni.length === 0) {
     tbody.innerHTML = '';
