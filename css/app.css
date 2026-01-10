@@ -1189,17 +1189,17 @@ button:active {
   /* Larghezze colonne ottimizzate per mobile */
   .table .td-numero,
   .table .th-numero {
-    width: 16%;
+    width: 18%;
   }
 
   .table .td-data-ins,
   .table .th-data-ins {
-    width: 15%;
+    width: 14.5%;
   }
 
   .table .td-data-com,
   .table .th-data-com {
-    width: 15%;
+    width: 14.5%;
   }
 
   .table .td-cliente,
@@ -1209,7 +1209,7 @@ button:active {
 
   .table .td-stato,
   .table .th-stato {
-    width: 14%;
+    width: 13%;
     text-align: center;
   }
 
