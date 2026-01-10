@@ -76,7 +76,7 @@ pio run -t upload && pio device monitor
 
 Il dispositivo scarica automaticamente il CSV delle riparazioni da:
 ```
-https://docs.google.com/spreadsheets/d/e/2PACX-1vTLukAJJ7pIFcbxUC8082z7jG1EP-lFgoJmNVae-0w0uZWABdJ8yWXxPViw8bqge1TOWXeUmFZyrp/pub?gid=0&single=true&output=csv
+https://docs.google.com/spreadsheets/d/e/2PACX-1vTLu_kAJJ7pIFcbxUC8082z7jG1EP-lFgoJmNVae-0w0_uZWABdJ8yWXxPViw8bqge1TOWXeUmFZyrp/pub?gid=0&single=true&output=csv
 ```
 
 ## File su MicroSD
@@ -88,9 +88,28 @@ https://docs.google.com/spreadsheets/d/e/2PACX-1vTLukAJJ7pIFcbxUC8082z7jG1EP-lFg
 
 Vedi `.claude.md` nella root del progetto per roadmap completa.
 
-### Fase Corrente: Step 1 - Setup Ambiente
+### Fase Corrente: Step 1 - Setup Ambiente (IN ATTESA HARDWARE)
 - [x] Progetto PlatformIO creato
-- [x] Librerie configurate
+- [x] Librerie configurate (TFT_eSPI, ArduinoJson, Adafruit Thermal)
 - [x] Pin mapping documentato
-- [ ] Test compilazione e upload
-- [ ] Verifica info hardware (Flash, PSRAM, heap)
+- [x] Compilazione testata e riuscita
+- [ ] **IN ATTESA:** Board T4 in arrivo per test upload e verifica hardware
+
+### Firmware Attuale (v0.1 - Test Base)
+
+Il firmware corrente è un test minimale che:
+- Inizializza Serial a 115200 baud
+- Stampa info hardware su Serial Monitor:
+  - Modello chip ESP32
+  - Dimensione Flash (4MB)
+  - Dimensione PSRAM (8MB)
+  - Heap libera
+- Loop con heartbeat (punto ogni secondo)
+
+**Cosa NON fa ancora:**
+- Display, pulsanti, stampante, WiFi, SD → Step 2-9
+
+**Prossimi Step (quando arriva board):**
+1. Flash firmware v0.1 su T4
+2. Verifica Serial Monitor per confermare PSRAM/Flash
+3. Procedi con Step 2: Test Display
