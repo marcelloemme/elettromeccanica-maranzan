@@ -982,9 +982,8 @@ button:active {
 }
 
 .filter-btn {
-  min-width: fit-content;
-  height: 44px;
-  padding: 0 0.5rem;
+  width: 90px;
+  padding: 0.5rem 0.5rem;
   background: var(--btn-secondary-bg);
   color: var(--btn-secondary-fg);
   border: 1px solid var(--border-strong);
@@ -1012,8 +1011,7 @@ button:active {
 
 @media (max-width: 768px) {
   .filter-btn {
-    height: 40px;
-    padding: 0 0.4rem;
+    padding: 0.5rem 0.4rem;
     font-size: 18px;
   }
 
@@ -1062,9 +1060,11 @@ button:active {
 }
 
 #btn-mostra-tutto {
+  width: calc(180px + 0.5rem);
   padding: 0.5rem 1rem;
   font-size: 14px;
   white-space: nowrap;
+  text-align: center;
 }
 
 /* Testo pulsante responsive */
