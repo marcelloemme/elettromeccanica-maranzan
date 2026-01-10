@@ -972,7 +972,7 @@ button:active {
 .search-box input {
   flex: 1;
   font-size: 16px;
-  padding: 0.75rem;
+  padding: 0.5rem 0.75rem;
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   background: var(--input-bg);
@@ -1031,7 +1031,7 @@ button:active {
 .date-input {
   width: 110px;
   font-size: 14px;
-  padding: 0.6rem;
+  padding: 0.5rem;
   border: 1px solid var(--border-strong);
   border-radius: 6px;
   background: var(--input-bg);
@@ -1046,7 +1046,7 @@ button:active {
 }
 
 #btn-mostra-tutto {
-  padding: 0.6rem 1rem;
+  padding: 0.5rem 1rem;
   font-size: 14px;
   white-space: nowrap;
 }
