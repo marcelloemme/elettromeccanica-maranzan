@@ -239,9 +239,13 @@ function renderTabella() {
   });
 
   tbody.innerHTML = riparazioni.map(r => {
-    // Prova diverse varianti del nome campo
+    // Data inserimento (consegna)
     const dataConsegna = r['Data Consegna'] || r['Data consegna'] || r.DataConsegna || r['Data'];
-    const data = formatData(dataConsegna);
+    const dataIns = formatData(dataConsegna);
+
+    // Data completamento
+    const dataCompletamento = r['Data Completamento'] || r['Data completamento'] || r.DataCompletamento;
+    const dataCom = dataCompletamento ? formatData(dataCompletamento) : '-';
 
     // Su mobile mostra solo emoji, su desktop mostra badge con testo
     const isMobile = window.innerWidth <= 768;
@@ -252,7 +256,8 @@ function renderTabella() {
     return `
       <tr onclick="apriDettaglio('${r.Numero}')">
         <td class="td-numero"><strong>${r.Numero}</strong></td>
-        <td class="td-data">${data}</td>
+        <td class="td-data-ins">${dataIns}</td>
+        <td class="td-data-com">${dataCom}</td>
         <td class="td-cliente">${r.Cliente || '-'}</td>
         <td class="td-stato">${stato}</td>
       </tr>

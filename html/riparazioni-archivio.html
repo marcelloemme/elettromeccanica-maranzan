@@ -67,10 +67,11 @@
       <table class="table" id="tabella-riparazioni">
         <thead>
           <tr>
-            <th>Numero</th>
-            <th>Data</th>
-            <th>Cliente</th>
-            <th>Stato</th>
+            <th class="th-numero"><span class="text-desktop">Numero</span><span class="text-mobile">Num.</span></th>
+            <th class="th-data-ins"><span class="text-desktop">Data ins.</span><span class="text-mobile">Ins.</span></th>
+            <th class="th-data-com"><span class="text-desktop">Data com.</span><span class="text-mobile">Com.</span></th>
+            <th class="th-cliente">Cliente</th>
+            <th class="th-stato">Stato</th>
           </tr>
         </thead>
         <tbody id="tbody-riparazioni">
@@ -86,7 +87,7 @@
   </main>
 
   <script src="/js/cache-manager.js"></script>
-  <script src="/js/riparazioni-archivio.js?v=2"></script>
+  <script src="/js/riparazioni-archivio.js?v=3"></script>
 
   <script>
     // Swipe da sinistra per tornare a /private

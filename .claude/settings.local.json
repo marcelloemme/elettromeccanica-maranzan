@@ -16,7 +16,14 @@
       "Bash(find:*)",
       "Bash(~/.platformio/penv/bin/platformio:*)",
       "Bash(tree:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(Data ins.)",
+      "Bash(Data com.)",
+      "Bash(Cliente)",
+      "Bash(Stato\"\n  - Mobile: \"Num.)",
+      "Bash(Ins.)",
+      "Bash(Com.)",
+      "Bash(Stato\"\n\nCSS \\(app.css\\):\n- Riorganizzate larghezze colonne: 15% | 15% | 15% | 40% | 15%\n- Testo headers responsive con .text-desktop/.text-mobile\n- Stesse larghezze su desktop e mobile\n\nJS \\(riparazioni-archivio.js\\):\n- Aggiunta colonna td-data-com con data completamento\n- Se data completamento vuota: mostra \"-\"\n- Data ins: formato GG/MM/AAAA \\(desktop\\) o GG/MM \\(mobile\\)\n- Data com: formato GG/MM/AAAA \\(desktop\\) o GG/MM \\(mobile\\)\n- Stato: testo completo \\(desktop\\) o emoji 🔴🟢 \\(mobile\\)\n\nService Worker:\n- Bump v45 → v46\n- CSS v27 → v28\n- riparazioni-archivio.js v2 → v3\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ],
     "deny": [],
     "ask": []
