@@ -1382,10 +1382,10 @@ button:active {
   flex: 0 0 17%;
 }
 
-/* Mobile: Data consegna 24% */
+/* Mobile: Data consegna 25% */
 @media (max-width: 768px) {
   .detail-group-right {
-    flex: 0 0 24%;
+    flex: 0 0 25%;
   }
 
   /* Cliente: truncate con ellipsis se troppo lungo */
@@ -1453,7 +1453,7 @@ button:active {
   }
 
   .detail-group-flex:nth-child(4) {
-    flex: 0 0 24%; /* Stato/Data com.: 24% */
+    flex: 0 0 25%; /* Stato/Data com.: 25% */
   }
 
   /* Indirizzo: truncate con ellipsis se troppo lungo */
