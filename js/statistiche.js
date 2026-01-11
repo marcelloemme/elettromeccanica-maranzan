@@ -70,18 +70,18 @@ function renderStatistiche() {
   // 1. Recap Attuale
   const { recapAttuale } = statistiche;
   if (recapAttuale.oltre90gg && recapAttuale.oltre90gg.length > 0) {
-    const elenco = recapAttuale.oltre90gg.map(r =>
-      `<strong>${r.numero}</strong> - ${r.cliente} (${formatData(r.dataConsegna)}, ${r.giorniAperti} giorni)`
-    ).join(', ');
-    recapAttualeEl.innerHTML = `Al momento hai <strong>${recapAttuale.totaleInCorso}</strong> riparazioni attive. Le riparazioni aperte da oltre 90 giorni sono: ${elenco}.`;
+    const elenco = recapAttuale.oltre90gg.map((r, i) => {
+      const separatore = i === recapAttuale.oltre90gg.length - 1 ? '.' : ';';
+      return `- <strong>${r.numero}</strong> - ${r.cliente} del ${formatData(r.dataConsegna)}${separatore}`;
+    }).join('<br>');
+    recapAttualeEl.innerHTML = `Al momento hai <strong>${recapAttuale.totaleInCorso}</strong> riparazioni attive. Le riparazioni aperte da oltre 90 giorni sono:<br>${elenco}`;
   } else if (recapAttuale.top3Vecchie && recapAttuale.top3Vecchie.length > 0) {
     const top3 = recapAttuale.top3Vecchie;
     const elenco = top3.map((r, i) => {
-      if (i === 0) return `la <strong>${r.numero}</strong> - ${r.cliente} del ${formatData(r.dataConsegna)}`;
-      if (i === 1) return `la <strong>${r.numero}</strong> - ${r.cliente} del ${formatData(r.dataConsegna)}`;
-      return `e la <strong>${r.numero}</strong> - ${r.cliente} del ${formatData(r.dataConsegna)}`;
-    }).join(', ');
-    recapAttualeEl.innerHTML = `Al momento hai <strong>${recapAttuale.totaleInCorso}</strong> riparazioni attive. Le tre più vecchie sono ${elenco}.`;
+      const separatore = i === top3.length - 1 ? '.' : ';';
+      return `- <strong>${r.numero}</strong> - ${r.cliente} del ${formatData(r.dataConsegna)}${separatore}`;
+    }).join('<br>');
+    recapAttualeEl.innerHTML = `Al momento hai <strong>${recapAttuale.totaleInCorso}</strong> riparazioni attive. Le tre più vecchie sono:<br>${elenco}`;
   } else {
     recapAttualeEl.innerHTML = `Al momento hai <strong>${recapAttuale.totaleInCorso}</strong> riparazioni attive.`;
   }
@@ -127,6 +127,16 @@ function renderGrafici() {
   aggiornaGraficoCompletate();
 }
 
+// Mappa colori fissi per anno
+const coloriAnni = {
+  2026: '#3b82f6',  // blu
+  2025: '#10b981',  // verde
+  2024: '#f59e0b',  // arancione
+  2023: '#ef4444',  // rosso
+  2022: '#8b5cf6',  // viola
+  2021: '#ec4899'   // rosa
+};
+
 // Render controlli anni
 function renderControlli(anni, tipo) {
   const container = tipo === 'create' ? controlsCreate : controlsCompletate;
@@ -134,10 +144,11 @@ function renderControlli(anni, tipo) {
 
   container.innerHTML = anni.map(anno => {
     const checked = anniAttivi[anno] ? 'checked' : '';
+    const colore = coloriAnni[anno] || '#6b7280';
     return `
       <label class="chart-year-toggle">
         <input type="checkbox" value="${anno}" ${checked} onchange="toggleAnno('${tipo}', ${anno})">
-        <span>${anno}</span>
+        <span style="border-bottom: 2px solid ${colore};">${anno}</span>
       </label>
     `;
   }).join('');
@@ -158,15 +169,15 @@ window.toggleAnno = (tipo, anno) => {
 function aggiornaGraficoCreate() {
   const datasets = Object.keys(anniAttiviCreate)
     .filter(anno => anniAttiviCreate[anno])
-    .map((anno, index) => {
+    .map((anno) => {
       const dati = statistiche.grafici[anno].create;
       const valori = Object.keys(dati).map(m => dati[m]);
-      const colori = ['#3b82f6', '#6b7280', '#10b981', '#f59e0b', '#ef4444'];
+      const colore = coloriAnni[anno] || '#6b7280';
       return {
         label: anno,
         data: valori,
-        borderColor: colori[index % colori.length],
-        backgroundColor: colori[index % colori.length] + '20',
+        borderColor: colore,
+        backgroundColor: colore + '20',
         tension: 0.3
       };
     });
@@ -200,15 +211,15 @@ function aggiornaGraficoCreate() {
 function aggiornaGraficoCompletate() {
   const datasets = Object.keys(anniAttiviCompletate)
     .filter(anno => anniAttiviCompletate[anno])
-    .map((anno, index) => {
+    .map((anno) => {
       const dati = statistiche.grafici[anno].completate;
       const valori = Object.keys(dati).map(m => dati[m]);
-      const colori = ['#10b981', '#6b7280', '#3b82f6', '#f59e0b', '#ef4444'];
+      const colore = coloriAnni[anno] || '#6b7280';
       return {
         label: anno,
         data: valori,
-        borderColor: colori[index % colori.length],
-        backgroundColor: colori[index % colori.length] + '20',
+        borderColor: colore,
+        backgroundColor: colore + '20',
         tension: 0.3
       };
     });

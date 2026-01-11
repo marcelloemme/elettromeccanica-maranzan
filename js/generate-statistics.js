@@ -112,22 +112,29 @@ const completateSettimana = riparazioni.filter(r => {
   return data && data >= startWeek && data <= endWeek;
 }).length;
 
-// Media ultimi 6 mesi (26 settimane)
+// Media ultimi 6 mesi (ma non prima del 27 ottobre 2025)
 const sixMonthsAgo = new Date(today);
 sixMonthsAgo.setMonth(today.getMonth() - 6);
 
-const riparazioniUltimi6Mesi = riparazioni.filter(r => {
+const dataInizioStorico = new Date('2025-10-27'); // Primo lunedì con dati
+const dataInizioCalcolo = sixMonthsAgo > dataInizioStorico ? sixMonthsAgo : dataInizioStorico;
+
+const riparazioniPeriodo = riparazioni.filter(r => {
   const data = parseDate(r['Data consegna']);
-  return data && data >= sixMonthsAgo;
+  return data && data >= dataInizioCalcolo;
 });
 
-const completateUltimi6Mesi = riparazioni.filter(r => {
+const completatePeriodo = riparazioni.filter(r => {
   const data = parseDate(r['Data completamento']);
-  return data && data >= sixMonthsAgo;
+  return data && data >= dataInizioCalcolo;
 });
 
-const mediaInseriteSettimana = riparazioniUltimi6Mesi.length / 26;
-const mediaCompletateSettimana = completateUltimi6Mesi.length / 26;
+// Calcola numero di settimane complete nel periodo
+const giorniPeriodo = Math.floor((today - dataInizioCalcolo) / (1000 * 60 * 60 * 24));
+const settimaneCalcolo = Math.max(1, giorniPeriodo / 7);
+
+const mediaInseriteSettimana = riparazioniPeriodo.length / settimaneCalcolo;
+const mediaCompletateSettimana = completatePeriodo.length / settimaneCalcolo;
 
 const percInserite = ((inseriteSettimana - mediaInseriteSettimana) / mediaInseriteSettimana * 100).toFixed(1);
 const percCompletate = ((completateSettimana - mediaCompletateSettimana) / mediaCompletateSettimana * 100).toFixed(1);
