@@ -90,7 +90,7 @@ function renderStatistiche() {
   const rs = statistiche.recapSettimanale;
   const segnoIns = rs.percInserite >= 0 ? '+' : '';
   const segnoComp = rs.percCompletate >= 0 ? '+' : '';
-  recapSettimanaleEl.innerHTML = `<strong>${rs.settimana}</strong> hai inserito <strong>${rs.inserite}</strong> schede (<strong>${segnoIns}${rs.percInserite}%</strong> rispetto alla media di ${rs.mediaInserite} schede/settimana degli ultimi 6 mesi), e ne hai completate <strong>${rs.completate}</strong> (<strong>${segnoComp}${rs.percCompletate}%</strong> rispetto alla media di ${rs.mediaCompletate} schede/settimana degli ultimi 6 mesi).`;
+  recapSettimanaleEl.innerHTML = `<strong>${rs.settimana}</strong> hai inserito <strong>${rs.inserite}</strong> schede (<strong>${segnoIns}${rs.percInserite}%</strong> rispetto alla media di ${rs.mediaInserite} schede/settimana), e ne hai completate <strong>${rs.completate}</strong> (<strong>${segnoComp}${rs.percCompletate}%</strong> rispetto alla media di ${rs.mediaCompletate} schede/settimana).`;
   recapSettimanaleSection.style.display = 'block';
 
   // 3. Tempi Riparazione

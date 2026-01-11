@@ -1625,9 +1625,15 @@ button:active {
   font-size: 16px;
 }
 
+.stats-trigger-container {
+  text-align: center;
+  margin-top: 2rem;
+}
+
 @media (max-width: 768px) {
   .stats-section {
-    padding: 0.75rem;
+    padding: 0.5rem;
+    margin-bottom: 0.75rem;
   }
 
   .stats-section h2 {
@@ -1636,5 +1642,9 @@ button:active {
 
   .stats-text {
     font-size: 16px;
+  }
+
+  .stats-trigger-container {
+    margin-top: 0.75rem;
   }
 }
