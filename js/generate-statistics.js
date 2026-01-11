@@ -43,7 +43,8 @@ const parseDate = (dateStr) => {
 };
 
 const today = new Date();
-const isSaturday = today.getDay() === 6;
+const dayOfWeek = today.getDay(); // 0=domenica, 1=lunedì, ..., 6=sabato
+const hour = today.getHours();
 
 // Filtra riparazioni
 const riparazioni = rows.filter(r => r.Numero);
@@ -69,58 +70,77 @@ const recapAttuale = {
   top3Vecchie: oltre90gg.length > 0 ? null : top3
 };
 
-// 2. RECAP SETTIMANALE (solo sabato)
-let recapSettimanale = null;
-if (isSaturday) {
-  // Calcola settimana corrente (lun-dom)
-  const startWeek = new Date(today);
-  startWeek.setDate(today.getDate() - ((today.getDay() + 6) % 7)); // Lunedì
+// 2. RECAP SETTIMANALE (sempre visibile)
+// Determina se mostrare settimana corrente o scorsa
+const mostraSettimanaCorrente = (dayOfWeek === 6 && hour >= 17) || dayOfWeek === 0; // Sabato dopo 17:30 o Domenica
+
+let startWeek, endWeek, prefisso;
+if (mostraSettimanaCorrente) {
+  // Settimana corrente (lun-dom)
+  startWeek = new Date(today);
+  startWeek.setDate(today.getDate() - ((today.getDay() + 6) % 7)); // Lunedì corrente
   startWeek.setHours(0, 0, 0, 0);
 
-  const endWeek = new Date(startWeek);
-  endWeek.setDate(startWeek.getDate() + 6); // Domenica
+  endWeek = new Date(startWeek);
+  endWeek.setDate(startWeek.getDate() + 6); // Domenica corrente
   endWeek.setHours(23, 59, 59, 999);
 
-  const inseriteSettimana = riparazioni.filter(r => {
-    const data = parseDate(r['Data consegna']);
-    return data && data >= startWeek && data <= endWeek;
-  }).length;
+  prefisso = 'Questa settimana';
+} else {
+  // Settimana scorsa (lun-dom)
+  const lunediCorrente = new Date(today);
+  lunediCorrente.setDate(today.getDate() - ((today.getDay() + 6) % 7));
 
-  const completateSettimana = riparazioni.filter(r => {
-    const data = parseDate(r['Data completamento']);
-    return data && data >= startWeek && data <= endWeek;
-  }).length;
+  startWeek = new Date(lunediCorrente);
+  startWeek.setDate(lunediCorrente.getDate() - 7); // Lunedì settimana scorsa
+  startWeek.setHours(0, 0, 0, 0);
 
-  // Media ultimi 6 mesi (26 settimane)
-  const sixMonthsAgo = new Date(today);
-  sixMonthsAgo.setMonth(today.getMonth() - 6);
+  endWeek = new Date(startWeek);
+  endWeek.setDate(startWeek.getDate() + 6); // Domenica settimana scorsa
+  endWeek.setHours(23, 59, 59, 999);
 
-  const riparazioniUltimi6Mesi = riparazioni.filter(r => {
-    const data = parseDate(r['Data consegna']);
-    return data && data >= sixMonthsAgo;
-  });
-
-  const completateUltimi6Mesi = riparazioni.filter(r => {
-    const data = parseDate(r['Data completamento']);
-    return data && data >= sixMonthsAgo;
-  });
-
-  const mediaInseriteSettimana = riparazioniUltimi6Mesi.length / 26;
-  const mediaCompletateSettimana = completateUltimi6Mesi.length / 26;
-
-  const percInserite = ((inseriteSettimana - mediaInseriteSettimana) / mediaInseriteSettimana * 100).toFixed(1);
-  const percCompletate = ((completateSettimana - mediaCompletateSettimana) / mediaCompletateSettimana * 100).toFixed(1);
-
-  recapSettimanale = {
-    settimana: `${startWeek.getDate().toString().padStart(2, '0')}.${(startWeek.getMonth() + 1).toString().padStart(2, '0')}-${endWeek.getDate().toString().padStart(2, '0')}.${(endWeek.getMonth() + 1).toString().padStart(2, '0')}`,
-    inserite: inseriteSettimana,
-    completate: completateSettimana,
-    percInserite: parseFloat(percInserite),
-    percCompletate: parseFloat(percCompletate),
-    mediaInserite: mediaInseriteSettimana.toFixed(1),
-    mediaCompletate: mediaCompletateSettimana.toFixed(1)
-  };
+  prefisso = 'Settimana scorsa';
 }
+
+const inseriteSettimana = riparazioni.filter(r => {
+  const data = parseDate(r['Data consegna']);
+  return data && data >= startWeek && data <= endWeek;
+}).length;
+
+const completateSettimana = riparazioni.filter(r => {
+  const data = parseDate(r['Data completamento']);
+  return data && data >= startWeek && data <= endWeek;
+}).length;
+
+// Media ultimi 6 mesi (26 settimane)
+const sixMonthsAgo = new Date(today);
+sixMonthsAgo.setMonth(today.getMonth() - 6);
+
+const riparazioniUltimi6Mesi = riparazioni.filter(r => {
+  const data = parseDate(r['Data consegna']);
+  return data && data >= sixMonthsAgo;
+});
+
+const completateUltimi6Mesi = riparazioni.filter(r => {
+  const data = parseDate(r['Data completamento']);
+  return data && data >= sixMonthsAgo;
+});
+
+const mediaInseriteSettimana = riparazioniUltimi6Mesi.length / 26;
+const mediaCompletateSettimana = completateUltimi6Mesi.length / 26;
+
+const percInserite = ((inseriteSettimana - mediaInseriteSettimana) / mediaInseriteSettimana * 100).toFixed(1);
+const percCompletate = ((completateSettimana - mediaCompletateSettimana) / mediaCompletateSettimana * 100).toFixed(1);
+
+const recapSettimanale = {
+  settimana: `${prefisso} (${startWeek.getDate().toString().padStart(2, '0')}.${(startWeek.getMonth() + 1).toString().padStart(2, '0')}-${endWeek.getDate().toString().padStart(2, '0')}.${(endWeek.getMonth() + 1).toString().padStart(2, '0')})`,
+  inserite: inseriteSettimana,
+  completate: completateSettimana,
+  percInserite: parseFloat(percInserite),
+  percCompletate: parseFloat(percCompletate),
+  mediaInserite: mediaInseriteSettimana.toFixed(1),
+  mediaCompletate: mediaCompletateSettimana.toFixed(1)
+};
 
 // 3. TEMPI RIPARAZIONE (ultimi 90 giorni)
 const ninetyDaysAgo = new Date(today);
