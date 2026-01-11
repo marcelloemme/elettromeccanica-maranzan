@@ -1341,10 +1341,10 @@ button:active {
   flex: 0 0 17%;
 }
 
-/* Mobile: Data consegna 19% */
+/* Mobile: Data consegna 20% */
 @media (max-width: 768px) {
   .detail-group-right {
-    flex: 0 0 19%;
+    flex: 0 0 20%;
   }
 }
 
@@ -1391,15 +1391,21 @@ button:active {
 
 /* Mobile: elementi con larghezze specifiche */
 @media (max-width: 768px) {
-  .detail-group-flex:nth-child(1),
-  .detail-group-flex:nth-child(3) {
-    flex: 1; /* Indirizzo e DDT: si allungano */
+  .detail-group-flex:nth-child(1) {
+    flex: 1; /* Indirizzo: si allunga */
     min-width: 0;
   }
 
-  .detail-group-flex:nth-child(2),
+  .detail-group-flex:nth-child(2) {
+    flex: 0 0 20%; /* Telefono: 20% */
+  }
+
+  .detail-group-flex:nth-child(3) {
+    flex: 0 0 10%; /* DDT: 10% */
+  }
+
   .detail-group-flex:nth-child(4) {
-    flex: 0 0 19%; /* Telefono e Stato/Data com.: 19% */
+    flex: 0 0 20%; /* Stato/Data com.: 20% */
   }
 }
 
