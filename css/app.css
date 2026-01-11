@@ -1338,8 +1338,7 @@ button:active {
 }
 
 .detail-group-right {
-  flex-shrink: 0;
-  width: auto;
+  flex: 0 0 20%;
 }
 
 .detail-row-equal {
@@ -1379,7 +1378,7 @@ button:active {
   }
 
   .detail-group-flex:nth-child(4) {
-    flex: 0 0 150px; /* Stato: larghezza fissa simile a Data consegna */
+    flex: 0 0 20%; /* Stato: 20% come Data consegna */
   }
 }
 
