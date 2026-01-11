@@ -10,8 +10,7 @@ const detailTelefono = document.getElementById('detail-telefono');
 const detailDdt = document.getElementById('detail-ddt');
 const detailAttrezzi = document.getElementById('detail-attrezzi');
 const detailStato = document.getElementById('detail-stato');
-const detailDataCompletamento = document.getElementById('detail-data-completamento');
-const detailGroupCompletamento = document.getElementById('detail-group-completamento');
+const detailStatoLabel = document.getElementById('detail-stato-label');
 
 const btnModifica = document.getElementById('btn-modifica');
 const btnPrev = document.getElementById('btn-prev');
@@ -182,19 +181,19 @@ function renderDettaglio() {
     detailAttrezzi.innerHTML = '<p>Nessun attrezzo</p>';
   }
 
-  // Stato
-  const stato = r.Completato ?
-    '<span class="badge completato-si">Completato</span>' :
-    '<span class="badge completato-no">In corso</span>';
-  detailStato.innerHTML = stato;
-
-  // Data Completamento (mostra solo se completato e data presente)
+  // Stato o Data Completamento
   const dataCompletamento = r['Data Completamento'] || r['Data completamento'] || r.DataCompletamento;
   if (r.Completato && dataCompletamento) {
-    detailDataCompletamento.textContent = formatData(dataCompletamento);
-    detailGroupCompletamento.style.display = 'block';
+    // Se completato con data, mostra "Data com." al posto di Stato
+    detailStatoLabel.textContent = 'Data com.';
+    detailStato.textContent = formatData(dataCompletamento);
   } else {
-    detailGroupCompletamento.style.display = 'none';
+    // Altrimenti mostra badge stato
+    detailStatoLabel.textContent = 'Stato';
+    const stato = r.Completato ?
+      '<span class="badge completato-si">Completato</span>' :
+      '<span class="badge completato-no">In corso</span>';
+    detailStato.innerHTML = stato;
   }
 }
 

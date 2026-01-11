@@ -1338,7 +1338,14 @@ button:active {
 }
 
 .detail-group-right {
-  flex: 0 0 15%;
+  flex: 0 0 17%;
+}
+
+/* Mobile: Data consegna 19% */
+@media (max-width: 768px) {
+  .detail-group-right {
+    flex: 0 0 19%;
+  }
 }
 
 .detail-row-equal {
@@ -1374,18 +1381,25 @@ button:active {
   }
 
   .detail-group-flex:nth-child(3) {
-    flex: 0 0 25%; /* DDT: 25% */
+    flex: 0 0 15%; /* DDT: 15% */
   }
 
   .detail-group-flex:nth-child(4) {
-    flex: 0 0 15%; /* Stato: 15% come Data consegna */
+    flex: 0 0 17%; /* Stato/Data com.: 17% come Data consegna */
   }
 }
 
-/* Mobile: 2 elementi per riga */
+/* Mobile: elementi con larghezze specifiche */
 @media (max-width: 768px) {
-  .detail-group-flex {
-    flex: 1 1 calc(50% - 0.25rem);
+  .detail-group-flex:nth-child(1),
+  .detail-group-flex:nth-child(3) {
+    flex: 1; /* Indirizzo e DDT: si allungano */
+    min-width: 0;
+  }
+
+  .detail-group-flex:nth-child(2),
+  .detail-group-flex:nth-child(4) {
+    flex: 0 0 19%; /* Telefono e Stato/Data com.: 19% */
   }
 }
 
