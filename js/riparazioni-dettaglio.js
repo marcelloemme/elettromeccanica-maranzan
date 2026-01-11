@@ -3,7 +3,6 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbxdsZtism0HvHXBo2ZwmYaf
 
 // Elementi DOM
 const titolo = document.getElementById('titolo-numero');
-const detailNumero = document.getElementById('detail-numero');
 const detailData = document.getElementById('detail-data');
 const detailCliente = document.getElementById('detail-cliente');
 const detailIndirizzo = document.getElementById('detail-indirizzo');
@@ -155,7 +154,6 @@ function renderDettaglio() {
   const r = riparazioneCorrente;
 
   titolo.textContent = `Riparazione ${r.Numero}`;
-  detailNumero.textContent = r.Numero;
   detailData.textContent = formatData(r['Data Consegna'] || r['Data consegna'] || r.DataConsegna);
   detailCliente.textContent = r.Cliente || '-';
   detailIndirizzo.textContent = r.Indirizzo || '-';
