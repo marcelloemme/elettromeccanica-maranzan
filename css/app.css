@@ -1341,10 +1341,10 @@ button:active {
   flex: 0 0 17%;
 }
 
-/* Mobile: Data consegna 20% */
+/* Mobile: Data consegna 21% */
 @media (max-width: 768px) {
   .detail-group-right {
-    flex: 0 0 20%;
+    flex: 0 0 21%;
   }
 }
 
@@ -1397,7 +1397,7 @@ button:active {
   }
 
   .detail-group-flex:nth-child(2) {
-    flex: 0 0 20%; /* Telefono: 20% */
+    flex: 0 0 23%; /* Telefono: 23% */
   }
 
   .detail-group-flex:nth-child(3) {
@@ -1405,7 +1405,7 @@ button:active {
   }
 
   .detail-group-flex:nth-child(4) {
-    flex: 0 0 20%; /* Stato/Data com.: 20% */
+    flex: 0 0 21%; /* Stato/Data com.: 21% */
   }
 }
 
