@@ -1379,8 +1379,7 @@ button:active {
   }
 
   .detail-group-flex:nth-child(4) {
-    flex-shrink: 0;
-    width: auto; /* Stato: larghezza auto (come Data consegna) */
+    flex: 0 0 150px; /* Stato: larghezza fissa simile a Data consegna */
   }
 }
 
@@ -1400,6 +1399,11 @@ button:active {
 .detail-value {
   font-size: 18px;
   font-weight: 500;
+}
+
+/* Badge dentro detail-value deve mantenere il proprio font-size */
+.detail-value .badge {
+  font-size: 14px;
 }
 
 .attrezzi-list {
