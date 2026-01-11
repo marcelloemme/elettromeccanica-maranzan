@@ -1398,10 +1398,11 @@ button:active {
   /* Label "Data consegna" diventa "Data cons." su mobile */
   .detail-group-right .detail-label::after {
     content: 'Data cons.';
+    font-size: 14px;
   }
 
   .detail-group-right .detail-label {
-    font-size: 0;
+    font-size: 0 !important;
   }
 }
 
