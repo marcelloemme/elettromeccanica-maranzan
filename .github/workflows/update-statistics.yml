@@ -26,11 +26,11 @@ jobs:
           curl -L "https://docs.google.com/spreadsheets/d/e/2PACX-1vTLu_kAJJ7pIFcbxUC8082z7jG1EP-lFgoJmNVae-0w0_uZWABdJ8yWXxPViw8bqge1TOWXeUmFZyrp/pub?gid=0&single=true&output=csv" > riparazioni.csv
 
       - name: Generate statistics JSON
-        run: node scripts/generate-statistics.js
+        run: node js/generate-statistics.js
 
       - name: Commit and push if changed
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add statistiche.json
+          git add js/statistiche.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Auto: Aggiorna statistiche $(date +'%Y-%m-%d %H:%M')" && git push)

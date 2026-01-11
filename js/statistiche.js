@@ -55,7 +55,7 @@ let anniAttiviCompletate = {};
 // Carica statistiche.json
 async function caricaStatistiche() {
   try {
-    const res = await fetch('/statistiche.json?t=' + Date.now());
+    const res = await fetch('/js/statistiche.json?t=' + Date.now());
     statistiche = await res.json();
   } catch (err) {
     console.error('Errore caricamento statistiche:', err);

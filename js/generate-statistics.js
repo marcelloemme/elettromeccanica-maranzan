@@ -3,8 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 
-// Leggi CSV
-const csvPath = path.join(__dirname, '../riparazioni.csv');
+// Leggi CSV (nella root del progetto durante GitHub Action)
+const csvPath = path.join(process.cwd(), 'riparazioni.csv');
 const csvContent = fs.readFileSync(csvPath, 'utf-8');
 
 // Parse CSV
