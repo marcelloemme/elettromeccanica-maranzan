@@ -948,6 +948,15 @@ button:active {
   flex: 1;
 }
 
+/* Testo pulsanti: default mostra testo completo, nasconde abbreviato */
+.btn-text-short {
+  display: none;
+}
+
+.btn-text-full {
+  display: inline;
+}
+
 /* Fixed form-actions in detail page - sopra ai nav-buttons */
 .detail-container .form-actions {
   position: fixed;
@@ -966,6 +975,17 @@ button:active {
 @media (max-width: 768px) {
   .detail-container .form-actions {
     bottom: calc(52px + 1rem + 0.5rem + env(safe-area-inset-bottom, 0));
+  }
+
+  /* Testo abbreviato pulsanti su mobile */
+  #btn-completa .btn-text-full,
+  #btn-modifica .btn-text-full {
+    display: none;
+  }
+
+  #btn-completa .btn-text-short,
+  #btn-modifica .btn-text-short {
+    display: inline;
   }
 }
 
@@ -1362,10 +1382,17 @@ button:active {
   flex: 0 0 17%;
 }
 
-/* Mobile: Data consegna 21% */
+/* Mobile: Data consegna 24% */
 @media (max-width: 768px) {
   .detail-group-right {
-    flex: 0 0 21%;
+    flex: 0 0 24%;
+  }
+
+  /* Cliente: truncate con ellipsis se troppo lungo */
+  .detail-group-left .detail-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
@@ -1418,15 +1445,22 @@ button:active {
   }
 
   .detail-group-flex:nth-child(2) {
-    flex: 0 0 23%; /* Telefono: 23% */
+    flex: 0 0 28%; /* Telefono: 28% */
   }
 
   .detail-group-flex:nth-child(3) {
-    flex: 0 0 10%; /* DDT: 10% */
+    flex: 0 0 9%; /* DDT: 9% */
   }
 
   .detail-group-flex:nth-child(4) {
-    flex: 0 0 21%; /* Stato/Data com.: 21% */
+    flex: 0 0 24%; /* Stato/Data com.: 24% */
+  }
+
+  /* Indirizzo: truncate con ellipsis se troppo lungo */
+  .detail-group-flex:nth-child(1) .detail-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
