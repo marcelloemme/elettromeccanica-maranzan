@@ -107,6 +107,14 @@ async function caricaTutteRiparazioni() {
     const data = await res.json();
     tutteRiparazioni = data.riparazioni || [];
 
+    // Ordina per numero (anno/numero decrescente: più recenti prima)
+    tutteRiparazioni.sort((a, b) => {
+      const [annoA, numA] = a.Numero.split('/').map(Number);
+      const [annoB, numB] = b.Numero.split('/').map(Number);
+      if (annoB !== annoA) return annoB - annoA; // Anno decrescente
+      return numB - numA; // Numero decrescente
+    });
+
     // Salva in cache centralizzata
     cacheManager.set('riparazioni', tutteRiparazioni);
   } catch (err) {

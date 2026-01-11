@@ -1353,6 +1353,32 @@ button:active {
   min-width: 0;
 }
 
+.detail-row-responsive {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.detail-group-flex {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Desktop: 4 elementi su una riga (Indirizzo, Telefono, DDT, Stato) */
+@media (min-width: 769px) {
+  .detail-group-flex {
+    flex: 1 1 calc(25% - 0.375rem);
+  }
+}
+
+/* Mobile: 2 elementi per riga */
+@media (max-width: 768px) {
+  .detail-group-flex {
+    flex: 1 1 calc(50% - 0.25rem);
+  }
+}
+
 .detail-label {
   font-size: 14px;
   color: var(--fg);
@@ -1365,9 +1391,16 @@ button:active {
 }
 
 .attrezzi-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+/* Desktop: 2 colonne per attrezzi */
+@media (min-width: 769px) {
+  .attrezzi-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .attrezzo-card {
@@ -1397,14 +1430,11 @@ button:active {
 }
 
 .nav-btn {
-  padding: 0.75rem 1rem;
-  font-size: 24px;
+  padding: 0.5rem 0.75rem;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 50px;
-}
-
-.nav-btn.burger {
-  font-size: 16px;
+  min-width: 44px;
+  height: 44px;
 }
