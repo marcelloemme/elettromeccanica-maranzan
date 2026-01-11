@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+  <title>Statistiche - EM Maranzan</title>
+  <link rel="stylesheet" href="/css/app.css?v=63" />
+  <!-- PWA / Manifest & iOS meta -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <!-- No indexing for this page -->
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="googlebot" content="noindex, nofollow, noarchive">
+</head>
+<body>
+  <!-- Loading overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <main class="app" style="opacity: 0;">
+    <header class="header" style="position: relative;">
+      <h1>Statistiche</h1>
+      <span class="menu-inside" id="burger-menu" role="button" aria-label="Torna a Private" tabindex="0" style="position: absolute; right: 16px; bottom: -10px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </span>
+    </header>
+
+    <!-- Recap Attuale -->
+    <div class="stats-section">
+      <h2>Situazione Attuale</h2>
+      <p id="recap-attuale" class="stats-text">Caricamento...</p>
+    </div>
+
+    <!-- Recap Settimanale -->
+    <div class="stats-section" id="recap-settimanale-section" style="display: none;">
+      <h2>Recap Settimanale</h2>
+      <p id="recap-settimanale" class="stats-text">-</p>
+    </div>
+
+    <!-- Tempi Riparazione -->
+    <div class="stats-section" id="tempi-section" style="display: none;">
+      <h2>Tempi di Riparazione</h2>
+      <p class="stats-intro">Negli ultimi 90 giorni:</p>
+      <p id="tempo-medio" class="stats-text">-</p>
+      <p id="record-velocita" class="stats-text">-</p>
+      <p id="record-lentezza" class="stats-text">-</p>
+      <p id="percentuali-tempo" class="stats-text">-</p>
+    </div>
+
+    <!-- Grafico Create -->
+    <div class="stats-section">
+      <h2>Riparazioni Create per Mese</h2>
+      <canvas id="chart-create" style="max-height: 300px;"></canvas>
+      <div class="chart-controls" id="controls-create">
+        <!-- Popolato da JS -->
+      </div>
+    </div>
+
+    <!-- Grafico Completate -->
+    <div class="stats-section">
+      <h2>Riparazioni Completate per Mese</h2>
+      <canvas id="chart-completate" style="max-height: 300px;"></canvas>
+      <div class="chart-controls" id="controls-completate">
+        <!-- Popolato da JS -->
+      </div>
+    </div>
+
+    <!-- Trigger Manuale -->
+    <div class="stats-section">
+      <button id="btn-trigger-update" class="btn-primary">Aggiorna Statistiche</button>
+      <p id="trigger-status" class="stats-text" style="margin-top: 0.5rem; font-size: 14px; color: var(--placeholder);"></p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="/js/statistiche.js?v=1"></script>
+
+  <script>
+    // Swipe da sinistra per tornare a /private
+    (() => {
+      const EDGE_THRESHOLD = 50;
+      const SWIPE_MIN_DISTANCE = 100;
+      let startX = 0, startY = 0;
+      let isEdgeSwipe = false;
+
+      document.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+        isEdgeSwipe = startX < EDGE_THRESHOLD;
+      }, { passive: true });
+
+      document.addEventListener('touchend', (e) => {
+        if (!isEdgeSwipe) return;
+        const touch = e.changedTouches[0];
+        const dx = touch.clientX - startX;
+        const dy = Math.abs(touch.clientY - startY);
+        if (dx > SWIPE_MIN_DISTANCE && dy < 100) {
+          if (navigator.vibrate) navigator.vibrate(50);
+          window.location.href = '/private.html';
+        }
+        isEdgeSwipe = false;
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>

@@ -1575,3 +1575,66 @@ button:active {
   min-width: 44px;
   height: 44px;
 }
+
+/* ===== STATISTICHE ===== */
+.stats-section {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.stats-section h2 {
+  margin: 0 0 1rem 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.stats-text {
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+.stats-intro {
+  margin: 0 0 0.5rem 0;
+  font-size: 16px;
+  color: var(--placeholder);
+}
+
+.chart-controls {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.chart-year-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.chart-year-toggle input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.chart-year-toggle span {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .stats-section {
+    padding: 0.75rem;
+  }
+
+  .stats-section h2 {
+    font-size: 18px;
+  }
+
+  .stats-text {
+    font-size: 16px;
+  }
+}
