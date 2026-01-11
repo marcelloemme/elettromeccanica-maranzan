@@ -1628,7 +1628,7 @@ button:active {
 .stats-trigger-container {
   text-align: center;
   margin-top: 0;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
 }
 
 @media (max-width: 768px) {
