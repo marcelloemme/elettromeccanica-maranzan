@@ -948,20 +948,24 @@ button:active {
   flex: 1;
 }
 
-/* Sticky form-actions in detail page */
+/* Fixed form-actions in detail page */
 .detail-container .form-actions {
-  position: sticky;
+  position: fixed;
   bottom: 0;
+  left: 0;
+  right: 0;
   background: var(--bg);
-  padding-top: 1rem;
-  padding-bottom: 2rem;
-  margin-top: 2rem;
+  padding: 0.5rem 1rem 2rem 1rem;
+  margin-top: 0;
   z-index: 50;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @media (max-width: 768px) {
   .detail-container .form-actions {
-    padding-bottom: 1rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
   }
 }
 
@@ -1472,24 +1476,38 @@ button:active {
   opacity: 0.8;
 }
 
-/* Navigation buttons */
+/* Navigation buttons - fixed sopra al pulsante Modifica */
 .nav-buttons {
   display: flex;
   gap: 1rem;
   align-items: center;
   justify-content: center;
-  position: sticky;
-  bottom: 0;
+  position: fixed;
+  bottom: calc(52px + 2rem + 0.5rem); /* Altezza pulsante + padding bottom + gap */
+  left: 0;
+  right: 0;
   background: var(--bg);
-  padding-top: 1rem;
-  padding-bottom: 2rem;
-  margin-top: 2rem;
-  z-index: 50;
+  padding: 0.5rem 1rem;
+  z-index: 49;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @media (max-width: 768px) {
   .nav-buttons {
-    padding-bottom: 1rem;
+    bottom: calc(52px + 1rem + 0.5rem + env(safe-area-inset-bottom, 0));
+  }
+}
+
+/* Aggiungi padding al contenuto per non essere coperto dai pulsanti fixed */
+.detail-container {
+  padding-bottom: calc(52px + 52px + 2rem + 1rem + 1rem); /* 2 pulsanti + padding + gap */
+}
+
+@media (max-width: 768px) {
+  .detail-container {
+    padding-bottom: calc(52px + 52px + 1rem + 0.5rem + 1rem + env(safe-area-inset-bottom, 0));
   }
 }
 
