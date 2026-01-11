@@ -974,7 +974,7 @@ button:active {
 
 @media (max-width: 768px) {
   .detail-container .form-actions {
-    bottom: calc(52px + 1rem + 0.5rem + env(safe-area-inset-bottom, 0));
+    bottom: calc(52px + 0.5rem + 0.5rem + env(safe-area-inset-bottom, 0));
   }
 
   /* Testo abbreviato pulsanti su mobile */
@@ -1394,6 +1394,15 @@ button:active {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  /* Label "Data consegna" diventa "Data cons." su mobile */
+  .detail-group-right .detail-label::after {
+    content: 'Data cons.';
+  }
+
+  .detail-group-right .detail-label {
+    font-size: 0;
+  }
 }
 
 .detail-row-equal {
@@ -1445,7 +1454,7 @@ button:active {
   }
 
   .detail-group-flex:nth-child(2) {
-    flex: 0 0 28%; /* Telefono: 28% */
+    flex: 0 0 29%; /* Telefono: 29% */
   }
 
   .detail-group-flex:nth-child(3) {
@@ -1535,7 +1544,7 @@ button:active {
 
 @media (max-width: 768px) {
   .nav-buttons {
-    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0));
   }
 }
 
@@ -1546,7 +1555,7 @@ button:active {
 
 @media (max-width: 768px) {
   .detail-container {
-    padding-bottom: calc(52px + 52px + 1rem + 0.5rem + 1rem + env(safe-area-inset-bottom, 0));
+    padding-bottom: calc(52px + 52px + 0.5rem + 0.5rem + 0.5rem + env(safe-area-inset-bottom, 0));
   }
 }
 
