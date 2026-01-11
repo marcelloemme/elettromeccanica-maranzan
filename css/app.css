@@ -1326,6 +1326,33 @@ button:active {
   gap: 0.25rem;
 }
 
+.detail-row-split {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.detail-group-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-group-right {
+  flex-shrink: 0;
+  width: auto;
+}
+
+.detail-row-equal {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.detail-group-equal {
+  flex: 1;
+  min-width: 0;
+}
+
 .detail-label {
   font-size: 14px;
   color: var(--fg);

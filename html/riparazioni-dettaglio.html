@@ -29,29 +29,30 @@
 
     <!-- Contenuto dettaglio -->
     <div class="detail-container" id="detail-container">
-      <div class="detail-group">
-        <div class="detail-label">Numero</div>
-        <div class="detail-value" id="detail-numero">-</div>
+      <!-- Cliente e Data consegna sulla stessa riga -->
+      <div class="detail-row-split">
+        <div class="detail-group detail-group-left">
+          <div class="detail-label">Cliente</div>
+          <div class="detail-value" id="detail-cliente">-</div>
+        </div>
+
+        <div class="detail-group detail-group-right">
+          <div class="detail-label">Data consegna</div>
+          <div class="detail-value" id="detail-data">-</div>
+        </div>
       </div>
 
-      <div class="detail-group">
-        <div class="detail-label">Data consegna</div>
-        <div class="detail-value" id="detail-data">-</div>
-      </div>
+      <!-- Indirizzo e Telefono sulla stessa riga -->
+      <div class="detail-row-equal">
+        <div class="detail-group detail-group-equal">
+          <div class="detail-label">Indirizzo</div>
+          <div class="detail-value" id="detail-indirizzo">-</div>
+        </div>
 
-      <div class="detail-group">
-        <div class="detail-label">Cliente</div>
-        <div class="detail-value" id="detail-cliente">-</div>
-      </div>
-
-      <div class="detail-group">
-        <div class="detail-label">Indirizzo</div>
-        <div class="detail-value" id="detail-indirizzo">-</div>
-      </div>
-
-      <div class="detail-group">
-        <div class="detail-label">Telefono</div>
-        <div class="detail-value" id="detail-telefono">-</div>
+        <div class="detail-group detail-group-equal">
+          <div class="detail-label">Telefono</div>
+          <div class="detail-value" id="detail-telefono">-</div>
+        </div>
       </div>
 
       <div class="detail-group">
