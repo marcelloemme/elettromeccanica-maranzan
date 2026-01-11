@@ -764,6 +764,33 @@ body.touch-app {
   position: relative;
 }
 
+.form-row-split {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.form-group-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-group-right {
+  flex-shrink: 0;
+  width: auto;
+}
+
+.form-row-equal {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.form-group-equal {
+  flex: 1;
+  min-width: 0;
+}
+
 .form-group label {
   font-size: 16px;
   font-weight: 500;

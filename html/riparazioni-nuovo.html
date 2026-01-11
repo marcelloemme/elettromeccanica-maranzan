@@ -35,30 +35,36 @@
     </header>
 
     <form id="form-nuova" class="form-container">
-      <!-- Data Consegna -->
-      <div class="form-group">
-        <label for="data-consegna">Data consegna</label>
-        <input type="date" id="data-consegna" required />
+      <!-- Cliente e Data Consegna sulla stessa riga -->
+      <div class="form-row-split">
+        <!-- Cliente con autocomplete -->
+        <div class="form-group form-group-left">
+          <label for="cliente">Cliente/Azienda</label>
+          <input type="text" id="cliente" autocomplete="off" required />
+          <div id="autocomplete-list" class="autocomplete-list"></div>
+        </div>
+
+        <!-- Data Consegna -->
+        <div class="form-group form-group-right">
+          <label for="data-consegna">Data consegna</label>
+          <input type="date" id="data-consegna" required />
+        </div>
       </div>
 
-      <!-- Cliente con autocomplete -->
-      <div class="form-group">
-        <label for="cliente">Cliente/Azienda</label>
-        <input type="text" id="cliente" autocomplete="off" required />
-        <div id="autocomplete-list" class="autocomplete-list"></div>
-      </div>
+      <!-- Indirizzo e Telefono sulla stessa riga -->
+      <div class="form-row-equal">
+        <!-- Indirizzo -->
+        <div class="form-group form-group-equal">
+          <label for="indirizzo">Indirizzo</label>
+          <input type="text" id="indirizzo" autocomplete="off" />
+          <div id="autocomplete-list-indirizzo" class="autocomplete-list"></div>
+        </div>
 
-      <!-- Indirizzo -->
-      <div class="form-group">
-        <label for="indirizzo">Indirizzo</label>
-        <input type="text" id="indirizzo" autocomplete="off" />
-        <div id="autocomplete-list-indirizzo" class="autocomplete-list"></div>
-      </div>
-
-      <!-- Telefono -->
-      <div class="form-group">
-        <label for="telefono">Telefono</label>
-        <input type="tel" id="telefono" />
+        <!-- Telefono -->
+        <div class="form-group form-group-equal">
+          <label for="telefono">Telefono</label>
+          <input type="tel" id="telefono" />
+        </div>
       </div>
 
       <!-- Documento di Trasporto -->
