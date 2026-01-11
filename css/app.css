@@ -1361,14 +1361,26 @@ button:active {
 }
 
 .detail-group-flex {
-  flex: 1;
   min-width: 0;
 }
 
-/* Desktop: 4 elementi su una riga (Indirizzo, Telefono, DDT, Stato) */
+/* Desktop: dimensioni specifiche per ogni campo */
 @media (min-width: 769px) {
-  .detail-group-flex {
-    flex: 1 1 calc(25% - 0.375rem);
+  .detail-group-flex:nth-child(1) {
+    flex: 1; /* Indirizzo: tutto lo spazio rimanente */
+  }
+
+  .detail-group-flex:nth-child(2) {
+    flex: 0 0 20%; /* Telefono: 20% */
+  }
+
+  .detail-group-flex:nth-child(3) {
+    flex: 0 0 25%; /* DDT: 25% */
+  }
+
+  .detail-group-flex:nth-child(4) {
+    flex-shrink: 0;
+    width: auto; /* Stato: larghezza auto (come Data consegna) */
   }
 }
 
