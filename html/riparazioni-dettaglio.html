@@ -72,8 +72,9 @@
         </div>
       </div>
 
-      <!-- Pulsante modifica -->
+      <!-- Pulsanti azioni -->
       <div class="form-actions">
+        <button id="btn-completa" class="btn-primary" style="display: none;">Completa scheda</button>
         <button id="btn-modifica" class="btn-primary">Modifica scheda</button>
       </div>
     </div>
@@ -85,6 +86,23 @@
       <button class="nav-btn btn-secondary" id="btn-next" title="Scheda successiva">→</button>
     </div>
   </main>
+
+  <!-- Popup completa -->
+  <div id="popup-completa" class="popup-overlay hidden">
+    <div class="popup-content">
+      <h2>Completa Riparazione</h2>
+      <form id="form-completa" class="form-container">
+        <div class="form-group">
+          <label for="completa-data">Data completamento</label>
+          <input type="date" id="completa-data" required />
+        </div>
+        <div class="popup-actions">
+          <button type="button" id="completa-annulla" class="btn-secondary">Annulla</button>
+          <button type="submit" class="btn-primary">Conferma</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Popup modifica -->
   <div id="popup-modifica" class="popup-overlay hidden">

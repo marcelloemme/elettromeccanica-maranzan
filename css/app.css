@@ -948,14 +948,14 @@ button:active {
   flex: 1;
 }
 
-/* Fixed form-actions in detail page */
+/* Fixed form-actions in detail page - sopra ai nav-buttons */
 .detail-container .form-actions {
   position: fixed;
-  bottom: 0;
+  bottom: calc(52px + 2rem + 0.5rem); /* Altezza nav-buttons + padding + gap */
   left: 0;
   right: 0;
   background: var(--bg);
-  padding: 0.5rem 1rem 2rem 1rem;
+  padding: 0.5rem 1rem;
   margin-top: 0;
   z-index: 50;
   max-width: 800px;
@@ -965,7 +965,7 @@ button:active {
 
 @media (max-width: 768px) {
   .detail-container .form-actions {
-    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
+    bottom: calc(52px + 1rem + 0.5rem + env(safe-area-inset-bottom, 0));
   }
 }
 
@@ -1457,6 +1457,11 @@ button:active {
   .attrezzi-list {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  /* Se numero dispari, l'ultimo elemento occupa tutta la larghezza */
+  .attrezzo-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
 }
 
 .attrezzo-card {
@@ -1476,18 +1481,18 @@ button:active {
   opacity: 0.8;
 }
 
-/* Navigation buttons - fixed sopra al pulsante Modifica */
+/* Navigation buttons - fixed in fondo sotto al pulsante Modifica */
 .nav-buttons {
   display: flex;
   gap: 1rem;
   align-items: center;
   justify-content: center;
   position: fixed;
-  bottom: calc(52px + 2rem + 0.5rem); /* Altezza pulsante + padding bottom + gap */
+  bottom: 0;
   left: 0;
   right: 0;
   background: var(--bg);
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1rem 2rem 1rem;
   z-index: 49;
   max-width: 800px;
   margin-left: auto;
@@ -1496,7 +1501,7 @@ button:active {
 
 @media (max-width: 768px) {
   .nav-buttons {
-    bottom: calc(52px + 1rem + 0.5rem + env(safe-area-inset-bottom, 0));
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
   }
 }
 

@@ -12,10 +12,16 @@ const detailAttrezzi = document.getElementById('detail-attrezzi');
 const detailStato = document.getElementById('detail-stato');
 const detailStatoLabel = document.getElementById('detail-stato-label');
 
+const btnCompleta = document.getElementById('btn-completa');
 const btnModifica = document.getElementById('btn-modifica');
 const btnPrev = document.getElementById('btn-prev');
 const btnNext = document.getElementById('btn-next');
 const btnArchivio = document.getElementById('btn-archivio');
+
+const popupCompleta = document.getElementById('popup-completa');
+const formCompleta = document.getElementById('form-completa');
+const completaData = document.getElementById('completa-data');
+const completaAnnulla = document.getElementById('completa-annulla');
 
 const popupModifica = document.getElementById('popup-modifica');
 const formModifica = document.getElementById('form-modifica');
@@ -187,6 +193,8 @@ function renderDettaglio() {
     // Se completato con data, mostra "Data com." al posto di Stato
     detailStatoLabel.textContent = 'Data com.';
     detailStato.textContent = formatData(dataCompletamento);
+    // Nascondi pulsante "Completa scheda" se già completato
+    btnCompleta.style.display = 'none';
   } else {
     // Altrimenti mostra badge stato
     detailStatoLabel.textContent = 'Stato';
@@ -194,6 +202,8 @@ function renderDettaglio() {
       '<span class="badge completato-si">Completato</span>' :
       '<span class="badge completato-no">In corso</span>';
     detailStato.innerHTML = stato;
+    // Mostra pulsante "Completa scheda" se non completato
+    btnCompleta.style.display = r.Completato ? 'none' : 'block';
   }
 }
 
@@ -221,10 +231,14 @@ function aggiornaNavigazione() {
 
 // Setup event listeners
 function setupEventListeners() {
+  btnCompleta.addEventListener('click', apriCompleta);
   btnModifica.addEventListener('click', apriModifica);
   btnArchivio.addEventListener('click', () => window.location.href = '/html/riparazioni-archivio.html');
   btnPrev.addEventListener('click', navigaPrev);
   btnNext.addEventListener('click', navigaNext);
+
+  completaAnnulla.addEventListener('click', () => popupCompleta.classList.add('hidden'));
+  formCompleta.addEventListener('submit', handleSubmitCompleta);
 
   popupAnnulla.addEventListener('click', () => popupModifica.classList.add('hidden'));
   formModifica.addEventListener('submit', handleSubmitModifica);
@@ -259,6 +273,69 @@ function navigaNext() {
     aggiornaNavigazione();
     // Aggiorna URL senza reload
     window.history.pushState({}, '', `/html/riparazioni-dettaglio.html?numero=${encodeURIComponent(next.Numero)}`);
+  }
+}
+
+// Apri popup completa
+function apriCompleta() {
+  // Imposta data odierna come default
+  const oggi = new Date().toISOString().split('T')[0];
+  completaData.value = oggi;
+
+  popupCompleta.classList.remove('hidden');
+}
+
+// Handle submit completa
+async function handleSubmitCompleta(e) {
+  e.preventDefault();
+
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Salvataggio...';
+
+  const dati = {
+    numero: riparazioneCorrente.Numero,
+    completato: true,
+    dataCompletamento: completaData.value
+  };
+
+  try {
+    const res = await fetch(`${API_URL}?action=completaRiparazione`, {
+      method: 'POST',
+      body: JSON.stringify(dati)
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      popupCompleta.classList.add('hidden');
+
+      // Invalida cache per forzare ricaricamento fresco al prossimo accesso archivio
+      cacheManager.invalidate('riparazioni');
+
+      // Aggiorna dati localmente
+      riparazioneCorrente.Completato = true;
+      riparazioneCorrente['Data Completamento'] = dati.dataCompletamento;
+
+      // Aggiorna anche in tutteRiparazioni se presente
+      const index = tutteRiparazioni.findIndex(r => r.Numero === dati.numero);
+      if (index !== -1) {
+        tutteRiparazioni[index] = riparazioneCorrente;
+      }
+
+      // Renderizza i dati aggiornati
+      renderDettaglio();
+      aggiornaNavigazione();
+
+      alert('Riparazione completata con successo!');
+    } else {
+      alert('Errore: ' + (result.error || 'Errore sconosciuto'));
+    }
+  } catch (err) {
+    alert('Errore di connessione: ' + err.message);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Conferma';
   }
 }
 
