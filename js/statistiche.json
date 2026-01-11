@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-01-11T20:30:15.836Z",
+  "generatedAt": "2026-01-11T20:38:13.882Z",
   "recapAttuale": {
     "totaleInCorso": 75,
     "oltre90gg": null,
@@ -24,7 +24,15 @@
       }
     ]
   },
-  "recapSettimanale": null,
+  "recapSettimanale": {
+    "settimana": "Questa settimana (05.01-11.01)",
+    "inserite": 21,
+    "completate": 0,
+    "percInserite": 254.5,
+    "percCompletate": null,
+    "mediaInserite": "5.9",
+    "mediaCompletate": "0.0"
+  },
   "tempiRiparazione": null,
   "grafici": {
     "2025": {
