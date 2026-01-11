@@ -1,12 +1,95 @@
 {
-  "generatedAt": "2026-01-11T00:00:00.000Z",
+  "generatedAt": "2026-01-11T20:30:15.836Z",
   "recapAttuale": {
-    "totaleInCorso": 0,
+    "totaleInCorso": 75,
     "oltre90gg": null,
-    "top3Vecchie": []
+    "top3Vecchie": [
+      {
+        "numero": "25/0007",
+        "cliente": "NOGHEROT",
+        "dataConsegna": "2025-10-29T00:00:00.000Z",
+        "giorniAperti": 74
+      },
+      {
+        "numero": "25/0008",
+        "cliente": "DOLFO SRL",
+        "dataConsegna": "2025-10-30T00:00:00.000Z",
+        "giorniAperti": 73
+      },
+      {
+        "numero": "25/0015",
+        "cliente": "PANIGHEL LUDOVICO",
+        "dataConsegna": "2025-11-03T00:00:00.000Z",
+        "giorniAperti": 69
+      }
+    ]
   },
   "recapSettimanale": null,
   "tempiRiparazione": null,
-  "grafici": {},
-  "anniDisponibili": []
+  "grafici": {
+    "2025": {
+      "create": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 14,
+        "11": 70,
+        "12": 49
+      },
+      "completate": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0,
+        "12": 0
+      }
+    },
+    "2026": {
+      "create": {
+        "1": 21,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0,
+        "12": 0
+      },
+      "completate": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0,
+        "12": 0
+      }
+    }
+  },
+  "anniDisponibili": [
+    2026,
+    2025
+  ]
 }
