@@ -216,7 +216,7 @@ const output = {
   anniDisponibili
 };
 
-const outputPath = path.join(__dirname, '../statistiche.json');
+const outputPath = path.join(__dirname, 'statistiche.json');
 fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
 
 console.log('✓ Statistiche generate con successo!');
