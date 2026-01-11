@@ -22,6 +22,7 @@ let filtroCompletato = false; // Se true, mostra solo completate
 let searchQuery = '';
 let dataDal = null; // Data inizio filtro (Date object o null)
 let dataAl = null;  // Data fine filtro (Date object o null)
+let isPulsanteAttivoMostraTutte = false; // Stato pulsante toggle
 
 // Init (ottimizzato con cache)
 (async () => {
@@ -130,8 +131,8 @@ function setupEventListeners() {
   setupDateInput(dataDalInput);
   setupDateInput(dataAlInput);
 
-  // Bottone "Mostra tutto"
-  btnMostraTutto.addEventListener('click', mostraTutto);
+  // Bottone "Tutte in corso" / "Tutte" (toggle)
+  btnMostraTutto.addEventListener('click', toggleMostraTutte);
 }
 
 // Filtra riparazioni
@@ -320,23 +321,8 @@ async function caricaRiparazioniBackground() {
 
 // ===== GESTIONE FILTRO DATE =====
 
-// Imposta filtro date default (ultimi 30 giorni)
+// Imposta filtro date default (dalla più vecchia non completata a oggi)
 function impostaFiltroDateDefault() {
-  const oggi = new Date();
-  const trentaGiorniFa = new Date();
-  trentaGiorniFa.setDate(oggi.getDate() - 30);
-
-  // Imposta variabili stato
-  dataDal = trentaGiorniFa;
-  dataAl = oggi;
-
-  // Imposta valori input
-  dataDalInput.value = formatDateToInput(trentaGiorniFa);
-  dataAlInput.value = formatDateToInput(oggi);
-}
-
-// Bottone "Mostra tutto" - mostra tutte le riparazioni in corso
-function mostraTutto() {
   const oggi = new Date();
 
   // Filtra solo riparazioni in corso (non completate)
@@ -360,17 +346,75 @@ function mostraTutto() {
       }
     });
 
-    dataInizio = dataMinima || new Date(2025, 9, 26); // Fallback se parsing fallisce
+    dataInizio = dataMinima || new Date(2025, 9, 15); // Fallback: 15 ottobre 2025
   } else {
-    // Nessuna riparazione in corso -> fallback data prima scheda
-    dataInizio = new Date(2025, 9, 26);
+    // Nessuna riparazione in corso -> fallback data minima assoluta
+    dataInizio = new Date(2025, 9, 15); // 15 ottobre 2025
   }
 
+  // Imposta variabili stato
   dataDal = dataInizio;
   dataAl = oggi;
 
+  // Imposta valori input
   dataDalInput.value = formatDateToInput(dataInizio);
   dataAlInput.value = formatDateToInput(oggi);
+
+  // Pulsante parte NON attivo
+  isPulsanteAttivoMostraTutte = false;
+  btnMostraTutto.classList.remove('active');
+  btnMostraTutto.textContent = 'Tutte in corso';
+}
+
+// Toggle pulsante "Tutte in corso" / "Tutte"
+function toggleMostraTutte() {
+  const oggi = new Date();
+
+  if (isPulsanteAttivoMostraTutte) {
+    // Era attivo -> disattiva e torna al default
+    isPulsanteAttivoMostraTutte = false;
+    btnMostraTutto.classList.remove('active');
+    btnMostraTutto.textContent = 'Tutte in corso';
+
+    // Ripristina forbice default (più vecchia non completata → oggi)
+    const riparazioniInCorso = tutteRiparazioni.filter(r => !r.Completato);
+    let dataInizio;
+
+    if (riparazioniInCorso.length > 0) {
+      let dataMinima = null;
+      riparazioniInCorso.forEach(r => {
+        const dataConsegna = r['Data Consegna'] || r['Data consegna'] || r.DataConsegna;
+        if (!dataConsegna) return;
+        const dataRip = parseDataItaliana(dataConsegna);
+        if (!dataRip) return;
+        if (!dataMinima || dataRip < dataMinima) {
+          dataMinima = dataRip;
+        }
+      });
+      dataInizio = dataMinima || new Date(2025, 9, 15);
+    } else {
+      dataInizio = new Date(2025, 9, 15);
+    }
+
+    dataDal = dataInizio;
+    dataAl = oggi;
+
+    dataDalInput.value = formatDateToInput(dataInizio);
+    dataAlInput.value = formatDateToInput(oggi);
+  } else {
+    // Era disattivo -> attiva e mostra tutto (15 ottobre 2025 → oggi)
+    isPulsanteAttivoMostraTutte = true;
+    btnMostraTutto.classList.add('active');
+    btnMostraTutto.textContent = 'Tutte';
+
+    // Imposta forbice completa
+    const dataMinAssoluta = new Date(2025, 9, 15); // 15 ottobre 2025
+    dataDal = dataMinAssoluta;
+    dataAl = oggi;
+
+    dataDalInput.value = formatDateToInput(dataMinAssoluta);
+    dataAlInput.value = formatDateToInput(oggi);
+  }
 
   renderTabella();
 }
@@ -480,6 +524,13 @@ function aggiornaFiltroDate() {
     dataAl = new Date(annoCompleto, m - 1, g);
   } else {
     dataAl = null;
+  }
+
+  // Se l'utente ha modificato manualmente le date, spegni il pulsante se era attivo
+  if (isPulsanteAttivoMostraTutte) {
+    isPulsanteAttivoMostraTutte = false;
+    btnMostraTutto.classList.remove('active');
+    btnMostraTutto.textContent = 'Tutte in corso';
   }
 
   // Renderizza tabella con nuovo filtro

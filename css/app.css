@@ -938,6 +938,12 @@ button:active {
   border-color: var(--border-strong);
 }
 
+.btn-secondary.active {
+  background: var(--btn-secondary-fg);
+  color: var(--btn-secondary-bg);
+  border-color: var(--border-strong);
+}
+
 .form-actions {
   display: flex;
   gap: 1rem;
