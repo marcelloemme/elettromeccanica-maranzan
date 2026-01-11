@@ -1284,8 +1284,8 @@ button:active {
     display: inline;
   }
 
-  /* Nascondi testo dei badge su mobile, mostra solo emoji */
-  .badge {
+  /* Nascondi testo dei badge su mobile nella tabella, mostra solo emoji */
+  .table .badge {
     padding: 0;
     background: none !important;
     border: none;
@@ -1338,7 +1338,7 @@ button:active {
 }
 
 .detail-group-right {
-  flex: 0 0 20%;
+  flex: 0 0 15%;
 }
 
 .detail-row-equal {
@@ -1378,7 +1378,7 @@ button:active {
   }
 
   .detail-group-flex:nth-child(4) {
-    flex: 0 0 20%; /* Stato: 20% come Data consegna */
+    flex: 0 0 15%; /* Stato: 15% come Data consegna */
   }
 }
 
