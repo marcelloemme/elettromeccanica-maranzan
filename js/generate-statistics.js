@@ -319,15 +319,6 @@ riparazioni.forEach(r => {
 // Conta completate per giorno
 riparazioni.forEach(r => {
   const data = parseDate(r['Data completamento']);
-
-  // Debug per 26/0008
-  if (r.Numero === '26/0008') {
-    console.log('DEBUG 26/0008:');
-    console.log('- Completato:', r.Completato);
-    console.log('- Data completamento raw:', r['Data completamento']);
-    console.log('- Data completamento parsed:', data);
-  }
-
   if (data && data >= dataInizioDeltagiornaliero) {
     const dateKey = data.toISOString().split('T')[0];
     if (!deltaGiornaliero[dateKey]) {
