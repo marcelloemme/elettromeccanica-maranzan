@@ -42,6 +42,15 @@ const parseDate = (dateStr) => {
   return new Date(dateStr);
 };
 
+const formatDataIT = (date) => {
+  if (!date) return '-';
+  const d = new Date(date);
+  const giorno = String(d.getDate()).padStart(2, '0');
+  const mese = String(d.getMonth() + 1).padStart(2, '0');
+  const anno = d.getFullYear();
+  return `${giorno}/${mese}/${anno}`;
+};
+
 const today = new Date();
 const dayOfWeek = today.getDay(); // 0=domenica, 1=lunedì, ..., 6=sabato
 const hour = today.getHours();
@@ -64,10 +73,27 @@ const inCorsoOrdinate = riparazioniInCorso
 const oltre90gg = inCorsoOrdinate.filter(r => r.giorniAperti > 90);
 const top3 = inCorsoOrdinate.slice(0, 3);
 
+// Genera testo notifica per shortcut iOS
+let testoNotifica = `Al momento hai ${riparazioniInCorso.length} riparazioni attive.`;
+if (oltre90gg.length > 0) {
+  const elenco = oltre90gg.map((r, i) => {
+    const sep = i === oltre90gg.length - 1 ? '.' : ';';
+    return `- ${r.numero} - ${r.cliente} del ${formatDataIT(r.dataConsegna)}${sep}`;
+  }).join('\n');
+  testoNotifica += ` Le riparazioni aperte da oltre 90 giorni sono:\n${elenco}`;
+} else if (top3.length > 0) {
+  const elenco = top3.map((r, i) => {
+    const sep = i === top3.length - 1 ? '.' : ';';
+    return `- ${r.numero} - ${r.cliente} del ${formatDataIT(r.dataConsegna)}${sep}`;
+  }).join('\n');
+  testoNotifica += ` Le tre più vecchie sono:\n${elenco}`;
+}
+
 const recapAttuale = {
   totaleInCorso: riparazioniInCorso.length,
   oltre90gg: oltre90gg.length > 0 ? oltre90gg : null,
-  top3Vecchie: oltre90gg.length > 0 ? null : top3
+  top3Vecchie: oltre90gg.length > 0 ? null : top3,
+  testoNotifica
 };
 
 // 2. RECAP SETTIMANALE (sempre visibile)

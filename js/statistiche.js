@@ -72,14 +72,16 @@ function renderStatistiche() {
   if (recapAttuale.oltre90gg && recapAttuale.oltre90gg.length > 0) {
     const elenco = recapAttuale.oltre90gg.map((r, i) => {
       const separatore = i === recapAttuale.oltre90gg.length - 1 ? '.' : ';';
-      return `- <strong>${r.numero}</strong> - ${r.cliente} del ${formatData(r.dataConsegna)}${separatore}`;
+      const numeroEncoded = encodeURIComponent(r.numero);
+      return `- <a href="/html/riparazioni-dettaglio?numero=${numeroEncoded}" style="color: inherit; text-decoration: none;"><strong>${r.numero}</strong> - ${r.cliente}</a> del ${formatData(r.dataConsegna)}${separatore}`;
     }).join('<br>');
     recapAttualeEl.innerHTML = `Al momento hai <strong>${recapAttuale.totaleInCorso}</strong> riparazioni attive. Le riparazioni aperte da oltre 90 giorni sono:<br>${elenco}`;
   } else if (recapAttuale.top3Vecchie && recapAttuale.top3Vecchie.length > 0) {
     const top3 = recapAttuale.top3Vecchie;
     const elenco = top3.map((r, i) => {
       const separatore = i === top3.length - 1 ? '.' : ';';
-      return `- <strong>${r.numero}</strong> - ${r.cliente} del ${formatData(r.dataConsegna)}${separatore}`;
+      const numeroEncoded = encodeURIComponent(r.numero);
+      return `- <a href="/html/riparazioni-dettaglio?numero=${numeroEncoded}" style="color: inherit; text-decoration: none;"><strong>${r.numero}</strong> - ${r.cliente}</a> del ${formatData(r.dataConsegna)}${separatore}`;
     }).join('<br>');
     recapAttualeEl.innerHTML = `Al momento hai <strong>${recapAttuale.totaleInCorso}</strong> riparazioni attive. Le tre più vecchie sono:<br>${elenco}`;
   } else {
