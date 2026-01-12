@@ -138,29 +138,35 @@ const completateSettimana = riparazioni.filter(r => {
   return data && data >= startWeek && data <= endWeek;
 }).length;
 
-// Media ultimi 6 mesi (ma non prima del 27 ottobre 2025)
+// Media ultimi 6 mesi (ma non prima delle date storiche)
 const sixMonthsAgo = new Date(today);
 sixMonthsAgo.setMonth(today.getMonth() - 6);
 
-const dataInizioStorico = new Date('2025-10-27'); // Primo lunedì con dati
-const dataInizioCalcolo = sixMonthsAgo > dataInizioStorico ? sixMonthsAgo : dataInizioStorico;
+const dataInizioInseritiStorico = new Date('2025-10-27'); // Primo lunedì con dati inserimenti
+const dataInizioCompletatiStorico = new Date('2026-01-12'); // Primo lunedì con data completamento salvata
+
+const dataInizioCalcoloInseriti = sixMonthsAgo > dataInizioInseritiStorico ? sixMonthsAgo : dataInizioInseritiStorico;
+const dataInizioCalcoloCompletati = sixMonthsAgo > dataInizioCompletatiStorico ? sixMonthsAgo : dataInizioCompletatiStorico;
 
 const riparazioniPeriodo = riparazioni.filter(r => {
   const data = parseDate(r['Data consegna']);
-  return data && data >= dataInizioCalcolo;
+  return data && data >= dataInizioCalcoloInseriti;
 });
 
 const completatePeriodo = riparazioni.filter(r => {
   const data = parseDate(r['Data completamento']);
-  return data && data >= dataInizioCalcolo;
+  return data && data >= dataInizioCalcoloCompletati;
 });
 
-// Calcola numero di settimane complete nel periodo
-const giorniPeriodo = Math.floor((today - dataInizioCalcolo) / (1000 * 60 * 60 * 24));
-const settimaneCalcolo = Math.max(1, giorniPeriodo / 7);
+// Calcola numero di settimane complete per ogni periodo
+const giorniPeriodoInseriti = Math.floor((today - dataInizioCalcoloInseriti) / (1000 * 60 * 60 * 24));
+const settimaneCalcoloInseriti = Math.max(1, giorniPeriodoInseriti / 7);
 
-const mediaInseriteSettimana = riparazioniPeriodo.length / settimaneCalcolo;
-const mediaCompletateSettimana = completatePeriodo.length / settimaneCalcolo;
+const giorniPeriodoCompletati = Math.floor((today - dataInizioCalcoloCompletati) / (1000 * 60 * 60 * 24));
+const settimaneCalcoloCompletati = Math.max(1, giorniPeriodoCompletati / 7);
+
+const mediaInseriteSettimana = riparazioniPeriodo.length / settimaneCalcoloInseriti;
+const mediaCompletateSettimana = completatePeriodo.length / settimaneCalcoloCompletati;
 
 const percInserite = ((inseriteSettimana - mediaInseriteSettimana) / mediaInseriteSettimana * 100).toFixed(1);
 const percCompletate = ((completateSettimana - mediaCompletateSettimana) / mediaCompletateSettimana * 100).toFixed(1);
