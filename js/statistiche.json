@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-01-12T08:49:37.667Z",
+  "generatedAt": "2026-01-12T13:02:40.417Z",
   "recapAttuale": {
-    "totaleInCorso": 76,
+    "totaleInCorso": 79,
     "oltre90gg": null,
     "top3Vecchie": [
       {
@@ -23,15 +23,15 @@
         "giorniAperti": 70
       }
     ],
-    "testoNotifica": "Al momento hai 76 riparazioni attive. Le tre più vecchie sono:\n- 25/0007 - NOGHEROT del 29/10/2025;\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025."
+    "testoNotifica": "Al momento hai 79 riparazioni attive. Le tre più vecchie sono:\n- 25/0007 - NOGHEROT del 29/10/2025;\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (05.01-11.01)",
     "inserite": 21,
     "completate": 0,
-    "percInserite": 50,
+    "percInserite": 47.1,
     "percCompletate": null,
-    "mediaInserite": "14.0",
+    "mediaInserite": "14.3",
     "mediaCompletate": "0.0"
   },
   "tempiRiparazione": null,
@@ -68,7 +68,7 @@
     },
     "2026": {
       "create": {
-        "1": 22,
+        "1": 25,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -100,5 +100,37 @@
   "anniDisponibili": [
     2026,
     2025
+  ],
+  "deltaGiornaliero": [
+    {
+      "data": "2026-01-07",
+      "aggiunte": 7,
+      "completate": 0,
+      "delta": -7
+    },
+    {
+      "data": "2026-01-08",
+      "aggiunte": 8,
+      "completate": 0,
+      "delta": -8
+    },
+    {
+      "data": "2026-01-09",
+      "aggiunte": 4,
+      "completate": 0,
+      "delta": -4
+    },
+    {
+      "data": "2026-01-10",
+      "aggiunte": 2,
+      "completate": 0,
+      "delta": -2
+    },
+    {
+      "data": "2026-01-12",
+      "aggiunte": 4,
+      "completate": 0,
+      "delta": -4
+    }
   ]
 }
