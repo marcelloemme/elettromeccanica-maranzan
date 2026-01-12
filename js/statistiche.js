@@ -7,8 +7,10 @@ const tempoMedioEl = document.getElementById('tempo-medio');
 const recordVelocitaEl = document.getElementById('record-velocita');
 const recordLentezzaEl = document.getElementById('record-lentezza');
 const percentualiTempoEl = document.getElementById('percentuali-tempo');
+const chartDeltaCanvas = document.getElementById('chart-delta');
 const chartCreateCanvas = document.getElementById('chart-create');
 const chartCompletateCanvas = document.getElementById('chart-completate');
+const controlsDelta = document.getElementById('controls-delta');
 const controlsCreate = document.getElementById('controls-create');
 const controlsCompletate = document.getElementById('controls-completate');
 const btnTriggerUpdate = document.getElementById('btn-trigger-update');
@@ -18,10 +20,12 @@ const appMain = document.querySelector('.app');
 
 // Stato
 let statistiche = null;
+let chartDelta = null;
 let chartCreate = null;
 let chartCompletate = null;
 let anniAttiviCreate = {};
 let anniAttiviCompletate = {};
+let periodoDelta = 30; // giorni (default)
 
 // Init
 (async () => {
@@ -128,6 +132,7 @@ function renderStatistiche() {
 
   // 4. Grafici
   renderGrafici();
+  renderGraficoDelta();
 }
 
 // Render grafici
@@ -280,6 +285,114 @@ function formatData(dateStr) {
   const mese = String(date.getMonth() + 1).padStart(2, '0');
   const anno = date.getFullYear();
   return `${giorno}/${mese}/${anno}`;
+}
+
+// Render grafico delta giornaliero
+function renderGraficoDelta() {
+  if (!statistiche.deltaGiornaliero || statistiche.deltaGiornaliero.length === 0) {
+    controlsDelta.innerHTML = '<p style="color: var(--placeholder); font-size: 14px;">Dati non ancora disponibili</p>';
+    return;
+  }
+
+  // Render controlli periodo
+  controlsDelta.innerHTML = `
+    <button class="btn-period ${periodoDelta === 7 ? 'active' : ''}" onclick="cambiaPeriodoDelta(7)">7 giorni</button>
+    <button class="btn-period ${periodoDelta === 30 ? 'active' : ''}" onclick="cambiaPeriodoDelta(30)">30 giorni</button>
+    <button class="btn-period ${periodoDelta === 90 ? 'active' : ''}" onclick="cambiaPeriodoDelta(90)">3 mesi</button>
+    <button class="btn-period ${periodoDelta === 999 ? 'active' : ''}" onclick="cambiaPeriodoDelta(999)">Tutto</button>
+  `;
+
+  aggiornaGraficoDelta();
+}
+
+// Cambia periodo delta
+window.cambiaPeriodoDelta = (giorni) => {
+  periodoDelta = giorni;
+  renderGraficoDelta();
+};
+
+// Aggiorna grafico delta
+function aggiornaGraficoDelta() {
+  // Filtra dati per periodo selezionato
+  let datiVisibili = statistiche.deltaGiornaliero;
+
+  if (periodoDelta !== 999) {
+    datiVisibili = datiVisibili.slice(-periodoDelta);
+  }
+
+  // Prepara dati per Chart.js
+  const labels = datiVisibili.map(d => {
+    const date = new Date(d.data);
+    const giorno = String(date.getDate()).padStart(2, '0');
+    const mese = String(date.getMonth() + 1).padStart(2, '0');
+    return `${giorno}/${mese}`;
+  });
+
+  const deltas = datiVisibili.map(d => d.delta);
+
+  // Colori: verde se positivo, rosso se negativo
+  const colori = deltas.map(delta => delta >= 0 ? '#10b981' : '#ef4444');
+
+  const data = {
+    labels,
+    datasets: [{
+      label: 'Delta',
+      data: deltas,
+      borderColor: '#6b7280',
+      backgroundColor: colori.map(c => c + '40'),
+      pointBackgroundColor: colori,
+      pointBorderColor: colori,
+      tension: 0.3,
+      fill: false
+    }]
+  };
+
+  if (chartDelta) {
+    chartDelta.destroy();
+  }
+
+  chartDelta = new Chart(chartDeltaCanvas, {
+    type: 'line',
+    data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const index = context.dataIndex;
+              const d = datiVisibili[index];
+              const delta = d.delta;
+              const segno = delta >= 0 ? '+' : '';
+              return `${segno}${delta} (${d.completate} completate, ${d.aggiunte} aggiunte)`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 },
+          grid: {
+            color: function(context) {
+              if (context.tick.value === 0) {
+                return '#000000'; // Linea zero in nero
+              }
+              return 'rgba(0, 0, 0, 0.1)';
+            },
+            lineWidth: function(context) {
+              if (context.tick.value === 0) {
+                return 2; // Linea zero più spessa
+              }
+              return 1;
+            }
+          }
+        }
+      }
+    }
+  });
 }
 
 // Trigger manuale GitHub Action

@@ -279,6 +279,50 @@ anniDisponibili.forEach(anno => {
   grafici[anno] = datiAnno;
 });
 
+// 5. GRAFICO DELTA GIORNALIERO (dal 7 gennaio 2026)
+const dataInizioDeltagiornaliero = new Date('2026-01-07');
+
+// Crea mappa di conteggi giornalieri
+const deltaGiornaliero = {};
+
+// Conta aggiunte per giorno
+riparazioni.forEach(r => {
+  const data = parseDate(r['Data consegna']);
+  if (data && data >= dataInizioDeltagiornaliero) {
+    const dateKey = data.toISOString().split('T')[0]; // YYYY-MM-DD
+    if (!deltaGiornaliero[dateKey]) {
+      deltaGiornaliero[dateKey] = { aggiunte: 0, completate: 0 };
+    }
+    deltaGiornaliero[dateKey].aggiunte++;
+  }
+});
+
+// Conta completate per giorno
+riparazioni.forEach(r => {
+  const data = parseDate(r['Data completamento']);
+  if (data && data >= dataInizioDeltagiornaliero) {
+    const dateKey = data.toISOString().split('T')[0];
+    if (!deltaGiornaliero[dateKey]) {
+      deltaGiornaliero[dateKey] = { aggiunte: 0, completate: 0 };
+    }
+    deltaGiornaliero[dateKey].completate++;
+  }
+});
+
+// Filtra solo giorni con attività e calcola delta
+const deltaArray = Object.keys(deltaGiornaliero)
+  .filter(dateKey => {
+    const d = deltaGiornaliero[dateKey];
+    return d.aggiunte > 0 || d.completate > 0; // Solo giorni con attività
+  })
+  .map(dateKey => ({
+    data: dateKey,
+    aggiunte: deltaGiornaliero[dateKey].aggiunte,
+    completate: deltaGiornaliero[dateKey].completate,
+    delta: deltaGiornaliero[dateKey].completate - deltaGiornaliero[dateKey].aggiunte
+  }))
+  .sort((a, b) => a.data.localeCompare(b.data)); // Ordina per data
+
 // Salva JSON
 const output = {
   generatedAt: today.toISOString(),
@@ -286,7 +330,8 @@ const output = {
   recapSettimanale,
   tempiRiparazione,
   grafici,
-  anniDisponibili
+  anniDisponibili,
+  deltaGiornaliero: deltaArray
 };
 
 const outputPath = path.join(__dirname, 'statistiche.json');
