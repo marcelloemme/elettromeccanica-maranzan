@@ -1,36 +1,37 @@
 {
-  "generatedAt": "2026-01-11T21:30:29.450Z",
+  "generatedAt": "2026-01-12T08:49:37.667Z",
   "recapAttuale": {
-    "totaleInCorso": 75,
+    "totaleInCorso": 76,
     "oltre90gg": null,
     "top3Vecchie": [
       {
         "numero": "25/0007",
         "cliente": "NOGHEROT",
         "dataConsegna": "2025-10-29T00:00:00.000Z",
-        "giorniAperti": 74
+        "giorniAperti": 75
       },
       {
         "numero": "25/0008",
         "cliente": "DOLFO SRL",
         "dataConsegna": "2025-10-30T00:00:00.000Z",
-        "giorniAperti": 73
+        "giorniAperti": 74
       },
       {
         "numero": "25/0015",
         "cliente": "PANIGHEL LUDOVICO",
         "dataConsegna": "2025-11-03T00:00:00.000Z",
-        "giorniAperti": 69
+        "giorniAperti": 70
       }
-    ]
+    ],
+    "testoNotifica": "Al momento hai 76 riparazioni attive. Le tre più vecchie sono:\n- 25/0007 - NOGHEROT del 29/10/2025;\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025."
   },
   "recapSettimanale": {
-    "settimana": "Questa settimana (05.01-11.01)",
+    "settimana": "Settimana scorsa (05.01-11.01)",
     "inserite": 21,
     "completate": 0,
-    "percInserite": 49,
+    "percInserite": 50,
     "percCompletate": null,
-    "mediaInserite": "14.1",
+    "mediaInserite": "14.0",
     "mediaCompletate": "0.0"
   },
   "tempiRiparazione": null,
@@ -67,7 +68,7 @@
     },
     "2026": {
       "create": {
-        "1": 21,
+        "1": 22,
         "2": 0,
         "3": 0,
         "4": 0,
