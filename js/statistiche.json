@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-01-12T13:35:22.756Z",
+  "generatedAt": "2026-01-12T18:37:35.950Z",
   "recapAttuale": {
-    "totaleInCorso": 80,
+    "totaleInCorso": 82,
     "oltre90gg": null,
     "top3Vecchie": [
       {
@@ -23,23 +23,35 @@
         "giorniAperti": 70
       }
     ],
-    "testoNotifica": "Al momento hai 80 riparazioni attive. Le tre più vecchie sono:\n- 25/0007 - NOGHEROT del 29/10/2025;\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025."
+    "testoNotifica": "Al momento hai 82 riparazioni attive. Le tre più vecchie sono:\n- 25/0007 - NOGHEROT del 29/10/2025;\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (05.01-11.01)",
     "inserite": 21,
     "completate": 1,
-    "percInserite": 46.2,
-    "percCompletate": null,
-    "mediaInserite": "14.4",
-    "mediaCompletate": "0.0"
+    "percInserite": 42.6,
+    "percCompletate": -50,
+    "mediaInserite": "14.7",
+    "mediaCompletate": "2.0"
   },
   "tempiRiparazione": [
+    {
+      "numero": "25/0054",
+      "cliente": "DANELUZZI",
+      "dataCompletamento": "2026-01-12T00:00:00.000Z",
+      "giorni": 54
+    },
     {
       "numero": "26/0008",
       "cliente": "MARRONE SRL",
       "dataCompletamento": "2026-01-10T00:00:00.000Z",
       "giorni": 2
+    },
+    {
+      "numero": "26/0009",
+      "cliente": "COSPEDIL SRL",
+      "dataCompletamento": "2026-01-12T00:00:00.000Z",
+      "giorni": 4
     }
   ],
   "grafici": {
@@ -75,7 +87,7 @@
     },
     "2026": {
       "create": {
-        "1": 26,
+        "1": 30,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -89,7 +101,7 @@
         "12": 0
       },
       "completate": {
-        "1": 1,
+        "1": 3,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -135,9 +147,9 @@
     },
     {
       "data": "2026-01-12",
-      "aggiunte": 5,
-      "completate": 0,
-      "delta": -5
+      "aggiunte": 9,
+      "completate": 2,
+      "delta": -7
     }
   ]
 }
