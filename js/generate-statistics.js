@@ -168,15 +168,29 @@ const settimaneCalcoloCompletati = Math.max(1, giorniPeriodoCompletati / 7);
 const mediaInseriteSettimana = riparazioniPeriodo.length / settimaneCalcoloInseriti;
 const mediaCompletateSettimana = completatePeriodo.length / settimaneCalcoloCompletati;
 
-const percInserite = ((inseriteSettimana - mediaInseriteSettimana) / mediaInseriteSettimana * 100).toFixed(1);
-const percCompletate = ((completateSettimana - mediaCompletateSettimana) / mediaCompletateSettimana * 100).toFixed(1);
+// Calcola percentuali (gestisce caso divisione per zero e valori molto piccoli)
+let percInserite = mediaInseriteSettimana > 0
+  ? ((inseriteSettimana - mediaInseriteSettimana) / mediaInseriteSettimana * 100).toFixed(1)
+  : null;
+
+let percCompletate = mediaCompletateSettimana > 0
+  ? ((completateSettimana - mediaCompletateSettimana) / mediaCompletateSettimana * 100).toFixed(1)
+  : null;
+
+// Se percentuale è tra -0.5 e +0.5, considera "nella media"
+if (percInserite !== null && Math.abs(parseFloat(percInserite)) < 0.5) {
+  percInserite = 0;
+}
+if (percCompletate !== null && Math.abs(parseFloat(percCompletate)) < 0.5) {
+  percCompletate = 0;
+}
 
 const recapSettimanale = {
   settimana: `${prefisso} (${startWeek.getDate().toString().padStart(2, '0')}.${(startWeek.getMonth() + 1).toString().padStart(2, '0')}-${endWeek.getDate().toString().padStart(2, '0')}.${(endWeek.getMonth() + 1).toString().padStart(2, '0')})`,
   inserite: inseriteSettimana,
   completate: completateSettimana,
-  percInserite: parseFloat(percInserite),
-  percCompletate: parseFloat(percCompletate),
+  percInserite: percInserite !== null ? parseFloat(percInserite) : null,
+  percCompletate: percCompletate !== null ? parseFloat(percCompletate) : null,
   mediaInserite: mediaInseriteSettimana.toFixed(1),
   mediaCompletate: mediaCompletateSettimana.toFixed(1)
 };

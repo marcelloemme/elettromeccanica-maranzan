@@ -90,9 +90,30 @@ function renderStatistiche() {
 
   // 2. Recap Settimanale
   const rs = statistiche.recapSettimanale;
-  const segnoIns = rs.percInserite >= 0 ? '+' : '';
-  const segnoComp = rs.percCompletate >= 0 ? '+' : '';
-  recapSettimanaleEl.innerHTML = `<strong>${rs.settimana}</strong> hai inserito <strong>${rs.inserite}</strong> schede (<strong>${segnoIns}${rs.percInserite}%</strong> rispetto alla media di ${rs.mediaInserite} schede/settimana), e ne hai completate <strong>${rs.completate}</strong> (<strong>${segnoComp}${rs.percCompletate}%</strong> rispetto alla media di ${rs.mediaCompletate} schede/settimana).`;
+
+  // Formatta testo inserite
+  let testoInserite;
+  if (rs.percInserite === null) {
+    testoInserite = `<strong>${rs.inserite}</strong> schede (media non ancora calcolabile)`;
+  } else if (rs.percInserite === 0) {
+    testoInserite = `<strong>${rs.inserite}</strong> schede (perfettamente nella media di ${rs.mediaInserite} schede/settimana)`;
+  } else {
+    const segnoIns = rs.percInserite >= 0 ? '+' : '';
+    testoInserite = `<strong>${rs.inserite}</strong> schede (<strong>${segnoIns}${rs.percInserite}%</strong> rispetto alla media di ${rs.mediaInserite} schede/settimana)`;
+  }
+
+  // Formatta testo completate
+  let testoCompletate;
+  if (rs.percCompletate === null) {
+    testoCompletate = `<strong>${rs.completate}</strong> (media non ancora calcolabile)`;
+  } else if (rs.percCompletate === 0) {
+    testoCompletate = `<strong>${rs.completate}</strong> (perfettamente nella media di ${rs.mediaCompletate} schede/settimana)`;
+  } else {
+    const segnoComp = rs.percCompletate >= 0 ? '+' : '';
+    testoCompletate = `<strong>${rs.completate}</strong> (<strong>${segnoComp}${rs.percCompletate}%</strong> rispetto alla media di ${rs.mediaCompletate} schede/settimana)`;
+  }
+
+  recapSettimanaleEl.innerHTML = `<strong>${rs.settimana}</strong> hai inserito ${testoInserite}, e ne hai completate ${testoCompletate}.`;
   recapSettimanaleSection.style.display = 'block';
 
   // 3. Tempi Riparazione
