@@ -11,6 +11,7 @@ const chartDeltaCanvas = document.getElementById('chart-delta');
 const chartCreateCanvas = document.getElementById('chart-create');
 const chartCompletateCanvas = document.getElementById('chart-completate');
 const controlsDelta = document.getElementById('controls-delta');
+const controlsTempi = document.getElementById('controls-tempi');
 const controlsCreate = document.getElementById('controls-create');
 const controlsCompletate = document.getElementById('controls-completate');
 const btnTriggerUpdate = document.getElementById('btn-trigger-update');
@@ -26,6 +27,7 @@ let chartCompletate = null;
 let anniAttiviCreate = {};
 let anniAttiviCompletate = {};
 let periodoDelta = 30; // giorni (default)
+let periodoTempi = 90; // giorni (default)
 
 // Init
 (async () => {
@@ -121,14 +123,7 @@ function renderStatistiche() {
   recapSettimanaleSection.style.display = 'block';
 
   // 3. Tempi Riparazione
-  if (statistiche.tempiRiparazione) {
-    const tr = statistiche.tempiRiparazione;
-    tempoMedioEl.innerHTML = `Il tempo medio per una riparazione è di <strong>${tr.mediaGiorni} giorni</strong>.`;
-    recordVelocitaEl.innerHTML = `Record di velocità: <strong>${tr.recordVelocita.giorni} giorni</strong> (${tr.recordVelocita.numero} - ${tr.recordVelocita.cliente})`;
-    recordLentezzaEl.innerHTML = `Riparazione più lenta: <strong>${tr.recordLentezza.giorni} giorni</strong> (${tr.recordLentezza.numero} - ${tr.recordLentezza.cliente})`;
-    percentualiTempoEl.innerHTML = `<strong>${tr.percEntro14}%</strong> completate entro 14 giorni, <strong>${tr.percEntro30}%</strong> entro 1 mese, <strong>${tr.percEntro60}%</strong> entro 2 mesi.`;
-    tempiSection.style.display = 'block';
-  }
+  renderTempiRiparazione();
 
   // 4. Grafici
   renderGrafici();
@@ -285,6 +280,76 @@ function formatData(dateStr) {
   const mese = String(date.getMonth() + 1).padStart(2, '0');
   const anno = date.getFullYear();
   return `${giorno}/${mese}/${anno}`;
+}
+
+// Render tempi riparazione
+function renderTempiRiparazione() {
+  if (!statistiche.tempiRiparazione || statistiche.tempiRiparazione.length === 0) {
+    return; // Nessun dato, sezione rimane nascosta
+  }
+
+  // Render controlli periodo
+  controlsTempi.innerHTML = `
+    <button class="btn-period ${periodoTempi === 30 ? 'active' : ''}" onclick="cambiaPeriodoTempi(30)">30 giorni</button>
+    <button class="btn-period ${periodoTempi === 90 ? 'active' : ''}" onclick="cambiaPeriodoTempi(90)">90 giorni</button>
+    <button class="btn-period ${periodoTempi === 999 ? 'active' : ''}" onclick="cambiaPeriodoTempi(999)">Tutto</button>
+  `;
+
+  aggiornaTempiRiparazione();
+  tempiSection.style.display = 'block';
+}
+
+// Cambia periodo tempi
+window.cambiaPeriodoTempi = (giorni) => {
+  periodoTempi = giorni;
+  aggiornaTempiRiparazione();
+};
+
+// Aggiorna tempi riparazione
+function aggiornaTempiRiparazione() {
+  const oggi = new Date();
+  let completateFiltrate = statistiche.tempiRiparazione;
+
+  // Filtra per periodo se non è "Tutto"
+  if (periodoTempi !== 999) {
+    const dataLimite = new Date(oggi);
+    dataLimite.setDate(oggi.getDate() - periodoTempi);
+
+    completateFiltrate = statistiche.tempiRiparazione.filter(r => {
+      const dataComp = new Date(r.dataCompletamento);
+      return dataComp >= dataLimite;
+    });
+  }
+
+  if (completateFiltrate.length === 0) {
+    tempoMedioEl.innerHTML = 'Nessuna riparazione completata in questo periodo.';
+    recordVelocitaEl.innerHTML = '';
+    recordLentezzaEl.innerHTML = '';
+    percentualiTempoEl.innerHTML = '';
+    return;
+  }
+
+  // Calcola statistiche
+  const sommaGiorni = completateFiltrate.reduce((sum, r) => sum + r.giorni, 0);
+  const mediaGiorni = Math.round(sommaGiorni / completateFiltrate.length);
+
+  const ordinatiPerGiorni = [...completateFiltrate].sort((a, b) => a.giorni - b.giorni);
+  const piuVeloce = ordinatiPerGiorni[0];
+  const piuLenta = ordinatiPerGiorni[ordinatiPerGiorni.length - 1];
+
+  const entro14 = completateFiltrate.filter(r => r.giorni <= 14).length;
+  const entro30 = completateFiltrate.filter(r => r.giorni <= 30).length;
+  const entro60 = completateFiltrate.filter(r => r.giorni <= 60).length;
+
+  const percEntro14 = ((entro14 / completateFiltrate.length) * 100).toFixed(1);
+  const percEntro30 = ((entro30 / completateFiltrate.length) * 100).toFixed(1);
+  const percEntro60 = ((entro60 / completateFiltrate.length) * 100).toFixed(1);
+
+  // Render
+  tempoMedioEl.innerHTML = `Il tempo medio per una riparazione è di <strong>${mediaGiorni} giorni</strong>.`;
+  recordVelocitaEl.innerHTML = `Record di velocità: <strong>${piuVeloce.giorni} giorni</strong> (${piuVeloce.numero} - ${piuVeloce.cliente})`;
+  recordLentezzaEl.innerHTML = `Riparazione più lenta: <strong>${piuLenta.giorni} giorni</strong> (${piuLenta.numero} - ${piuLenta.cliente})`;
+  percentualiTempoEl.innerHTML = `<strong>${percEntro14}%</strong> completate entro 14 giorni, <strong>${percEntro30}%</strong> entro 1 mese, <strong>${percEntro60}%</strong> entro 2 mesi.`;
 }
 
 // Render grafico delta giornaliero

@@ -214,13 +214,10 @@ const recapSettimanale = {
   mediaCompletate: mediaCompletateSettimana.toFixed(1)
 };
 
-// 3. TEMPI RIPARAZIONE (ultimi 90 giorni)
-const ninetyDaysAgo = new Date(today);
-ninetyDaysAgo.setDate(today.getDate() - 90);
-
-const completateUltimi90gg = riparazioni.filter(r => {
+// 3. TEMPI RIPARAZIONE (tutte le completate con data)
+const tutteCompletateConData = riparazioni.filter(r => {
   const dataComp = parseDate(r['Data completamento']);
-  return dataComp && dataComp >= ninetyDaysAgo && r.Completato === 'TRUE';
+  return dataComp && r.Completato === 'TRUE';
 }).map(r => {
   const dataConsegna = parseDate(r['Data consegna']);
   const dataComp = parseDate(r['Data completamento']);
@@ -228,38 +225,15 @@ const completateUltimi90gg = riparazioni.filter(r => {
   return {
     numero: r.Numero,
     cliente: r.Cliente,
+    dataCompletamento: dataComp,
     giorni: giorni >= 0 ? giorni : null
   };
 }).filter(r => r.giorni !== null);
 
-let tempiRiparazione = null;
-if (completateUltimi90gg.length > 0) {
-  const sommaGiorni = completateUltimi90gg.reduce((sum, r) => sum + r.giorni, 0);
-  const mediaGiorni = Math.round(sommaGiorni / completateUltimi90gg.length);
+// Salva array completo per filtraggio frontend
+const tempiRiparazione = tutteCompletateConData;
 
-  const ordinatiPerGiorni = [...completateUltimi90gg].sort((a, b) => a.giorni - b.giorni);
-  const piuVeloce = ordinatiPerGiorni[0];
-  const piuLenta = ordinatiPerGiorni[ordinatiPerGiorni.length - 1];
-
-  const entro14 = completateUltimi90gg.filter(r => r.giorni <= 14).length;
-  const entro30 = completateUltimi90gg.filter(r => r.giorni <= 30).length;
-  const entro60 = completateUltimi90gg.filter(r => r.giorni <= 60).length;
-
-  const percEntro14 = ((entro14 / completateUltimi90gg.length) * 100).toFixed(1);
-  const percEntro30 = ((entro30 / completateUltimi90gg.length) * 100).toFixed(1);
-  const percEntro60 = ((entro60 / completateUltimi90gg.length) * 100).toFixed(1);
-
-  tempiRiparazione = {
-    mediaGiorni,
-    recordVelocita: piuVeloce,
-    recordLentezza: piuLenta,
-    percEntro14: parseFloat(percEntro14),
-    percEntro30: parseFloat(percEntro30),
-    percEntro60: parseFloat(percEntro60)
-  };
-}
-
-// 4. GRAFICI MENSILI (ultimi 12 mesi per ogni anno disponibile)
+// 4. GRAFICI MENSILI (per anno disponibile)
 const anniDisponibili = [...new Set(riparazioni.map(r => {
   const data = parseDate(r['Data consegna']);
   return data ? data.getFullYear() : null;
