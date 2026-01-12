@@ -7,6 +7,7 @@ const tempoMedioEl = document.getElementById('tempo-medio');
 const recordVelocitaEl = document.getElementById('record-velocita');
 const recordLentezzaEl = document.getElementById('record-lentezza');
 const percentualiTempoEl = document.getElementById('percentuali-tempo');
+const titoloDeltaEl = document.getElementById('titolo-delta');
 const chartDeltaCanvas = document.getElementById('chart-delta');
 const chartCreateCanvas = document.getElementById('chart-create');
 const chartCompletateCanvas = document.getElementById('chart-completate');
@@ -288,10 +289,13 @@ function renderTempiRiparazione() {
     return; // Nessun dato, sezione rimane nascosta
   }
 
-  // Render controlli periodo
+  // Render controlli periodo (mobile: "giorni" → "gg")
+  const isMobile = window.innerWidth <= 768;
+  const unitaGiorni = isMobile ? 'gg' : 'giorni';
+
   controlsTempi.innerHTML = `
-    <button class="btn-period ${periodoTempi === 30 ? 'active' : ''}" onclick="cambiaPeriodoTempi(30)">30 giorni</button>
-    <button class="btn-period ${periodoTempi === 90 ? 'active' : ''}" onclick="cambiaPeriodoTempi(90)">90 giorni</button>
+    <button class="btn-period ${periodoTempi === 30 ? 'active' : ''}" onclick="cambiaPeriodoTempi(30)">30 ${unitaGiorni}</button>
+    <button class="btn-period ${periodoTempi === 90 ? 'active' : ''}" onclick="cambiaPeriodoTempi(90)">90 ${unitaGiorni}</button>
     <button class="btn-period ${periodoTempi === 999 ? 'active' : ''}" onclick="cambiaPeriodoTempi(999)">Tutto</button>
   `;
 
@@ -337,19 +341,23 @@ function aggiornaTempiRiparazione() {
   const piuVeloce = ordinatiPerGiorni[0];
   const piuLenta = ordinatiPerGiorni[ordinatiPerGiorni.length - 1];
 
+  // Percentuali esclusive (non cumulative)
   const entro14 = completateFiltrate.filter(r => r.giorni <= 14).length;
-  const entro30 = completateFiltrate.filter(r => r.giorni <= 30).length;
-  const entro60 = completateFiltrate.filter(r => r.giorni <= 60).length;
+  const tra15e30 = completateFiltrate.filter(r => r.giorni > 14 && r.giorni <= 30).length;
+  const tra31e60 = completateFiltrate.filter(r => r.giorni > 30 && r.giorni <= 60).length;
 
   const percEntro14 = ((entro14 / completateFiltrate.length) * 100).toFixed(1);
-  const percEntro30 = ((entro30 / completateFiltrate.length) * 100).toFixed(1);
-  const percEntro60 = ((entro60 / completateFiltrate.length) * 100).toFixed(1);
+  const percEntro30 = ((tra15e30 / completateFiltrate.length) * 100).toFixed(1);
+  const percEntro60 = ((tra31e60 / completateFiltrate.length) * 100).toFixed(1);
 
-  // Render
-  tempoMedioEl.innerHTML = `Il tempo medio per una riparazione è di <strong>${mediaGiorni} giorni</strong>.`;
-  recordVelocitaEl.innerHTML = `Record di velocità: <strong>${piuVeloce.giorni} giorni</strong> (${piuVeloce.numero} - ${piuVeloce.cliente})`;
-  recordLentezzaEl.innerHTML = `Riparazione più lenta: <strong>${piuLenta.giorni} giorni</strong> (${piuLenta.numero} - ${piuLenta.cliente})`;
-  percentualiTempoEl.innerHTML = `<strong>${percEntro14}%</strong> completate entro 14 giorni, <strong>${percEntro30}%</strong> entro 1 mese, <strong>${percEntro60}%</strong> entro 2 mesi.`;
+  // Render (mobile: "giorni" → "gg")
+  const isMobile = window.innerWidth <= 768;
+  const unitaGiorni = isMobile ? 'gg' : 'giorni';
+
+  tempoMedioEl.innerHTML = `Il tempo medio per una riparazione è di <strong>${mediaGiorni} ${unitaGiorni}</strong>.`;
+  recordVelocitaEl.innerHTML = `Record di velocità: <strong>${piuVeloce.giorni} ${unitaGiorni}</strong> (${piuVeloce.numero} - ${piuVeloce.cliente})`;
+  recordLentezzaEl.innerHTML = `Riparazione più lenta: <strong>${piuLenta.giorni} ${unitaGiorni}</strong> (${piuLenta.numero} - ${piuLenta.cliente})`;
+  percentualiTempoEl.innerHTML = `<strong>${percEntro14}%</strong> completate entro 14 ${unitaGiorni}, <strong>${percEntro30}%</strong> entro 1 mese, <strong>${percEntro60}%</strong> entro 2 mesi.`;
 }
 
 // Render grafico delta giornaliero
@@ -359,10 +367,18 @@ function renderGraficoDelta() {
     return;
   }
 
+  // Mobile: "Bilancio giornaliero (completate - aggiunte)" → "Bilancio giornaliero"
+  const isMobile = window.innerWidth <= 768;
+  const unitaGiorni = isMobile ? 'gg' : 'giorni';
+
+  if (titoloDeltaEl) {
+    titoloDeltaEl.textContent = isMobile ? 'Bilancio giornaliero' : 'Bilancio giornaliero (completate - aggiunte)';
+  }
+
   // Render controlli periodo
   controlsDelta.innerHTML = `
-    <button class="btn-period ${periodoDelta === 7 ? 'active' : ''}" onclick="cambiaPeriodoDelta(7)">7 giorni</button>
-    <button class="btn-period ${periodoDelta === 30 ? 'active' : ''}" onclick="cambiaPeriodoDelta(30)">30 giorni</button>
+    <button class="btn-period ${periodoDelta === 7 ? 'active' : ''}" onclick="cambiaPeriodoDelta(7)">7 ${unitaGiorni}</button>
+    <button class="btn-period ${periodoDelta === 30 ? 'active' : ''}" onclick="cambiaPeriodoDelta(30)">30 ${unitaGiorni}</button>
     <button class="btn-period ${periodoDelta === 90 ? 'active' : ''}" onclick="cambiaPeriodoDelta(90)">3 mesi</button>
     <button class="btn-period ${periodoDelta === 999 ? 'active' : ''}" onclick="cambiaPeriodoDelta(999)">Tutto</button>
   `;
