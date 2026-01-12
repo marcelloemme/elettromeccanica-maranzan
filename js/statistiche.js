@@ -306,7 +306,7 @@ function renderTempiRiparazione() {
 // Cambia periodo tempi
 window.cambiaPeriodoTempi = (giorni) => {
   periodoTempi = giorni;
-  aggiornaTempiRiparazione();
+  renderTempiRiparazione();
 };
 
 // Aggiorna tempi riparazione
