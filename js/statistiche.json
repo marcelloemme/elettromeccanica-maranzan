@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-01-12T13:15:47.564Z",
+  "generatedAt": "2026-01-12T13:35:22.756Z",
   "recapAttuale": {
-    "totaleInCorso": 79,
+    "totaleInCorso": 80,
     "oltre90gg": null,
     "top3Vecchie": [
       {
@@ -23,33 +23,25 @@
         "giorniAperti": 70
       }
     ],
-    "testoNotifica": "Al momento hai 79 riparazioni attive. Le tre più vecchie sono:\n- 25/0007 - NOGHEROT del 29/10/2025;\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025."
+    "testoNotifica": "Al momento hai 80 riparazioni attive. Le tre più vecchie sono:\n- 25/0007 - NOGHEROT del 29/10/2025;\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (05.01-11.01)",
     "inserite": 21,
     "completate": 1,
-    "percInserite": 47.1,
+    "percInserite": 46.2,
     "percCompletate": null,
-    "mediaInserite": "14.3",
+    "mediaInserite": "14.4",
     "mediaCompletate": "0.0"
   },
-  "tempiRiparazione": {
-    "mediaGiorni": 2,
-    "recordVelocita": {
+  "tempiRiparazione": [
+    {
       "numero": "26/0008",
       "cliente": "MARRONE SRL",
+      "dataCompletamento": "2026-01-10T00:00:00.000Z",
       "giorni": 2
-    },
-    "recordLentezza": {
-      "numero": "26/0008",
-      "cliente": "MARRONE SRL",
-      "giorni": 2
-    },
-    "percEntro14": 100,
-    "percEntro30": 100,
-    "percEntro60": 100
-  },
+    }
+  ],
   "grafici": {
     "2025": {
       "create": {
@@ -83,7 +75,7 @@
     },
     "2026": {
       "create": {
-        "1": 25,
+        "1": 26,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -143,9 +135,9 @@
     },
     {
       "data": "2026-01-12",
-      "aggiunte": 4,
+      "aggiunte": 5,
       "completate": 0,
-      "delta": -4
+      "delta": -5
     }
   ]
 }
