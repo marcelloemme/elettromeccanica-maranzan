@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-01-12T13:02:40.417Z",
+  "generatedAt": "2026-01-12T13:15:47.564Z",
   "recapAttuale": {
     "totaleInCorso": 79,
     "oltre90gg": null,
@@ -28,13 +28,28 @@
   "recapSettimanale": {
     "settimana": "Settimana scorsa (05.01-11.01)",
     "inserite": 21,
-    "completate": 0,
+    "completate": 1,
     "percInserite": 47.1,
     "percCompletate": null,
     "mediaInserite": "14.3",
     "mediaCompletate": "0.0"
   },
-  "tempiRiparazione": null,
+  "tempiRiparazione": {
+    "mediaGiorni": 2,
+    "recordVelocita": {
+      "numero": "26/0008",
+      "cliente": "MARRONE SRL",
+      "giorni": 2
+    },
+    "recordLentezza": {
+      "numero": "26/0008",
+      "cliente": "MARRONE SRL",
+      "giorni": 2
+    },
+    "percEntro14": 100,
+    "percEntro30": 100,
+    "percEntro60": 100
+  },
   "grafici": {
     "2025": {
       "create": {
@@ -82,7 +97,7 @@
         "12": 0
       },
       "completate": {
-        "1": 0,
+        "1": 1,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -123,8 +138,8 @@
     {
       "data": "2026-01-10",
       "aggiunte": 2,
-      "completate": 0,
-      "delta": -2
+      "completate": 1,
+      "delta": -1
     },
     {
       "data": "2026-01-12",
