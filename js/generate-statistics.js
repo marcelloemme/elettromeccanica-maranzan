@@ -9,7 +9,26 @@ const csvContent = fs.readFileSync(csvPath, 'utf-8');
 
 // Parse CSV
 const lines = csvContent.trim().split('\n');
-const headers = lines[0].split(',');
+
+// Parse header con gestione virgolette
+const headerLine = lines[0];
+const headers = [];
+let currentHeader = '';
+let insideQuotesHeader = false;
+
+for (let i = 0; i < headerLine.length; i++) {
+  const char = headerLine[i];
+  if (char === '"') {
+    insideQuotesHeader = !insideQuotesHeader;
+  } else if (char === ',' && !insideQuotesHeader) {
+    headers.push(currentHeader.trim());
+    currentHeader = '';
+  } else {
+    currentHeader += char;
+  }
+}
+headers.push(currentHeader.trim()); // Ultimo header
+
 const rows = lines.slice(1).map(line => {
   // Parse CSV con gestione virgolette per campi JSON
   const values = [];
@@ -300,6 +319,15 @@ riparazioni.forEach(r => {
 // Conta completate per giorno
 riparazioni.forEach(r => {
   const data = parseDate(r['Data completamento']);
+
+  // Debug per 26/0008
+  if (r.Numero === '26/0008') {
+    console.log('DEBUG 26/0008:');
+    console.log('- Completato:', r.Completato);
+    console.log('- Data completamento raw:', r['Data completamento']);
+    console.log('- Data completamento parsed:', data);
+  }
+
   if (data && data >= dataInizioDeltagiornaliero) {
     const dateKey = data.toISOString().split('T')[0];
     if (!deltaGiornaliero[dateKey]) {
@@ -341,6 +369,7 @@ console.log('✓ Statistiche generate con successo!');
 console.log(`- Riparazioni totali: ${riparazioni.length}`);
 console.log(`- In corso: ${riparazioniInCorso.length}`);
 console.log(`- Anni disponibili: ${anniDisponibili.join(', ')}`);
+console.log(`- Delta giornaliero: ${deltaArray.length} giorni con attività`);
 if (recapSettimanale) {
   console.log(`- Recap settimanale generato (sabato)`);
 }
