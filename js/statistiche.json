@@ -1,54 +1,54 @@
 {
-  "generatedAt": "2026-01-12T19:01:03.303Z",
+  "generatedAt": "2026-01-13T18:56:24.348Z",
   "recapAttuale": {
-    "totaleInCorso": 82,
+    "totaleInCorso": 84,
     "oltre90gg": null,
     "top3Vecchie": [
       {
-        "numero": "25/0007",
+        "numero": "25/0006",
         "cliente": "NOGHEROT",
         "dataConsegna": "2025-10-29T00:00:00.000Z",
+        "giorniAperti": 76
+      },
+      {
+        "numero": "25/0007",
+        "cliente": "DOLFO SRL",
+        "dataConsegna": "2025-10-30T00:00:00.000Z",
         "giorniAperti": 75
       },
       {
-        "numero": "25/0008",
-        "cliente": "DOLFO SRL",
-        "dataConsegna": "2025-10-30T00:00:00.000Z",
-        "giorniAperti": 74
-      },
-      {
-        "numero": "25/0015",
+        "numero": "25/0014",
         "cliente": "PANIGHEL LUDOVICO",
         "dataConsegna": "2025-11-03T00:00:00.000Z",
-        "giorniAperti": 70
+        "giorniAperti": 71
       }
     ],
-    "testoNotifica": "Al momento hai 82 riparazioni attive. Le tre più vecchie sono:\n- 25/0007 - NOGHEROT del 29/10/2025;\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025."
+    "testoNotifica": "Al momento hai 84 riparazioni attive. Le tre più vecchie sono:\n- 25/0006 - NOGHEROT del 29/10/2025;\n- 25/0007 - DOLFO SRL del 30/10/2025;\n- 25/0014 - PANIGHEL LUDOVICO del 03/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (05.01-11.01)",
     "inserite": 21,
     "completate": 1,
-    "percInserite": 42.6,
+    "percInserite": 42.7,
     "percCompletate": -50,
     "mediaInserite": "14.7",
     "mediaCompletate": "2.0"
   },
   "tempiRiparazione": [
     {
-      "numero": "25/0054",
+      "numero": "25/0053",
       "cliente": "DANELUZZI",
       "dataCompletamento": "2026-01-12T00:00:00.000Z",
       "giorni": 54
     },
     {
-      "numero": "26/0008",
+      "numero": "26/0007",
       "cliente": "MARRONE SRL",
       "dataCompletamento": "2026-01-10T00:00:00.000Z",
       "giorni": 2
     },
     {
-      "numero": "26/0009",
+      "numero": "26/0008",
       "cliente": "COSPEDIL SRL",
       "dataCompletamento": "2026-01-12T00:00:00.000Z",
       "giorni": 4
@@ -66,7 +66,7 @@
         "7": 0,
         "8": 0,
         "9": 0,
-        "10": 14,
+        "10": 13,
         "11": 70,
         "12": 49
       },
@@ -87,7 +87,7 @@
     },
     "2026": {
       "create": {
-        "1": 30,
+        "1": 32,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -150,6 +150,12 @@
       "aggiunte": 9,
       "completate": 2,
       "delta": -7
+    },
+    {
+      "data": "2026-01-13",
+      "aggiunte": 2,
+      "completate": 0,
+      "delta": -2
     }
   ]
 }
