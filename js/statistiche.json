@@ -1,40 +1,46 @@
 {
-  "generatedAt": "2026-01-13T18:56:24.348Z",
+  "generatedAt": "2026-01-14T15:08:45.553Z",
   "recapAttuale": {
-    "totaleInCorso": 84,
+    "totaleInCorso": 85,
     "oltre90gg": null,
     "top3Vecchie": [
-      {
-        "numero": "25/0006",
-        "cliente": "NOGHEROT",
-        "dataConsegna": "2025-10-29T00:00:00.000Z",
-        "giorniAperti": 76
-      },
       {
         "numero": "25/0007",
         "cliente": "DOLFO SRL",
         "dataConsegna": "2025-10-30T00:00:00.000Z",
-        "giorniAperti": 75
+        "giorniAperti": 76
       },
       {
         "numero": "25/0014",
         "cliente": "PANIGHEL LUDOVICO",
         "dataConsegna": "2025-11-03T00:00:00.000Z",
-        "giorniAperti": 71
+        "giorniAperti": 72
+      },
+      {
+        "numero": "25/0016",
+        "cliente": "BOLZAN",
+        "dataConsegna": "2025-11-05T00:00:00.000Z",
+        "giorniAperti": 70
       }
     ],
-    "testoNotifica": "Al momento hai 84 riparazioni attive. Le tre più vecchie sono:\n- 25/0006 - NOGHEROT del 29/10/2025;\n- 25/0007 - DOLFO SRL del 30/10/2025;\n- 25/0014 - PANIGHEL LUDOVICO del 03/11/2025."
+    "testoNotifica": "Al momento hai 85 riparazioni attive. Le tre più vecchie sono:\n- 25/0007 - DOLFO SRL del 30/10/2025;\n- 25/0014 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0016 - BOLZAN del 05/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (05.01-11.01)",
     "inserite": 21,
     "completate": 1,
-    "percInserite": 42.7,
-    "percCompletate": -50,
+    "percInserite": 42.8,
+    "percCompletate": -66.7,
     "mediaInserite": "14.7",
-    "mediaCompletate": "2.0"
+    "mediaCompletate": "3.0"
   },
   "tempiRiparazione": [
+    {
+      "numero": "25/0006",
+      "cliente": "NOGHEROT",
+      "dataCompletamento": "2026-01-14T00:00:00.000Z",
+      "giorni": 77
+    },
     {
       "numero": "25/0053",
       "cliente": "DANELUZZI",
@@ -87,7 +93,7 @@
     },
     "2026": {
       "create": {
-        "1": 32,
+        "1": 34,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -101,7 +107,7 @@
         "12": 0
       },
       "completate": {
-        "1": 3,
+        "1": 4,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -153,9 +159,15 @@
     },
     {
       "data": "2026-01-13",
-      "aggiunte": 2,
+      "aggiunte": 3,
       "completate": 0,
-      "delta": -2
+      "delta": -3
+    },
+    {
+      "data": "2026-01-14",
+      "aggiunte": 1,
+      "completate": 1,
+      "delta": 0
     }
   ]
 }
