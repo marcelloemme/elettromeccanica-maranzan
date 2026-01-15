@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-01-15T11:01:32.706Z",
+  "generatedAt": "2026-01-15T19:02:46.770Z",
   "recapAttuale": {
-    "totaleInCorso": 89,
+    "totaleInCorso": 93,
     "oltre90gg": null,
     "top3Vecchie": [
       {
@@ -23,16 +23,16 @@
         "giorniAperti": 71
       }
     ],
-    "testoNotifica": "Al momento hai 89 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
+    "testoNotifica": "Al momento hai 93 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (05.01-11.01)",
     "inserite": 21,
     "completate": 1,
-    "percInserite": 41.2,
-    "percCompletate": -66.7,
-    "mediaInserite": "14.9",
-    "mediaCompletate": "3.0"
+    "percInserite": 37.1,
+    "percCompletate": -75,
+    "mediaInserite": "15.3",
+    "mediaCompletate": "4.0"
   },
   "tempiRiparazione": [
     {
@@ -46,6 +46,12 @@
       "cliente": "DANELUZZI",
       "dataCompletamento": "2026-01-12T00:00:00.000Z",
       "giorni": 54
+    },
+    {
+      "numero": "25/0125",
+      "cliente": "IMP. SAN ANTONINO",
+      "dataCompletamento": "2026-01-15T00:00:00.000Z",
+      "giorni": 27
     },
     {
       "numero": "26/0008",
@@ -93,7 +99,7 @@
     },
     "2026": {
       "create": {
-        "1": 38,
+        "1": 43,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -107,7 +113,7 @@
         "12": 0
       },
       "completate": {
-        "1": 4,
+        "1": 5,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -171,9 +177,9 @@
     },
     {
       "data": "2026-01-15",
-      "aggiunte": 2,
-      "completate": 0,
-      "delta": -2
+      "aggiunte": 7,
+      "completate": 1,
+      "delta": -6
     }
   ]
 }
