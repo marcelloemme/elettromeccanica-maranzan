@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-01-16T09:14:54.400Z",
+  "generatedAt": "2026-01-16T16:28:59.491Z",
   "recapAttuale": {
-    "totaleInCorso": 95,
+    "totaleInCorso": 98,
     "oltre90gg": null,
     "top3Vecchie": [
       {
@@ -23,16 +23,16 @@
         "giorniAperti": 72
       }
     ],
-    "testoNotifica": "Al momento hai 95 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
+    "testoNotifica": "Al momento hai 98 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (05.01-11.01)",
     "inserite": 21,
     "completate": 1,
-    "percInserite": 37.3,
-    "percCompletate": -75,
-    "mediaInserite": "15.3",
-    "mediaCompletate": "4.0"
+    "percInserite": 32.8,
+    "percCompletate": -85.7,
+    "mediaInserite": "15.8",
+    "mediaCompletate": "7.0"
   },
   "tempiRiparazione": [
     {
@@ -64,6 +64,24 @@
       "cliente": "COSPEDIL SRL",
       "dataCompletamento": "2026-01-12T00:00:00.000Z",
       "giorni": 4
+    },
+    {
+      "numero": "26/0025",
+      "cliente": "FEDRIGO SRL",
+      "dataCompletamento": "2026-01-16T00:00:00.000Z",
+      "giorni": 4
+    },
+    {
+      "numero": "26/0036",
+      "cliente": "DANELUZZI MICHELE",
+      "dataCompletamento": "2026-01-16T00:00:00.000Z",
+      "giorni": 2
+    },
+    {
+      "numero": "26/0037",
+      "cliente": "VENERUZ",
+      "dataCompletamento": "2026-01-16T00:00:00.000Z",
+      "giorni": 1
     }
   ],
   "grafici": {
@@ -99,7 +117,7 @@
     },
     "2026": {
       "create": {
-        "1": 45,
+        "1": 51,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -113,7 +131,7 @@
         "12": 0
       },
       "completate": {
-        "1": 5,
+        "1": 8,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -183,9 +201,9 @@
     },
     {
       "data": "2026-01-16",
-      "aggiunte": 2,
-      "completate": 0,
-      "delta": -2
+      "aggiunte": 8,
+      "completate": 3,
+      "delta": -5
     }
   ]
 }
