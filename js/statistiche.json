@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-01-16T16:28:59.491Z",
+  "generatedAt": "2026-01-16T18:56:41.787Z",
   "recapAttuale": {
-    "totaleInCorso": 98,
+    "totaleInCorso": 97,
     "oltre90gg": null,
     "top3Vecchie": [
       {
@@ -23,16 +23,16 @@
         "giorniAperti": 72
       }
     ],
-    "testoNotifica": "Al momento hai 98 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
+    "testoNotifica": "Al momento hai 97 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (05.01-11.01)",
     "inserite": 21,
     "completate": 1,
     "percInserite": 32.8,
-    "percCompletate": -85.7,
+    "percCompletate": -87.5,
     "mediaInserite": "15.8",
-    "mediaCompletate": "7.0"
+    "mediaCompletate": "8.0"
   },
   "tempiRiparazione": [
     {
@@ -70,6 +70,12 @@
       "cliente": "FEDRIGO SRL",
       "dataCompletamento": "2026-01-16T00:00:00.000Z",
       "giorni": 4
+    },
+    {
+      "numero": "26/0032",
+      "cliente": "BRUN STEFANO",
+      "dataCompletamento": "2026-01-16T00:00:00.000Z",
+      "giorni": 3
     },
     {
       "numero": "26/0036",
@@ -131,7 +137,7 @@
         "12": 0
       },
       "completate": {
-        "1": 8,
+        "1": 9,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -202,8 +208,8 @@
     {
       "data": "2026-01-16",
       "aggiunte": 8,
-      "completate": 3,
-      "delta": -5
+      "completate": 4,
+      "delta": -4
     }
   ]
 }
