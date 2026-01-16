@@ -213,6 +213,7 @@ Codice,descrizione,scaffale
 194930-6,base velcro x BO3700,F11
 198259-2,pignone,D03
 210006-2,cuscinetto 696,Q01
+210012-0,cuscinetto,N05
 210057-5,cuscinetto,I07
 210059-1,cuscinetto,Z05
 210213102,carter,X05
@@ -324,6 +325,7 @@ Codice,descrizione,scaffale
 216008-6,sfera,G06
 216011-7,sfera,G07
 216019-1,sfera,F11
+216040-0,sfere,N05
 219013-2,cuscinetto or,S03
 219014-0,cuscinetto,P14
 221095-2,ingranaggio x 9030,E12
@@ -344,6 +346,7 @@ Codice,descrizione,scaffale
 221849-7,ingranaggio x 6905,C07
 221884-5,ingranaggio,O07
 222018-3,puleggia,M04
+222018-3,puleggia,N05
 222019-1,puleggia x 9030,I06
 222129-4,puleggia x 9031,P02
 222144-8,puleggia,V05
@@ -888,10 +891,10 @@ Codice,descrizione,scaffale
 419005-3,biella,Z09
 419015-0,manicotto,E16
 419016-8,coperchio,E14
+419018-4,piastra,V16
 419022-3,convogliatore,K10
 419027-3,leva,E14
 419041-9,leva inv.,X09
-419081-4,piastra,V16
 419202-1,bussola,Z04
 419241-1,coperchio,K11
 419250-0,leva inv.,F14
@@ -1405,6 +1408,3 @@ P-08414,porta mandrino,M03
 P-09101,protezione gomma,M02
 P-15970,lampadina,R02
 PN1301025,albero flessibile,R13
-210012-0,cuscinetto,N05
-216040-0,sfere,N05
-222018-3,puleggia,N05
