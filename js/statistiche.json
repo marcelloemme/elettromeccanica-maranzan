@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-01-17T16:38:32.525Z",
+  "generatedAt": "2026-01-17T17:01:25.396Z",
   "recapAttuale": {
     "totaleInCorso": 95,
     "oltre90gg": null,
@@ -26,11 +26,11 @@
     "testoNotifica": "Al momento hai 95 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
   },
   "recapSettimanale": {
-    "settimana": "Settimana scorsa (05.01-11.01)",
-    "inserite": 21,
-    "completate": 1,
-    "percInserite": 33.7,
-    "percCompletate": -90.9,
+    "settimana": "Questa settimana (12.01-18.01)",
+    "inserite": 31,
+    "completate": 11,
+    "percInserite": 97.4,
+    "percCompletate": 0,
     "mediaInserite": "15.7",
     "mediaCompletate": "11.0"
   },
