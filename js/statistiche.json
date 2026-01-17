@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-01-17T10:58:21.530Z",
+  "generatedAt": "2026-01-17T15:31:55.136Z",
   "recapAttuale": {
-    "totaleInCorso": 97,
+    "totaleInCorso": 95,
     "oltre90gg": null,
     "top3Vecchie": [
       {
@@ -23,16 +23,16 @@
         "giorniAperti": 73
       }
     ],
-    "testoNotifica": "Al momento hai 97 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
+    "testoNotifica": "Al momento hai 95 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (05.01-11.01)",
     "inserite": 21,
     "completate": 1,
     "percInserite": 33.7,
-    "percCompletate": -88.9,
+    "percCompletate": -90.9,
     "mediaInserite": "15.7",
-    "mediaCompletate": "9.0"
+    "mediaCompletate": "11.0"
   },
   "tempiRiparazione": [
     {
@@ -46,6 +46,18 @@
       "cliente": "DANELUZZI",
       "dataCompletamento": "2026-01-12T00:00:00.000Z",
       "giorni": 54
+    },
+    {
+      "numero": "25/0097",
+      "cliente": "RIZZOTTI DOMENICO",
+      "dataCompletamento": "2026-01-17T00:00:00.000Z",
+      "giorni": 43
+    },
+    {
+      "numero": "25/0099",
+      "cliente": "BUSET IMP.",
+      "dataCompletamento": "2026-01-17T00:00:00.000Z",
+      "giorni": 43
     },
     {
       "numero": "25/0125",
@@ -143,7 +155,7 @@
         "12": 0
       },
       "completate": {
-        "1": 10,
+        "1": 12,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -220,8 +232,8 @@
     {
       "data": "2026-01-17",
       "aggiunte": 1,
-      "completate": 1,
-      "delta": 0
+      "completate": 3,
+      "delta": 2
     }
   ]
 }
