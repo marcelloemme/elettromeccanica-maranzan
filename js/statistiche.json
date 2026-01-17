@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-01-17T08:42:53.201Z",
+  "generatedAt": "2026-01-17T10:58:21.530Z",
   "recapAttuale": {
-    "totaleInCorso": 96,
+    "totaleInCorso": 97,
     "oltre90gg": null,
     "top3Vecchie": [
       {
@@ -23,15 +23,15 @@
         "giorniAperti": 73
       }
     ],
-    "testoNotifica": "Al momento hai 96 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
+    "testoNotifica": "Al momento hai 97 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (05.01-11.01)",
     "inserite": 21,
     "completate": 1,
-    "percInserite": 34.4,
+    "percInserite": 33.7,
     "percCompletate": -88.9,
-    "mediaInserite": "15.6",
+    "mediaInserite": "15.7",
     "mediaCompletate": "9.0"
   },
   "tempiRiparazione": [
@@ -129,7 +129,7 @@
     },
     "2026": {
       "create": {
-        "1": 51,
+        "1": 52,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -219,9 +219,9 @@
     },
     {
       "data": "2026-01-17",
-      "aggiunte": 0,
+      "aggiunte": 1,
       "completate": 1,
-      "delta": 1
+      "delta": 0
     }
   ]
 }
