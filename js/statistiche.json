@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-01-17T18:51:21.565Z",
+  "generatedAt": "2026-01-18T18:51:06.256Z",
   "recapAttuale": {
     "totaleInCorso": 95,
     "oltre90gg": null,
@@ -8,19 +8,19 @@
         "numero": "25/0008",
         "cliente": "DOLFO SRL",
         "dataConsegna": "2025-10-30T00:00:00.000Z",
-        "giorniAperti": 79
+        "giorniAperti": 80
       },
       {
         "numero": "25/0015",
         "cliente": "PANIGHEL LUDOVICO",
         "dataConsegna": "2025-11-03T00:00:00.000Z",
-        "giorniAperti": 75
+        "giorniAperti": 76
       },
       {
         "numero": "25/0017",
         "cliente": "BOLZAN",
         "dataConsegna": "2025-11-05T00:00:00.000Z",
-        "giorniAperti": 73
+        "giorniAperti": 74
       }
     ],
     "testoNotifica": "Al momento hai 95 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
@@ -29,9 +29,9 @@
     "settimana": "Questa settimana (12.01-18.01)",
     "inserite": 31,
     "completate": 11,
-    "percInserite": 97.4,
+    "percInserite": 99.8,
     "percCompletate": 0,
-    "mediaInserite": "15.7",
+    "mediaInserite": "15.5",
     "mediaCompletate": "11.0"
   },
   "tempiRiparazione": [
