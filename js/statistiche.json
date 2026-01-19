@@ -1,38 +1,38 @@
 {
-  "generatedAt": "2026-01-18T18:51:06.256Z",
+  "generatedAt": "2026-01-19T17:48:57.269Z",
   "recapAttuale": {
-    "totaleInCorso": 95,
+    "totaleInCorso": 98,
     "oltre90gg": null,
     "top3Vecchie": [
       {
         "numero": "25/0008",
         "cliente": "DOLFO SRL",
         "dataConsegna": "2025-10-30T00:00:00.000Z",
-        "giorniAperti": 80
+        "giorniAperti": 81
       },
       {
         "numero": "25/0015",
         "cliente": "PANIGHEL LUDOVICO",
         "dataConsegna": "2025-11-03T00:00:00.000Z",
-        "giorniAperti": 76
+        "giorniAperti": 77
       },
       {
         "numero": "25/0017",
         "cliente": "BOLZAN",
         "dataConsegna": "2025-11-05T00:00:00.000Z",
-        "giorniAperti": 74
+        "giorniAperti": 75
       }
     ],
-    "testoNotifica": "Al momento hai 95 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
+    "testoNotifica": "Al momento hai 98 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
   },
   "recapSettimanale": {
-    "settimana": "Questa settimana (12.01-18.01)",
+    "settimana": "Settimana scorsa (12.01-18.01)",
     "inserite": 31,
     "completate": 11,
-    "percInserite": 99.8,
-    "percCompletate": 0,
-    "mediaInserite": "15.5",
-    "mediaCompletate": "11.0"
+    "percInserite": 96.8,
+    "percCompletate": -15.4,
+    "mediaInserite": "15.8",
+    "mediaCompletate": "13.0"
   },
   "tempiRiparazione": [
     {
@@ -84,6 +84,12 @@
       "giorni": 4
     },
     {
+      "numero": "26/0021",
+      "cliente": "FRIUL SERVIZI",
+      "dataCompletamento": "2026-01-19T00:00:00.000Z",
+      "giorni": 9
+    },
+    {
       "numero": "26/0025",
       "cliente": "FEDRIGO SRL",
       "dataCompletamento": "2026-01-16T00:00:00.000Z",
@@ -106,6 +112,12 @@
       "cliente": "VENERUZ",
       "dataCompletamento": "2026-01-16T00:00:00.000Z",
       "giorni": 1
+    },
+    {
+      "numero": "26/0055",
+      "cliente": "MONT INVEST",
+      "dataCompletamento": "2026-01-19T00:00:00.000Z",
+      "giorni": 0
     }
   ],
   "grafici": {
@@ -141,7 +153,7 @@
     },
     "2026": {
       "create": {
-        "1": 52,
+        "1": 57,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -155,7 +167,7 @@
         "12": 0
       },
       "completate": {
-        "1": 12,
+        "1": 14,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -234,6 +246,12 @@
       "aggiunte": 1,
       "completate": 3,
       "delta": 2
+    },
+    {
+      "data": "2026-01-19",
+      "aggiunte": 5,
+      "completate": 2,
+      "delta": -3
     }
   ]
 }
