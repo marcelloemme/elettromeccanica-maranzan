@@ -1,38 +1,38 @@
 {
-  "generatedAt": "2026-01-19T18:56:59.369Z",
+  "generatedAt": "2026-01-20T19:48:03.173Z",
   "recapAttuale": {
-    "totaleInCorso": 98,
+    "totaleInCorso": 100,
     "oltre90gg": null,
     "top3Vecchie": [
       {
         "numero": "25/0008",
         "cliente": "DOLFO SRL",
         "dataConsegna": "2025-10-30T00:00:00.000Z",
-        "giorniAperti": 81
+        "giorniAperti": 82
       },
       {
         "numero": "25/0015",
         "cliente": "PANIGHEL LUDOVICO",
         "dataConsegna": "2025-11-03T00:00:00.000Z",
-        "giorniAperti": 77
+        "giorniAperti": 78
       },
       {
         "numero": "25/0017",
         "cliente": "BOLZAN",
         "dataConsegna": "2025-11-05T00:00:00.000Z",
-        "giorniAperti": 75
+        "giorniAperti": 76
       }
     ],
-    "testoNotifica": "Al momento hai 98 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
+    "testoNotifica": "Al momento hai 100 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (12.01-18.01)",
     "inserite": 31,
     "completate": 11,
-    "percInserite": 96.8,
-    "percCompletate": -15.4,
-    "mediaInserite": "15.8",
-    "mediaCompletate": "13.0"
+    "percInserite": 93,
+    "percCompletate": -26.1,
+    "mediaInserite": "16.1",
+    "mediaCompletate": "14.9"
   },
   "tempiRiparazione": [
     {
@@ -42,10 +42,22 @@
       "giorni": 77
     },
     {
+      "numero": "25/0051",
+      "cliente": "ZANETTE",
+      "dataCompletamento": "2026-01-20T00:00:00.000Z",
+      "giorni": 62
+    },
+    {
       "numero": "25/0054",
       "cliente": "DANELUZZI",
       "dataCompletamento": "2026-01-12T00:00:00.000Z",
       "giorni": 54
+    },
+    {
+      "numero": "25/0064",
+      "cliente": "ZAGO STEFANO",
+      "dataCompletamento": "2026-01-20T00:00:00.000Z",
+      "giorni": 57
     },
     {
       "numero": "25/0097",
@@ -90,6 +102,12 @@
       "giorni": 9
     },
     {
+      "numero": "26/0023",
+      "cliente": "DEL PUPPO SIMONETTA",
+      "dataCompletamento": "2026-01-20T00:00:00.000Z",
+      "giorni": 8
+    },
+    {
       "numero": "26/0025",
       "cliente": "FEDRIGO SRL",
       "dataCompletamento": "2026-01-16T00:00:00.000Z",
@@ -117,6 +135,12 @@
       "numero": "26/0055",
       "cliente": "MONT INVEST",
       "dataCompletamento": "2026-01-19T00:00:00.000Z",
+      "giorni": 0
+    },
+    {
+      "numero": "26/0059",
+      "cliente": "LGL SRL",
+      "dataCompletamento": "2026-01-20T00:00:00.000Z",
       "giorni": 0
     }
   ],
@@ -153,7 +177,7 @@
     },
     "2026": {
       "create": {
-        "1": 57,
+        "1": 63,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -167,7 +191,7 @@
         "12": 0
       },
       "completate": {
-        "1": 14,
+        "1": 18,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -252,6 +276,12 @@
       "aggiunte": 5,
       "completate": 2,
       "delta": -3
+    },
+    {
+      "data": "2026-01-20",
+      "aggiunte": 6,
+      "completate": 4,
+      "delta": -2
     }
   ]
 }
