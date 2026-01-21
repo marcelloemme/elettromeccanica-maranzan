@@ -1,38 +1,38 @@
 {
-  "generatedAt": "2026-01-20T19:48:03.173Z",
+  "generatedAt": "2026-01-21T19:07:17.851Z",
   "recapAttuale": {
-    "totaleInCorso": 100,
+    "totaleInCorso": 97,
     "oltre90gg": null,
     "top3Vecchie": [
       {
         "numero": "25/0008",
         "cliente": "DOLFO SRL",
         "dataConsegna": "2025-10-30T00:00:00.000Z",
-        "giorniAperti": 82
+        "giorniAperti": 83
       },
       {
         "numero": "25/0015",
         "cliente": "PANIGHEL LUDOVICO",
         "dataConsegna": "2025-11-03T00:00:00.000Z",
-        "giorniAperti": 78
+        "giorniAperti": 79
       },
       {
         "numero": "25/0017",
         "cliente": "BOLZAN",
         "dataConsegna": "2025-11-05T00:00:00.000Z",
-        "giorniAperti": 76
+        "giorniAperti": 77
       }
     ],
-    "testoNotifica": "Al momento hai 100 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
+    "testoNotifica": "Al momento hai 97 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (12.01-18.01)",
     "inserite": 31,
     "completate": 11,
-    "percInserite": 93,
-    "percCompletate": -26.1,
-    "mediaInserite": "16.1",
-    "mediaCompletate": "14.9"
+    "percInserite": 90.4,
+    "percCompletate": -43.4,
+    "mediaInserite": "16.3",
+    "mediaCompletate": "19.4"
   },
   "tempiRiparazione": [
     {
@@ -54,6 +54,12 @@
       "giorni": 54
     },
     {
+      "numero": "25/0058",
+      "cliente": "BIANCO",
+      "dataCompletamento": "2026-01-21T00:00:00.000Z",
+      "giorni": 61
+    },
+    {
       "numero": "25/0064",
       "cliente": "ZAGO STEFANO",
       "dataCompletamento": "2026-01-20T00:00:00.000Z",
@@ -72,10 +78,28 @@
       "giorni": 43
     },
     {
+      "numero": "25/0111",
+      "cliente": "STYLEDILE SAS",
+      "dataCompletamento": "2026-01-21T00:00:00.000Z",
+      "giorni": 39
+    },
+    {
+      "numero": "25/0119",
+      "cliente": "FALEG. PELLEGRINI SRL",
+      "dataCompletamento": "2026-01-21T00:00:00.000Z",
+      "giorni": 35
+    },
+    {
       "numero": "25/0125",
       "cliente": "IMP. SAN ANTONINO",
       "dataCompletamento": "2026-01-15T00:00:00.000Z",
       "giorni": 27
+    },
+    {
+      "numero": "25/0131",
+      "cliente": "COSTRUZ. TAGLIAMENTO SRL",
+      "dataCompletamento": "2026-01-21T00:00:00.000Z",
+      "giorni": 30
     },
     {
       "numero": "26/0004",
@@ -96,6 +120,12 @@
       "giorni": 4
     },
     {
+      "numero": "26/0012",
+      "cliente": "JACUZZI SRL",
+      "dataCompletamento": "2026-01-21T00:00:00.000Z",
+      "giorni": 13
+    },
+    {
       "numero": "26/0021",
       "cliente": "FRIUL SERVIZI",
       "dataCompletamento": "2026-01-19T00:00:00.000Z",
@@ -108,10 +138,22 @@
       "giorni": 8
     },
     {
+      "numero": "26/0024",
+      "cliente": "PIVA ROBERTO",
+      "dataCompletamento": "2026-01-21T00:00:00.000Z",
+      "giorni": 9
+    },
+    {
       "numero": "26/0025",
       "cliente": "FEDRIGO SRL",
       "dataCompletamento": "2026-01-16T00:00:00.000Z",
       "giorni": 4
+    },
+    {
+      "numero": "26/0029",
+      "cliente": "TUSSET SRL",
+      "dataCompletamento": "2026-01-21T00:00:00.000Z",
+      "giorni": 9
     },
     {
       "numero": "26/0032",
@@ -130,6 +172,12 @@
       "cliente": "VENERUZ",
       "dataCompletamento": "2026-01-16T00:00:00.000Z",
       "giorni": 1
+    },
+    {
+      "numero": "26/0047",
+      "cliente": "IUS CLAUDIO",
+      "dataCompletamento": "2026-01-21T00:00:00.000Z",
+      "giorni": 5
     },
     {
       "numero": "26/0055",
@@ -177,7 +225,7 @@
     },
     "2026": {
       "create": {
-        "1": 63,
+        "1": 68,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -191,7 +239,7 @@
         "12": 0
       },
       "completate": {
-        "1": 18,
+        "1": 26,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -282,6 +330,12 @@
       "aggiunte": 6,
       "completate": 4,
       "delta": -2
+    },
+    {
+      "data": "2026-01-21",
+      "aggiunte": 5,
+      "completate": 8,
+      "delta": 3
     }
   ]
 }
