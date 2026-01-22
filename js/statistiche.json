@@ -1,15 +1,9 @@
 {
-  "generatedAt": "2026-01-22T11:17:33.818Z",
+  "generatedAt": "2026-01-22T19:00:12.058Z",
   "recapAttuale": {
     "totaleInCorso": 97,
     "oltre90gg": null,
     "top3Vecchie": [
-      {
-        "numero": "25/0008",
-        "cliente": "DOLFO SRL",
-        "dataConsegna": "2025-10-30T00:00:00.000Z",
-        "giorniAperti": 84
-      },
       {
         "numero": "25/0015",
         "cliente": "PANIGHEL LUDOVICO",
@@ -21,18 +15,24 @@
         "cliente": "BOLZAN",
         "dataConsegna": "2025-11-05T00:00:00.000Z",
         "giorniAperti": 78
+      },
+      {
+        "numero": "25/0020",
+        "cliente": "SORIN",
+        "dataConsegna": "2025-11-06T00:00:00.000Z",
+        "giorniAperti": 77
       }
     ],
-    "testoNotifica": "Al momento hai 97 riparazioni attive. Le tre più vecchie sono:\n- 25/0008 - DOLFO SRL del 30/10/2025;\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025."
+    "testoNotifica": "Al momento hai 97 riparazioni attive. Le tre più vecchie sono:\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025;\n- 25/0020 - SORIN del 06/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (12.01-18.01)",
     "inserite": 31,
     "completate": 11,
-    "percInserite": 90.7,
-    "percCompletate": -41.8,
-    "mediaInserite": "16.3",
-    "mediaCompletate": "18.9"
+    "percInserite": 88.9,
+    "percCompletate": -45.8,
+    "mediaInserite": "16.4",
+    "mediaCompletate": "20.3"
   },
   "tempiRiparazione": [
     {
@@ -40,6 +40,12 @@
       "cliente": "NOGHEROT",
       "dataCompletamento": "2026-01-14T00:00:00.000Z",
       "giorni": 77
+    },
+    {
+      "numero": "25/0008",
+      "cliente": "DOLFO SRL",
+      "dataCompletamento": "2026-01-22T00:00:00.000Z",
+      "giorni": 84
     },
     {
       "numero": "25/0051",
@@ -112,6 +118,12 @@
       "cliente": "ROSOLEN",
       "dataCompletamento": "2026-01-17T00:00:00.000Z",
       "giorni": 10
+    },
+    {
+      "numero": "26/0006",
+      "cliente": "COPAS SRL",
+      "dataCompletamento": "2026-01-22T00:00:00.000Z",
+      "giorni": 15
     },
     {
       "numero": "26/0008",
@@ -237,7 +249,7 @@
     },
     "2026": {
       "create": {
-        "1": 70,
+        "1": 72,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -251,7 +263,7 @@
         "12": 0
       },
       "completate": {
-        "1": 28,
+        "1": 30,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -351,8 +363,8 @@
     },
     {
       "data": "2026-01-22",
-      "aggiunte": 2,
-      "completate": 2,
+      "aggiunte": 4,
+      "completate": 4,
       "delta": 0
     }
   ]
