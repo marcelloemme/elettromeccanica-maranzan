@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-01-23T11:52:57.032Z",
+  "generatedAt": "2026-01-23T18:59:42.043Z",
   "recapAttuale": {
-    "totaleInCorso": 96,
+    "totaleInCorso": 95,
     "oltre90gg": null,
     "top3Vecchie": [
       {
@@ -23,16 +23,16 @@
         "giorniAperti": 78
       }
     ],
-    "testoNotifica": "Al momento hai 96 riparazioni attive. Le tre più vecchie sono:\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025;\n- 25/0020 - SORIN del 06/11/2025."
+    "testoNotifica": "Al momento hai 95 riparazioni attive. Le tre più vecchie sono:\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025;\n- 25/0020 - SORIN del 06/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (12.01-18.01)",
     "inserite": 31,
     "completate": 11,
-    "percInserite": 91,
-    "percCompletate": -42.4,
-    "mediaInserite": "16.2",
-    "mediaCompletate": "19.1"
+    "percInserite": 88.3,
+    "percCompletate": -49.2,
+    "mediaInserite": "16.5",
+    "mediaCompletate": "21.6"
   },
   "tempiRiparazione": [
     {
@@ -180,6 +180,12 @@
       "giorni": 9
     },
     {
+      "numero": "26/0030",
+      "cliente": "DE MARCHI RICCARDO",
+      "dataCompletamento": "2026-01-23T00:00:00.000Z",
+      "giorni": 11
+    },
+    {
       "numero": "26/0032",
       "cliente": "BRUN STEFANO",
       "dataCompletamento": "2026-01-16T00:00:00.000Z",
@@ -204,10 +210,28 @@
       "giorni": 7
     },
     {
+      "numero": "26/0040",
+      "cliente": "EDIL NOVA JOVAN",
+      "dataCompletamento": "2026-01-23T00:00:00.000Z",
+      "giorni": 8
+    },
+    {
+      "numero": "26/0045",
+      "cliente": "SPORTARO",
+      "dataCompletamento": "2026-01-23T00:00:00.000Z",
+      "giorni": 7
+    },
+    {
       "numero": "26/0047",
       "cliente": "IUS CLAUDIO",
       "dataCompletamento": "2026-01-21T00:00:00.000Z",
       "giorni": 5
+    },
+    {
+      "numero": "26/0054",
+      "cliente": "BORTOLIN FABIO",
+      "dataCompletamento": "2026-01-23T00:00:00.000Z",
+      "giorni": 4
     },
     {
       "numero": "26/0055",
@@ -255,7 +279,7 @@
     },
     "2026": {
       "create": {
-        "1": 72,
+        "1": 75,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -269,7 +293,7 @@
         "12": 0
       },
       "completate": {
-        "1": 31,
+        "1": 35,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -375,9 +399,9 @@
     },
     {
       "data": "2026-01-23",
-      "aggiunte": 0,
-      "completate": 1,
-      "delta": 1
+      "aggiunte": 3,
+      "completate": 5,
+      "delta": 2
     }
   ]
 }
