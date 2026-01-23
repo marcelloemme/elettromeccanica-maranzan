@@ -1,38 +1,38 @@
 {
-  "generatedAt": "2026-01-22T19:00:12.058Z",
+  "generatedAt": "2026-01-23T11:52:57.032Z",
   "recapAttuale": {
-    "totaleInCorso": 97,
+    "totaleInCorso": 96,
     "oltre90gg": null,
     "top3Vecchie": [
       {
         "numero": "25/0015",
         "cliente": "PANIGHEL LUDOVICO",
         "dataConsegna": "2025-11-03T00:00:00.000Z",
-        "giorniAperti": 80
+        "giorniAperti": 81
       },
       {
         "numero": "25/0017",
         "cliente": "BOLZAN",
         "dataConsegna": "2025-11-05T00:00:00.000Z",
-        "giorniAperti": 78
+        "giorniAperti": 79
       },
       {
         "numero": "25/0020",
         "cliente": "SORIN",
         "dataConsegna": "2025-11-06T00:00:00.000Z",
-        "giorniAperti": 77
+        "giorniAperti": 78
       }
     ],
-    "testoNotifica": "Al momento hai 97 riparazioni attive. Le tre più vecchie sono:\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025;\n- 25/0020 - SORIN del 06/11/2025."
+    "testoNotifica": "Al momento hai 96 riparazioni attive. Le tre più vecchie sono:\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025;\n- 25/0020 - SORIN del 06/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (12.01-18.01)",
     "inserite": 31,
     "completate": 11,
-    "percInserite": 88.9,
-    "percCompletate": -45.8,
-    "mediaInserite": "16.4",
-    "mediaCompletate": "20.3"
+    "percInserite": 91,
+    "percCompletate": -42.4,
+    "mediaInserite": "16.2",
+    "mediaCompletate": "19.1"
   },
   "tempiRiparazione": [
     {
@@ -76,6 +76,12 @@
       "cliente": "REGINATO SRL",
       "dataCompletamento": "2026-01-22T00:00:00.000Z",
       "giorni": 54
+    },
+    {
+      "numero": "25/0093",
+      "cliente": "EDIL POSA SRL",
+      "dataCompletamento": "2026-01-23T00:00:00.000Z",
+      "giorni": 51
     },
     {
       "numero": "25/0097",
@@ -263,7 +269,7 @@
         "12": 0
       },
       "completate": {
-        "1": 30,
+        "1": 31,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -366,6 +372,12 @@
       "aggiunte": 4,
       "completate": 4,
       "delta": 0
+    },
+    {
+      "data": "2026-01-23",
+      "aggiunte": 0,
+      "completate": 1,
+      "delta": 1
     }
   ]
 }
