@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.2"
+#define FIRMWARE_VERSION "1.2.1"
 
 // OTA Update URL (GitHub raw)
 const char* OTA_URL = "https://raw.githubusercontent.com/marcelloemme/elettromeccanica-maranzan/main/hardware/EM_Maranzan_printer.bin";
@@ -1813,11 +1813,13 @@ void setup() {
   tft.setRotation(0);
   tft.fillScreen(TFT_BLACK);
 
-  // Messaggio avvio
+  // Messaggio avvio con versione
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.setTextSize(2);
   tft.setCursor(10, 100);
-  tft.println("Avvio...");
+  tft.print("Avvio v");
+  tft.print(FIRMWARE_VERSION);
+  tft.println("...");
 
   // Stampante
   Serial.println("[INIT] Stampante...");
