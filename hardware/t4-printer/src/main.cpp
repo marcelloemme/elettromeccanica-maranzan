@@ -12,11 +12,29 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+#include <WebServer.h>
+#include <DNSServer.h>
 #include <math.h>
 
-// WiFi credentials
-const char* WIFI_SSID = "FASTWEB-RNHDU3";
-const char* WIFI_PASS = "C9FLCJDDRY";
+// WiFi - rete di default (fallback se SD vuota)
+const char* DEFAULT_WIFI_SSID = "FASTWEB-RNHDU3";
+const char* DEFAULT_WIFI_PASS = "C9FLCJDDRY";
+
+// WiFi networks storage (max 5)
+#define MAX_WIFI_NETWORKS 5
+struct WifiNetwork {
+  char ssid[33];
+  char pass[65];
+};
+WifiNetwork savedNetworks[MAX_WIFI_NETWORKS];
+int numSavedNetworks = 0;
+int currentNetworkIndex = 0;
+
+// Captive portal
+WebServer webServer(80);
+DNSServer dnsServer;
+const byte DNS_PORT = 53;
+bool configMode = false;
 
 // CSV URL (Google Sheets published)
 const char* CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTLu_kAJJ7pIFcbxUC8082z7jG1EP-lFgoJmNVae-0w0_uZWABdJ8yWXxPViw8bqge1TOWXeUmFZyrp/pub?gid=0&single=true&output=csv";
@@ -118,6 +136,433 @@ bool screenOn = true;
 void showMessage(const char* msg, uint16_t color);
 void drawList();
 void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi);
+void drawHeader();
+void drawButtons();
+
+// ===== WIFI CONFIG MANAGEMENT =====
+
+// Carica reti WiFi da SD
+void loadWifiConfig() {
+  numSavedNetworks = 0;
+
+  if (!sdOK) {
+    Serial.println("[WIFI] SD non disponibile, uso default");
+    return;
+  }
+
+  File f = SD.open("/wifi_config.txt", FILE_READ);
+  if (!f) {
+    Serial.println("[WIFI] Config non trovata, uso default");
+    return;
+  }
+
+  while (f.available() && numSavedNetworks < MAX_WIFI_NETWORKS) {
+    String line = f.readStringUntil('\n');
+    line.trim();
+
+    int sepIdx = line.indexOf('|');
+    if (sepIdx > 0) {
+      String ssid = line.substring(0, sepIdx);
+      String pass = line.substring(sepIdx + 1);
+
+      strncpy(savedNetworks[numSavedNetworks].ssid, ssid.c_str(), 32);
+      savedNetworks[numSavedNetworks].ssid[32] = '\0';
+      strncpy(savedNetworks[numSavedNetworks].pass, pass.c_str(), 64);
+      savedNetworks[numSavedNetworks].pass[64] = '\0';
+
+      Serial.print("[WIFI] Caricata rete: ");
+      Serial.println(savedNetworks[numSavedNetworks].ssid);
+      numSavedNetworks++;
+    }
+  }
+  f.close();
+
+  Serial.print("[WIFI] Caricate ");
+  Serial.print(numSavedNetworks);
+  Serial.println(" reti");
+}
+
+// Salva reti WiFi su SD
+void saveWifiConfig() {
+  if (!sdOK) return;
+
+  File f = SD.open("/wifi_config.txt", FILE_WRITE);
+  if (!f) {
+    Serial.println("[WIFI] Errore scrittura config");
+    return;
+  }
+
+  for (int i = 0; i < numSavedNetworks; i++) {
+    f.print(savedNetworks[i].ssid);
+    f.print("|");
+    f.println(savedNetworks[i].pass);
+  }
+  f.close();
+
+  Serial.println("[WIFI] Config salvata");
+}
+
+// Aggiunge una rete (FIFO se pieno)
+void addWifiNetwork(const char* ssid, const char* pass) {
+  // Controlla se esiste già, in tal caso aggiorna e sposta in fondo
+  for (int i = 0; i < numSavedNetworks; i++) {
+    if (strcmp(savedNetworks[i].ssid, ssid) == 0) {
+      // Aggiorna password
+      strncpy(savedNetworks[i].pass, pass, 64);
+      savedNetworks[i].pass[64] = '\0';
+
+      // Sposta in fondo (più recente)
+      WifiNetwork temp = savedNetworks[i];
+      for (int j = i; j < numSavedNetworks - 1; j++) {
+        savedNetworks[j] = savedNetworks[j + 1];
+      }
+      savedNetworks[numSavedNetworks - 1] = temp;
+
+      saveWifiConfig();
+      Serial.print("[WIFI] Aggiornata rete: ");
+      Serial.println(ssid);
+      return;
+    }
+  }
+
+  // Se pieno, rimuovi la più vecchia (prima)
+  if (numSavedNetworks >= MAX_WIFI_NETWORKS) {
+    for (int i = 0; i < MAX_WIFI_NETWORKS - 1; i++) {
+      savedNetworks[i] = savedNetworks[i + 1];
+    }
+    numSavedNetworks = MAX_WIFI_NETWORKS - 1;
+  }
+
+  // Aggiungi in fondo
+  strncpy(savedNetworks[numSavedNetworks].ssid, ssid, 32);
+  savedNetworks[numSavedNetworks].ssid[32] = '\0';
+  strncpy(savedNetworks[numSavedNetworks].pass, pass, 64);
+  savedNetworks[numSavedNetworks].pass[64] = '\0';
+  numSavedNetworks++;
+
+  saveWifiConfig();
+  Serial.print("[WIFI] Aggiunta rete: ");
+  Serial.println(ssid);
+}
+
+// Tenta connessione a una rete specifica
+bool tryConnectToNetwork(int index) {
+  if (index < 0 || index >= numSavedNetworks) return false;
+
+  Serial.print("[WIFI] Provo: ");
+  Serial.println(savedNetworks[index].ssid);
+
+  WiFi.disconnect();
+  delay(100);
+  WiFi.begin(savedNetworks[index].ssid, savedNetworks[index].pass);
+
+  int attempts = 0;
+  while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+    delay(500);
+    Serial.print(".");
+    attempts++;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.print("\n[WIFI] Connesso a ");
+    Serial.print(savedNetworks[index].ssid);
+    Serial.print(": ");
+    Serial.println(WiFi.localIP());
+    currentNetworkIndex = index;
+    return true;
+  }
+
+  Serial.println("\n[WIFI] Fallito");
+  return false;
+}
+
+// Tenta connessione a rotazione su tutte le reti salvate
+bool tryConnectAllNetworks() {
+  // Prima prova le reti salvate
+  for (int i = 0; i < numSavedNetworks; i++) {
+    if (tryConnectToNetwork(i)) return true;
+  }
+
+  // Fallback: prova la rete di default se non è già nelle salvate
+  bool defaultInList = false;
+  for (int i = 0; i < numSavedNetworks; i++) {
+    if (strcmp(savedNetworks[i].ssid, DEFAULT_WIFI_SSID) == 0) {
+      defaultInList = true;
+      break;
+    }
+  }
+
+  if (!defaultInList) {
+    Serial.print("[WIFI] Provo default: ");
+    Serial.println(DEFAULT_WIFI_SSID);
+
+    WiFi.disconnect();
+    delay(100);
+    WiFi.begin(DEFAULT_WIFI_SSID, DEFAULT_WIFI_PASS);
+
+    int attempts = 0;
+    while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+      delay(500);
+      Serial.print(".");
+      attempts++;
+    }
+
+    if (WiFi.status() == WL_CONNECTED) {
+      Serial.print("\n[WIFI] Connesso a default: ");
+      Serial.println(WiFi.localIP());
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// ===== CAPTIVE PORTAL =====
+
+// HTML della pagina di configurazione
+String getConfigPageHTML() {
+  String html = R"rawliteral(
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EM Maranzan - Config WiFi</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e; color: #eee; padding: 20px;
+      min-height: 100vh;
+    }
+    .container { max-width: 400px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 20px; font-size: 1.5em; }
+    .subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 0.9em; }
+    .network {
+      background: #16213e; border-radius: 10px; padding: 15px;
+      margin-bottom: 10px; cursor: pointer; transition: all 0.2s;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .network:hover, .network.selected { background: #0f3460; }
+    .network.selected { border: 2px solid #00d9ff; }
+    .ssid { font-weight: 600; }
+    .signal { color: #888; font-size: 0.8em; }
+    .form-group { margin-top: 20px; }
+    label { display: block; margin-bottom: 8px; color: #888; }
+    input[type="password"], input[type="text"] {
+      width: 100%; padding: 15px; border-radius: 10px; border: none;
+      background: #16213e; color: #fff; font-size: 16px;
+    }
+    input:focus { outline: 2px solid #00d9ff; }
+    button {
+      width: 100%; padding: 15px; border-radius: 10px; border: none;
+      background: #00d9ff; color: #1a1a2e; font-size: 16px;
+      font-weight: 600; margin-top: 20px; cursor: pointer;
+    }
+    button:hover { background: #00b8d4; }
+    button:disabled { background: #444; cursor: not-allowed; }
+    .scanning { text-align: center; padding: 40px; color: #888; }
+    .success { background: #00c853; }
+    .error { background: #ff5252; color: #fff; padding: 15px; border-radius: 10px; margin-top: 20px; }
+    .refresh { background: transparent; border: 2px solid #00d9ff; color: #00d9ff; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>EM Maranzan</h1>
+    <p class="subtitle">Configurazione WiFi</p>
+
+    <div id="networks">
+      <div class="scanning">Scansione reti...</div>
+    </div>
+
+    <div id="form" style="display:none;">
+      <div class="form-group">
+        <label>Rete selezionata</label>
+        <input type="text" id="ssid" readonly>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Inserisci password">
+      </div>
+      <button onclick="saveConfig()">Salva e Connetti</button>
+    </div>
+
+    <button class="refresh" onclick="scanNetworks()">Aggiorna lista</button>
+
+    <div id="message"></div>
+  </div>
+
+  <script>
+    let selectedSSID = '';
+
+    function scanNetworks() {
+      document.getElementById('networks').innerHTML = '<div class="scanning">Scansione reti...</div>';
+      fetch('/scan').then(r => r.json()).then(data => {
+        let html = '';
+        data.networks.forEach(n => {
+          html += `<div class="network" onclick="selectNetwork('${n.ssid}', this)">
+            <span class="ssid">${n.ssid}</span>
+            <span class="signal">${n.rssi} dBm</span>
+          </div>`;
+        });
+        if (data.networks.length === 0) {
+          html = '<div class="scanning">Nessuna rete trovata</div>';
+        }
+        document.getElementById('networks').innerHTML = html;
+      }).catch(e => {
+        document.getElementById('networks').innerHTML = '<div class="error">Errore scansione</div>';
+      });
+    }
+
+    function selectNetwork(ssid, el) {
+      selectedSSID = ssid;
+      document.querySelectorAll('.network').forEach(n => n.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('ssid').value = ssid;
+      document.getElementById('form').style.display = 'block';
+      document.getElementById('password').focus();
+    }
+
+    function saveConfig() {
+      const pass = document.getElementById('password').value;
+      const msg = document.getElementById('message');
+
+      fetch('/save', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'ssid=' + encodeURIComponent(selectedSSID) + '&pass=' + encodeURIComponent(pass)
+      }).then(r => r.json()).then(data => {
+        if (data.success) {
+          msg.innerHTML = '<div class="network success">Salvato! Riavvio in corso...</div>';
+          setTimeout(() => window.close(), 3000);
+        } else {
+          msg.innerHTML = '<div class="error">' + data.error + '</div>';
+        }
+      }).catch(e => {
+        msg.innerHTML = '<div class="error">Errore di connessione</div>';
+      });
+    }
+
+    scanNetworks();
+  </script>
+</body>
+</html>
+)rawliteral";
+  return html;
+}
+
+// Handler pagina principale
+void handleRoot() {
+  webServer.send(200, "text/html", getConfigPageHTML());
+}
+
+// Handler scansione reti
+void handleScan() {
+  Serial.println("[AP] Scansione reti...");
+  int n = WiFi.scanNetworks();
+
+  String json = "{\"networks\":[";
+  for (int i = 0; i < n; i++) {
+    if (i > 0) json += ",";
+    json += "{\"ssid\":\"" + WiFi.SSID(i) + "\",\"rssi\":" + String(WiFi.RSSI(i)) + "}";
+  }
+  json += "]}";
+
+  webServer.send(200, "application/json", json);
+  WiFi.scanDelete();
+}
+
+// Handler salvataggio config
+void handleSave() {
+  String ssid = webServer.arg("ssid");
+  String pass = webServer.arg("pass");
+
+  if (ssid.length() == 0) {
+    webServer.send(200, "application/json", "{\"success\":false,\"error\":\"SSID mancante\"}");
+    return;
+  }
+
+  Serial.print("[AP] Salvo rete: ");
+  Serial.println(ssid);
+
+  addWifiNetwork(ssid.c_str(), pass.c_str());
+
+  webServer.send(200, "application/json", "{\"success\":true}");
+
+  // Riavvia dopo 2 secondi
+  delay(2000);
+  ESP.restart();
+}
+
+// Handler captive portal (redirect tutto a root)
+void handleNotFound() {
+  webServer.sendHeader("Location", "http://192.168.4.1/", true);
+  webServer.send(302, "text/plain", "");
+}
+
+// Avvia modalità Access Point
+void startConfigMode() {
+  configMode = true;
+
+  Serial.println("\n[AP] Avvio modalità configurazione...");
+
+  // Mostra su display
+  tft.fillScreen(TFT_BLACK);
+  tft.setTextColor(TFT_CYAN, TFT_BLACK);
+  tft.setTextSize(2);
+  tft.setCursor(20, 60);
+  tft.println("Config WiFi");
+
+  tft.setTextSize(1);
+  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  tft.setCursor(20, 100);
+  tft.println("Connettiti a:");
+
+  tft.setTextSize(2);
+  tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+  tft.setCursor(20, 120);
+  tft.println("EM Maranzan");
+
+  tft.setTextSize(1);
+  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  tft.setCursor(20, 160);
+  tft.println("(nessuna password)");
+
+  tft.setCursor(20, 200);
+  tft.println("Si aprira' una pagina");
+  tft.setCursor(20, 215);
+  tft.println("per configurare il WiFi");
+
+  // Avvia AP
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP("EM Maranzan", "");  // No password
+
+  IPAddress apIP(192, 168, 4, 1);
+  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+
+  Serial.print("[AP] IP: ");
+  Serial.println(WiFi.softAPIP());
+
+  // Avvia DNS server per captive portal
+  dnsServer.start(DNS_PORT, "*", apIP);
+
+  // Configura web server
+  webServer.on("/", handleRoot);
+  webServer.on("/scan", handleScan);
+  webServer.on("/save", HTTP_POST, handleSave);
+  webServer.onNotFound(handleNotFound);
+  webServer.begin();
+
+  Serial.println("[AP] Server avviato");
+
+  // Loop modalità config
+  while (configMode) {
+    dnsServer.processNextRequest();
+    webServer.handleClient();
+    delay(10);
+  }
+}
 
 // ===== PARSING CSV =====
 String getCSVField(const String& line, int fieldIndex) {
@@ -556,31 +1001,80 @@ bool checkTimestampChanged() {
   return false;
 }
 
-// Tenta riconnessione WiFi
+// Tenta riconnessione WiFi (rotazione su tutte le reti)
 bool tryReconnectWifi() {
   Serial.println("[WIFI] Tentativo riconnessione...");
 
-  WiFi.disconnect();
-  vTaskDelay(1000 / portTICK_PERIOD_MS);
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  // Prova la prossima rete nella lista
+  int startIndex = currentNetworkIndex;
+  int tried = 0;
 
-  int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+  while (tried < numSavedNetworks) {
+    currentNetworkIndex = (currentNetworkIndex + 1) % numSavedNetworks;
+    tried++;
+
+    Serial.print("[WIFI] Provo: ");
+    Serial.println(savedNetworks[currentNetworkIndex].ssid);
+
+    WiFi.disconnect();
     vTaskDelay(500 / portTICK_PERIOD_MS);
-    Serial.print(".");
-    attempts++;
+    WiFi.begin(savedNetworks[currentNetworkIndex].ssid, savedNetworks[currentNetworkIndex].pass);
+
+    int attempts = 0;
+    while (WiFi.status() != WL_CONNECTED && attempts < 15) {
+      vTaskDelay(500 / portTICK_PERIOD_MS);
+      Serial.print(".");
+      attempts++;
+    }
+
+    if (WiFi.status() == WL_CONNECTED) {
+      Serial.print("\n[WIFI] Riconnesso a ");
+      Serial.print(savedNetworks[currentNetworkIndex].ssid);
+      Serial.print(": ");
+      Serial.println(WiFi.localIP());
+      wifiOK = true;
+      wifiError = false;
+      showWifiStatus = true;
+      return true;
+    }
+    Serial.println(" fallito");
   }
 
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.print("\n[WIFI] Riconnesso: ");
-    Serial.println(WiFi.localIP());
-    wifiOK = true;
-    wifiError = false;
-    showWifiStatus = true;
-    return true;
+  // Fallback: prova default se non nelle salvate
+  bool defaultInList = false;
+  for (int i = 0; i < numSavedNetworks; i++) {
+    if (strcmp(savedNetworks[i].ssid, DEFAULT_WIFI_SSID) == 0) {
+      defaultInList = true;
+      break;
+    }
   }
 
-  Serial.println("\n[WIFI] Riconnessione fallita");
+  if (!defaultInList && numSavedNetworks == 0) {
+    Serial.print("[WIFI] Provo default: ");
+    Serial.println(DEFAULT_WIFI_SSID);
+
+    WiFi.disconnect();
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+    WiFi.begin(DEFAULT_WIFI_SSID, DEFAULT_WIFI_PASS);
+
+    int attempts = 0;
+    while (WiFi.status() != WL_CONNECTED && attempts < 15) {
+      vTaskDelay(500 / portTICK_PERIOD_MS);
+      Serial.print(".");
+      attempts++;
+    }
+
+    if (WiFi.status() == WL_CONNECTED) {
+      Serial.print("\n[WIFI] Riconnesso a default: ");
+      Serial.println(WiFi.localIP());
+      wifiOK = true;
+      wifiError = false;
+      showWifiStatus = true;
+      return true;
+    }
+  }
+
+  Serial.println("[WIFI] Riconnessione fallita su tutte le reti");
   return false;
 }
 
@@ -900,8 +1394,8 @@ void setup() {
   delay(1000);
 
   Serial.println("\n\n=================================");
-  Serial.println("T4 Thermal Printer - v0.9");
-  Serial.println("Auto-print + History");
+  Serial.println("T4 Thermal Printer - v1.0");
+  Serial.println("Auto-print + WiFi Config");
   Serial.println("=================================\n");
 
   // Pulsanti
@@ -936,26 +1430,27 @@ void setup() {
     Serial.println("[FAIL] SD card");
   }
 
-  // WiFi
+  // Carica reti WiFi salvate
+  loadWifiConfig();
+
+  // Controlla se pulsante centrale premuto -> modalità configurazione
+  delay(100);  // Debounce
+  if (digitalRead(BTN_CENTER) == LOW) {
+    Serial.println("[INIT] Pulsante centrale premuto - modalità config");
+    startConfigMode();
+    // Non ritorna mai da qui (riavvia dopo config)
+  }
+
+  // WiFi - tenta connessione a rotazione
   Serial.println("[INIT] WiFi...");
   tft.setCursor(10, 130);
   tft.setTextSize(1);
   tft.print("WiFi...");
 
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
-  int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED && attempts < 20) {
-    delay(500);
-    Serial.print(".");
-    attempts++;
-  }
-
-  if (WiFi.status() == WL_CONNECTED) {
+  if (tryConnectAllNetworks()) {
     wifiOK = true;
-    Serial.print("\n[OK] WiFi: ");
-    Serial.println(WiFi.localIP());
   } else {
-    Serial.println("\n[FAIL] WiFi");
+    Serial.println("[FAIL] Nessuna rete disponibile");
   }
 
   // Download CSV
