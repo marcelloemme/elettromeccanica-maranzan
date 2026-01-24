@@ -2,7 +2,7 @@
  * Elettromeccanica Maranzan - T4 Thermal Printer
  * Hardware: LilyGo T4 v1.3 + CSN-A2 TTL
  *
- * v1.1 - Inserimento manuale numero scheda
+ * v1.2 - OTA Updates da GitHub
  */
 
 #include <Arduino.h>
@@ -15,6 +15,13 @@
 #include <WebServer.h>
 #include <DNSServer.h>
 #include <math.h>
+#include <Update.h>
+
+// Versione firmware corrente
+#define FIRMWARE_VERSION "1.2"
+
+// OTA Update URL (GitHub raw)
+const char* OTA_URL = "https://raw.githubusercontent.com/marcelloemme/elettromeccanica-maranzan/main/hardware/EM_Maranzan_printer.bin";
 
 // WiFi - rete di default (fallback se SD vuota)
 const char* DEFAULT_WIFI_SSID = "FASTWEB-RNHDU3";
@@ -147,6 +154,161 @@ void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi);
 void drawHeader();
 void drawButtons();
 void tryPrintManualScheda();
+bool performOTAUpdate();
+
+// ===== OTA UPDATE =====
+
+// Esegue aggiornamento OTA da GitHub
+bool performOTAUpdate() {
+  Serial.println("[OTA] Avvio aggiornamento firmware...");
+  Serial.print("[OTA] URL: ");
+  Serial.println(OTA_URL);
+
+  // Mostra su display
+  tft.fillScreen(TFT_BLACK);
+  tft.setTextColor(TFT_CYAN, TFT_BLACK);
+  tft.setTextSize(2);
+  tft.setCursor(20, 40);
+  tft.println("Aggiornamento");
+  tft.setCursor(20, 65);
+  tft.println("firmware...");
+
+  tft.setTextSize(1);
+  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  tft.setCursor(20, 100);
+  tft.println("Download in corso...");
+  tft.setCursor(20, 115);
+  tft.print("Versione attuale: ");
+  tft.println(FIRMWARE_VERSION);
+
+  // Progress bar
+  int barX = 20, barY = 150, barW = 200, barH = 20;
+  tft.drawRect(barX, barY, barW, barH, TFT_WHITE);
+
+  HTTPClient http;
+  http.begin(OTA_URL);
+  http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+  http.setTimeout(30000);  // 30 secondi
+
+  int httpCode = http.GET();
+  int contentLength = http.getSize();
+
+  Serial.print("[OTA] HTTP code: ");
+  Serial.println(httpCode);
+  Serial.print("[OTA] Content length: ");
+  Serial.println(contentLength);
+
+  if (httpCode != HTTP_CODE_OK) {
+    Serial.println("[OTA] Download fallito");
+    tft.setTextColor(TFT_RED, TFT_BLACK);
+    tft.setCursor(20, 200);
+    tft.println("Download fallito!");
+    tft.setCursor(20, 215);
+    tft.print("HTTP: ");
+    tft.println(httpCode);
+    http.end();
+    delay(3000);
+    return false;
+  }
+
+  if (contentLength <= 0) {
+    Serial.println("[OTA] File non trovato o vuoto");
+    tft.setTextColor(TFT_ORANGE, TFT_BLACK);
+    tft.setCursor(20, 200);
+    tft.println("File non trovato");
+    http.end();
+    delay(3000);
+    return false;
+  }
+
+  // Inizia update
+  if (!Update.begin(contentLength)) {
+    Serial.println("[OTA] Spazio insufficiente");
+    tft.setTextColor(TFT_RED, TFT_BLACK);
+    tft.setCursor(20, 200);
+    tft.println("Spazio insufficiente!");
+    http.end();
+    delay(3000);
+    return false;
+  }
+
+  WiFiClient* stream = http.getStreamPtr();
+  size_t written = 0;
+  uint8_t buff[1024];
+  int lastPercent = 0;
+
+  tft.setCursor(20, 130);
+  tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+  tft.print("0%");
+
+  while (http.connected() && written < (size_t)contentLength) {
+    size_t available = stream->available();
+    if (available) {
+      size_t toRead = min(available, sizeof(buff));
+      size_t bytesRead = stream->readBytes(buff, toRead);
+      size_t bytesWritten = Update.write(buff, bytesRead);
+
+      if (bytesWritten != bytesRead) {
+        Serial.println("[OTA] Errore scrittura");
+        Update.abort();
+        http.end();
+        tft.setTextColor(TFT_RED, TFT_BLACK);
+        tft.setCursor(20, 200);
+        tft.println("Errore scrittura!");
+        delay(3000);
+        return false;
+      }
+
+      written += bytesWritten;
+
+      // Aggiorna progress bar
+      int percent = (written * 100) / contentLength;
+      if (percent != lastPercent) {
+        lastPercent = percent;
+        int fillW = (barW - 4) * percent / 100;
+        tft.fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_GREEN);
+
+        // Percentuale
+        tft.fillRect(20, 130, 50, 15, TFT_BLACK);
+        tft.setCursor(20, 130);
+        tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+        tft.print(percent);
+        tft.print("%");
+      }
+    }
+    delay(1);
+  }
+
+  http.end();
+
+  if (Update.end()) {
+    if (Update.isFinished()) {
+      Serial.println("[OTA] Aggiornamento completato!");
+
+      tft.fillRect(20, 200, 220, 40, TFT_BLACK);
+      tft.setTextColor(TFT_GREEN, TFT_BLACK);
+      tft.setTextSize(2);
+      tft.setCursor(20, 200);
+      tft.println("Completato!");
+
+      tft.setTextSize(1);
+      tft.setCursor(20, 230);
+      tft.println("Riavvio in 3 secondi...");
+
+      delay(3000);
+      ESP.restart();
+      return true;  // Non raggiunto
+    }
+  }
+
+  Serial.print("[OTA] Errore finale: ");
+  Serial.println(Update.getError());
+  tft.setTextColor(TFT_RED, TFT_BLACK);
+  tft.setCursor(20, 200);
+  tft.println("Errore aggiornamento!");
+  delay(3000);
+  return false;
+}
 
 // ===== WIFI CONFIG MANAGEMENT =====
 
@@ -1634,8 +1796,9 @@ void setup() {
   delay(1000);
 
   Serial.println("\n\n=================================");
-  Serial.println("T4 Thermal Printer - v1.0");
-  Serial.println("Auto-print + WiFi Config");
+  Serial.print("T4 Thermal Printer - v");
+  Serial.println(FIRMWARE_VERSION);
+  Serial.println("Auto-print + WiFi + OTA");
   Serial.println("=================================\n");
 
   // Pulsanti
@@ -1673,12 +1836,45 @@ void setup() {
   // Carica reti WiFi salvate
   loadWifiConfig();
 
-  // Controlla se pulsante centrale premuto -> modalità configurazione
+  // Controlla pulsanti all'avvio
   delay(100);  // Debounce
+
+  // Pulsante CENTRALE premuto -> modalità configurazione WiFi
   if (digitalRead(BTN_CENTER) == LOW) {
-    Serial.println("[INIT] Pulsante centrale premuto - modalità config");
+    Serial.println("[INIT] Pulsante centrale premuto - modalità config WiFi");
     startConfigMode();
     // Non ritorna mai da qui (riavvia dopo config)
+  }
+
+  // Pulsante SU (LEFT) premuto -> OTA Update
+  if (digitalRead(BTN_LEFT) == LOW) {
+    Serial.println("[INIT] Pulsante SU premuto - modalità OTA Update");
+
+    // Prima connetti WiFi
+    tft.setCursor(10, 130);
+    tft.setTextSize(1);
+    tft.print("WiFi per OTA...");
+
+    if (tryConnectAllNetworks()) {
+      wifiOK = true;
+      performOTAUpdate();
+      // Se fallisce, continua avvio normale
+    } else {
+      Serial.println("[OTA] WiFi non disponibile");
+      tft.fillScreen(TFT_BLACK);
+      tft.setTextColor(TFT_RED, TFT_BLACK);
+      tft.setTextSize(2);
+      tft.setCursor(20, 100);
+      tft.println("WiFi non");
+      tft.setCursor(20, 125);
+      tft.println("disponibile!");
+      tft.setTextSize(1);
+      tft.setCursor(20, 170);
+      tft.println("OTA annullato.");
+      tft.setCursor(20, 190);
+      tft.println("Avvio normale in 3s...");
+      delay(3000);
+    }
   }
 
   // WiFi - tenta connessione a rotazione
