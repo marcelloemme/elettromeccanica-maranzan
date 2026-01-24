@@ -1359,112 +1359,105 @@ void advanceManualCursor() {
   }
 }
 
-// Cerca scheda via API e stampa
+// Cerca scheda nel CSV su SD e stampa
 void tryPrintManualScheda() {
   showMessage("Ricerca scheda...", TFT_YELLOW);
   Serial.print("[MANUAL] Cerco scheda: ");
   Serial.println(manualNumero);
 
-  if (WiFi.status() != WL_CONNECTED) {
-    showMessage("WiFi non connesso!", TFT_RED);
+  if (!sdOK) {
+    showMessage("SD non disponibile!", TFT_RED);
     delay(2000);
-    manualCursorPos = 5;  // Torna all'ultima cifra per correggere
+    manualCursorPos = 5;
     drawManualInput();
     return;
   }
 
-  // Chiama API getRiparazione
-  HTTPClient http;
-  String encodedNumero = String(manualNumero);
-  encodedNumero.replace("/", "%2F");  // URL encode solo del numero
-  String url = String(API_URL) + "?action=getRiparazione&numero=" + encodedNumero;
-
-  http.begin(url);
-  http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
-  http.setTimeout(10000);
-
-  int httpCode = http.GET();
-
-  if (httpCode == HTTP_CODE_OK) {
-    String response = http.getString();
-    Serial.print("[MANUAL] Response: ");
-    Serial.println(response);
-
-    JsonDocument doc;
-    DeserializationError error = deserializeJson(doc, response);
-
-    if (!error && !doc["error"]) {
-      // Scheda trovata, parsa e stampa
-      JsonObject rip = doc["riparazione"];
-
-      Scheda s;
-      memset(&s, 0, sizeof(Scheda));
-
-      strncpy(s.numero, rip["Numero"] | "", sizeof(s.numero) - 1);
-      strncpy(s.data, rip["Data Consegna"] | "", sizeof(s.data) - 1);
-      strncpy(s.cliente, rip["Cliente"] | "", sizeof(s.cliente) - 1);
-      strncpy(s.indirizzo, rip["Indirizzo"] | "", sizeof(s.indirizzo) - 1);
-      strncpy(s.telefono, rip["Telefono"] | "", sizeof(s.telefono) - 1);
-
-      // Parse attrezzi
-      JsonArray attrezzi = rip["Attrezzi"];
-      s.numAttrezzi = 0;
-      for (JsonObject att : attrezzi) {
-        if (s.numAttrezzi >= 5) break;
-        strncpy(s.attrezzi[s.numAttrezzi].marca, att["marca"] | "", 31);
-        strncpy(s.attrezzi[s.numAttrezzi].dotazione, att["dotazione"] | "", 31);
-        strncpy(s.attrezzi[s.numAttrezzi].note, att["note"] | "", 63);
-        s.numAttrezzi++;
-      }
-
-      http.end();
-
-      // Stampa
-      int numEtichette = max(1, s.numAttrezzi);
-      for (int i = 0; i < numEtichette; i++) {
-        char msg[32];
-        sprintf(msg, "Stampa %s (%d/%d)", s.numero, i + 1, numEtichette);
-        showMessage(msg, TFT_CYAN);
-        printEtichetta(s, i, numEtichette);
-
-        if (i < numEtichette - 1) {
-          for (int sec = 10; sec > 0; sec--) {
-            char countdown[32];
-            sprintf(countdown, "Prossima in %ds...", sec);
-            showMessage(countdown, TFT_CYAN);
-            delay(1000);
-          }
-        }
-      }
-
-      showMessage("Stampa completata!", TFT_GREEN);
-      delay(1500);
-
-      // Esci dalla modalità manuale
-      manualInputMode = false;
-      tft.fillScreen(TFT_BLACK);
-      drawHeader();
-      drawList();
-      drawButtons();
-
-    } else {
-      // Scheda non trovata
-      Serial.println("[MANUAL] Scheda non trovata");
-      showMessage("Scheda non trovata!", TFT_RED);
-      delay(2000);
-      manualCursorPos = 5;  // Torna all'ultima cifra per correggere
-      drawManualInput();
-    }
-  } else {
-    Serial.print("[MANUAL] HTTP error: ");
-    Serial.println(httpCode);
-    showMessage("Errore connessione!", TFT_RED);
+  File f = SD.open("/riparazioni.csv", FILE_READ);
+  if (!f) {
+    showMessage("File CSV non trovato!", TFT_RED);
     delay(2000);
     manualCursorPos = 5;
     drawManualInput();
+    return;
   }
 
-  http.end();
+  bool found = false;
+  Scheda s;
+  memset(&s, 0, sizeof(Scheda));
+
+  // Salta header
+  if (f.available()) {
+    f.readStringUntil('\n');
+  }
+
+  // Cerca la riga con il numero corrispondente
+  while (f.available()) {
+    String line = f.readStringUntil('\n');
+    line.trim();
+
+    if (line.length() == 0) continue;
+
+    // Estrai il numero (primo campo)
+    String numero = getCSVField(line, 0);
+
+    if (numero.equals(manualNumero)) {
+      // Trovata! Parsa la riga
+      Serial.println("[MANUAL] Scheda trovata nel CSV");
+
+      strncpy(s.numero, numero.c_str(), sizeof(s.numero) - 1);
+      strncpy(s.data, getCSVField(line, 1).c_str(), sizeof(s.data) - 1);
+      strncpy(s.cliente, getCSVField(line, 2).c_str(), sizeof(s.cliente) - 1);
+      strncpy(s.indirizzo, getCSVField(line, 3).c_str(), sizeof(s.indirizzo) - 1);
+      strncpy(s.telefono, getCSVField(line, 4).c_str(), sizeof(s.telefono) - 1);
+
+      // Parse attrezzi (campo 6)
+      String attrezziJson = getCSVField(line, 6);
+      parseAttrezziJSON(attrezziJson, s);
+
+      found = true;
+      break;
+    }
+  }
+
+  f.close();
+
+  if (found) {
+    // Stampa
+    int numEtichette = max(1, s.numAttrezzi);
+    for (int i = 0; i < numEtichette; i++) {
+      char msg[32];
+      sprintf(msg, "Stampa %s (%d/%d)", s.numero, i + 1, numEtichette);
+      showMessage(msg, TFT_CYAN);
+      printEtichetta(s, i, numEtichette);
+
+      if (i < numEtichette - 1) {
+        for (int sec = 10; sec > 0; sec--) {
+          char countdown[32];
+          sprintf(countdown, "Prossima in %ds...", sec);
+          showMessage(countdown, TFT_CYAN);
+          delay(1000);
+        }
+      }
+    }
+
+    showMessage("Stampa completata!", TFT_GREEN);
+    delay(1500);
+
+    // Esci dalla modalità manuale
+    manualInputMode = false;
+    tft.fillScreen(TFT_BLACK);
+    drawHeader();
+    drawList();
+    drawButtons();
+
+  } else {
+    Serial.println("[MANUAL] Scheda non trovata");
+    showMessage("Scheda non trovata!", TFT_RED);
+    delay(2000);
+    manualCursorPos = 5;  // Torna all'ultima cifra per correggere
+    drawManualInput();
+  }
 }
 
 // Entra in modalità inserimento manuale
