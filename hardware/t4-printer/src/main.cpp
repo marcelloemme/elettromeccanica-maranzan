@@ -12,6 +12,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+#include <math.h>
 
 // WiFi credentials
 const char* WIFI_SSID = "FASTWEB-RNHDU3";
@@ -90,14 +91,22 @@ bool wifiOK = false;
 String csvData = "";
 
 // Auto-print polling
-unsigned long lastPollTime = 0;
 unsigned long lastKnownTimestamp = 0;
 #define POLL_INTERVAL 5000  // 5 secondi
+
+// Task polling su core separato
+TaskHandle_t pollTaskHandle = NULL;
+volatile bool newSchedeReady = false;  // Flag per comunicare col loop principale
 
 // Print history (schede già stampate)
 #define MAX_HISTORY 200
 char printHistory[MAX_HISTORY][12];  // Array di numeri scheda (es: "26/0021")
 int historyCount = 0;
+
+// Screen sleep
+unsigned long lastButtonActivity = 0;
+#define SCREEN_TIMEOUT 30000  // 30 secondi
+bool screenOn = true;
 
 // Forward declarations
 void showMessage(const char* msg, uint16_t color);
@@ -349,38 +358,59 @@ void addToHistory(const char* numero) {
 }
 
 // Segna tutte le schede correnti come stampate (all'avvio)
+// SOVRASCRIVE la history con solo le schede attuali nel CSV
 void markAllAsPrinted() {
+  historyCount = 0;  // Reset history
   for (int i = 0; i < numSchede; i++) {
-    if (!isAlreadyPrinted(schede[i].numero)) {
-      addToHistory(schede[i].numero);
-    }
+    addToHistory(schede[i].numero);
   }
   savePrintHistory();
-  Serial.println("[HISTORY] Tutte le schede correnti segnate come stampate");
+  Serial.print("[HISTORY] Reset history con ");
+  Serial.print(historyCount);
+  Serial.println(" schede dal CSV");
 }
 
 // ===== POLLING & AUTO-PRINT =====
 
 // Fetch timestamp da API
 unsigned long fetchLastUpdate() {
-  if (WiFi.status() != WL_CONNECTED) return 0;
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[POLL] WiFi non connesso");
+    return 0;
+  }
+
+  Serial.println("[POLL] Fetching timestamp...");
 
   HTTPClient http;
   String url = String(API_URL) + "?action=getLastUpdate";
   http.begin(url);
   http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
-  http.setTimeout(5000);
+  http.setTimeout(10000);  // 10 secondi
 
   int httpCode = http.GET();
   unsigned long ts = 0;
 
+  Serial.print("[POLL] HTTP code: ");
+  Serial.println(httpCode);
+
   if (httpCode == HTTP_CODE_OK) {
     String response = http.getString();
+    Serial.print("[POLL] Response: ");
+    Serial.println(response);
+
     // Parse JSON: {"ts":1234567890}
     JsonDocument doc;
     DeserializationError error = deserializeJson(doc, response);
     if (!error) {
-      ts = doc["ts"] | 0UL;
+      // Il timestamp JS è troppo grande per unsigned long (32 bit su ESP32)
+      // Usiamo solo parte del valore per confronto
+      double tsDouble = doc["ts"] | 0.0;
+      ts = (unsigned long)fmod(tsDouble, 1000000000.0);
+      Serial.print("[POLL] Parsed ts: ");
+      Serial.println(ts);
+    } else {
+      Serial.print("[POLL] JSON error: ");
+      Serial.println(error.c_str());
     }
   }
 
@@ -437,13 +467,23 @@ void autoPrintNewSchede() {
       // Stampa
       Scheda& s = schede[i];
       int numEtichette = max(1, s.numAttrezzi);
+      Serial.print("[AUTO] numAttrezzi=");
+      Serial.print(s.numAttrezzi);
+      Serial.print(" -> numEtichette=");
+      Serial.println(numEtichette);
 
       for (int j = 0; j < numEtichette; j++) {
+        Serial.print("[AUTO] Stampo etichetta ");
+        Serial.print(j + 1);
+        Serial.print("/");
+        Serial.println(numEtichette);
+
         char msg[40];
         sprintf(msg, "Auto: %s (%d/%d)", s.numero, j + 1, numEtichette);
         showMessage(msg, TFT_CYAN);
 
         printEtichetta(s, j, numEtichette);
+        Serial.println("[AUTO] printEtichetta completato");
 
         // Pausa tra etichette multiple
         if (j < numEtichette - 1) {
@@ -478,8 +518,8 @@ void autoPrintNewSchede() {
   }
 }
 
-// Check per nuove schede (chiamato ogni 5s)
-void checkForNewSchede() {
+// Check per nuove schede - solo controllo timestamp (non bloccante)
+bool checkTimestampChanged() {
   unsigned long serverTs = fetchLastUpdate();
 
   if (serverTs > lastKnownTimestamp) {
@@ -487,15 +527,53 @@ void checkForNewSchede() {
     Serial.print(lastKnownTimestamp);
     Serial.print(" -> ");
     Serial.println(serverTs);
-
     lastKnownTimestamp = serverTs;
+    return true;
+  }
+  return false;
+}
 
-    // Scarica nuovo CSV
-    if (downloadCSV()) {
-      parseCSV(csvData);
-      autoPrintNewSchede();
-      drawList();
+// Task di polling su core 0 (loop principale gira su core 1)
+void pollTask(void* parameter) {
+  Serial.println("[TASK] Poll task avviato su core 0");
+
+  for (;;) {
+    if (wifiOK && !newSchedeReady) {
+      if (checkTimestampChanged()) {
+        // Aspetta che Google Sheets aggiorni il CSV
+        Serial.println("[TASK] Nuova scheda rilevata, attendo 5s...");
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
+
+        // Scarica CSV con retry
+        for (int retry = 0; retry < 10; retry++) {
+          if (downloadCSV()) {
+            parseCSV(csvData);
+
+            // Verifica se ci sono nuove schede
+            int newCount = 0;
+            for (int i = 0; i < numSchede; i++) {
+              if (!isAlreadyPrinted(schede[i].numero)) {
+                newCount++;
+              }
+            }
+
+            if (newCount > 0) {
+              Serial.print("[TASK] Trovate ");
+              Serial.print(newCount);
+              Serial.println(" nuove schede - segnalo al loop");
+              newSchedeReady = true;  // Segnala al loop principale
+              break;
+            }
+
+            Serial.print("[TASK] Retry ");
+            Serial.print(retry + 1);
+            Serial.println("/10");
+            vTaskDelay(3000 / portTICK_PERIOD_MS);
+          }
+        }
+      }
     }
+    vTaskDelay(POLL_INTERVAL / portTICK_PERIOD_MS);
   }
 }
 
@@ -521,7 +599,9 @@ void drawButtons() {
   tft.fillRect(btnWidth + 1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_DARKGREEN);
   tft.setTextColor(TFT_WHITE, TFT_DARKGREEN);
   tft.setTextSize(2);
-  tft.setCursor(btnWidth + 22, btnY + 12);
+  // "OK" = 2 caratteri × 12px = 24px
+  // Centro nel pulsante: btnWidth + (80 - 24) / 2 = btnWidth + 28
+  tft.setCursor(btnWidth + 28, btnY + 12);
   tft.print("OK");
 
   // Pulsante GIU (destra) - triangolo giù centrato
@@ -598,7 +678,9 @@ void drawHeader() {
   tft.fillRect(0, 0, 240, 30, TFT_BLACK);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.setTextSize(2);
-  tft.setCursor(35, 8);  // Centrato
+  // "EM Maranzan" = 11 caratteri × 12px = 132px
+  // Centro: (240 - 132) / 2 = 54
+  tft.setCursor(54, 8);
   tft.print("EM Maranzan");
 
   // Linea separatore
@@ -632,52 +714,51 @@ void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi) {
   printerSerial.write('@');
   delay(50);
 
-  // === NUMERO SCHEDA (grande, bianco su nero) ===
-  printerSerial.write(0x1B); printerSerial.write('a'); printerSerial.write(1);  // center
-  printerSerial.write(0x1D); printerSerial.write('B'); printerSerial.write(1);  // reverse
+  // === NUMERO SCHEDA (normale, bold, reverse, riga intera nera) ===
+  printerSerial.write(0x1D); printerSerial.write('B'); printerSerial.write(1);  // reverse ON
   printerSerial.write(0x1B); printerSerial.write('E'); printerSerial.write(1);  // bold
-  printerSerial.write(0x1D); printerSerial.write('!'); printerSerial.write(0x11); // large
 
-  printerSerial.print(" ");
-  printerSerial.print(s.numero);
+  // Costruisci stringa centrata con padding per riempire tutta la riga (32 caratteri)
+  String numStr = String(s.numero);
   if (totAttrezzi > 1) {
-    printerSerial.print(" (");
-    printerSerial.print(attrezzoIdx + 1);
-    printerSerial.print("/");
-    printerSerial.print(totAttrezzi);
-    printerSerial.print(")");
+    numStr += " (" + String(attrezzoIdx + 1) + "/" + String(totAttrezzi) + ")";
   }
-  printerSerial.println(" ");
+  int padding = (32 - numStr.length()) / 2;
+  for (int p = 0; p < padding; p++) printerSerial.print(" ");
+  printerSerial.print(numStr);
+  for (int p = 0; p < (32 - padding - numStr.length()); p++) printerSerial.print(" ");
+  printerSerial.println();
 
-  printerSerial.write(0x1D); printerSerial.write('B'); printerSerial.write(0);  // reverse off
-  printerSerial.write(0x1D); printerSerial.write('!'); printerSerial.write(0x00); // normal
-  printerSerial.write(0x1B); printerSerial.write('E'); printerSerial.write(0);    // bold off
-  printerSerial.write(0x1B); printerSerial.write('a'); printerSerial.write(0);  // left
+  printerSerial.write(0x1D); printerSerial.write('B'); printerSerial.write(0);  // reverse OFF
+  printerSerial.write(0x1B); printerSerial.write('E'); printerSerial.write(0);  // bold off
 
-  // Spazio 3mm (ESC J 21 = 21/180 pollici ≈ 3mm)
-  printerSerial.write(0x1B); printerSerial.write('J'); printerSerial.write(14);
+  // Spazio 1mm (ESC J 7)
+  printerSerial.write(0x1B); printerSerial.write('J'); printerSerial.write(7);
 
-  // === Cliente - Data ===
-  printerSerial.print(s.cliente);
-  printerSerial.print(" - ");
-  printerSerial.println(formatDate(s.data));
+  // === Cliente (normale) ===
+  printerSerial.println(s.cliente);
 
-  // === Telefono - Indirizzo (se presenti) ===
+  // === Data - Telefono - Indirizzo (condensato) ===
+  printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(1);  // font condensato
+
   bool hasTel = strlen(s.telefono) > 0;
   bool hasInd = strlen(s.indirizzo) > 0;
 
-  if (hasTel && hasInd) {
-    printerSerial.print(s.telefono);
+  printerSerial.print(formatDate(s.data));
+  if (hasTel) {
     printerSerial.print(" - ");
-    printerSerial.println(s.indirizzo);
-  } else if (hasTel) {
-    printerSerial.println(s.telefono);
-  } else if (hasInd) {
-    printerSerial.println(s.indirizzo);
+    printerSerial.print(s.telefono);
   }
+  if (hasInd) {
+    printerSerial.print(" - ");
+    printerSerial.print(s.indirizzo);
+  }
+  printerSerial.println();
 
-  // Spazio 3mm
-  printerSerial.write(0x1B); printerSerial.write('J'); printerSerial.write(14);
+  printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);  // font normale
+
+  // Spazio 1mm
+  printerSerial.write(0x1B); printerSerial.write('J'); printerSerial.write(7);
 
   // === Attrezzo - Dotazione ===
   if (attrezzoIdx < s.numAttrezzi) {
@@ -692,16 +773,15 @@ void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi) {
       printerSerial.println();
     }
 
-    // Note
+    // Note (condensato)
     if (strlen(a.note) > 0) {
+      printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(1);  // font condensato
       printerSerial.println(a.note);
+      printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);  // font normale
     }
   }
 
-  // Spazio 3mm prima del feed finale
-  printerSerial.write(0x1B); printerSerial.write('J'); printerSerial.write(14);
-
-  // Feed carta per staccare etichetta
+  // Feed carta per staccare etichetta (solo line feed, no spazio extra)
   printerSerial.write(0x0A);
   printerSerial.write(0x0A);
   printerSerial.write(0x0A);
@@ -878,6 +958,17 @@ void setup() {
     lastKnownTimestamp = fetchLastUpdate();
     Serial.print("[POLL] Timestamp iniziale: ");
     Serial.println(lastKnownTimestamp);
+
+    // Avvia task di polling su core 0 (loop gira su core 1)
+    xTaskCreatePinnedToCore(
+      pollTask,           // Funzione
+      "PollTask",         // Nome
+      8192,               // Stack size
+      NULL,               // Parametri
+      1,                  // Priorità
+      &pollTaskHandle,    // Handle
+      0                   // Core 0
+    );
   }
 
   // Disegna UI
@@ -886,7 +977,10 @@ void setup() {
   drawList();
   drawButtons();
 
-  Serial.println("\n[READY] Auto-print attivo");
+  // Inizializza timer screen sleep
+  lastButtonActivity = millis();
+
+  Serial.println("\n[READY] Auto-print attivo (dual-core)");
 }
 
 // ===== LOOP =====
@@ -902,10 +996,48 @@ void loop() {
   bool needRedraw = false;
   unsigned long now = millis();
 
-  // === POLLING per nuove schede (ogni 5 secondi) ===
-  if (wifiOK && (now - lastPollTime >= POLL_INTERVAL)) {
-    lastPollTime = now;
-    checkForNewSchede();
+  // === Gestione screen sleep ===
+  bool anyButtonPressed = (currLeft == LOW || currCenter == LOW || currRight == LOW);
+
+  if (anyButtonPressed) {
+    lastButtonActivity = now;
+
+    // Risveglia schermo se spento
+    if (!screenOn) {
+      screenOn = true;
+      digitalWrite(TFT_BL, HIGH);
+      Serial.println("[SCREEN] Riattivato");
+      // Non processare il pulsante che ha risvegliato lo schermo
+      lastLeft = currLeft;
+      lastCenter = currCenter;
+      lastRight = currRight;
+      delay(30);
+      return;
+    }
+  }
+
+  // Spegni schermo dopo timeout
+  if (screenOn && (now - lastButtonActivity >= SCREEN_TIMEOUT)) {
+    screenOn = false;
+    digitalWrite(TFT_BL, LOW);
+    Serial.println("[SCREEN] Sleep");
+  }
+
+  // === Nuove schede pronte dal task di polling ===
+  if (newSchedeReady) {
+    newSchedeReady = false;
+    Serial.println("[LOOP] Processo nuove schede...");
+
+    // Riaccendi schermo per mostrare stampa
+    if (!screenOn) {
+      screenOn = true;
+      digitalWrite(TFT_BL, HIGH);
+      lastButtonActivity = now;
+    }
+
+    showMessage("Nuove schede!", TFT_CYAN);
+    autoPrintNewSchede();
+    drawList();
   }
 
   // === SU (LEFT button) ===
