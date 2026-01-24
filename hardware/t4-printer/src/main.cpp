@@ -964,7 +964,7 @@ void autoPrintNewSchede() {
 
         // Pausa tra etichette multiple
         if (j < numEtichette - 1) {
-          for (int sec = 10; sec > 0; sec--) {
+          for (int sec = 6; sec > 0; sec--) {
             char countdown[32];
             sprintf(countdown, "Prossima in %ds...", sec);
             showMessage(countdown, TFT_CYAN);
@@ -1369,7 +1369,7 @@ void tryPrintManualScheda() {
     Serial.println("[MANUAL] SD non disponibile");
     showMessage("SD non disponibile!", TFT_RED);
     delay(2000);
-    manualCursorPos = 5;
+    manualCursorPos = 0;  // Torna alla prima cifra
     drawManualInput();
     return;
   }
@@ -1379,7 +1379,7 @@ void tryPrintManualScheda() {
     Serial.println("[MANUAL] File CSV non trovato");
     showMessage("File CSV non trovato!", TFT_RED);
     delay(2000);
-    manualCursorPos = 5;
+    manualCursorPos = 0;  // Torna alla prima cifra
     drawManualInput();
     return;
   }
@@ -1445,7 +1445,7 @@ void tryPrintManualScheda() {
       printEtichetta(s, i, numEtichette);
 
       if (i < numEtichette - 1) {
-        for (int sec = 10; sec > 0; sec--) {
+        for (int sec = 6; sec > 0; sec--) {
           char countdown[32];
           sprintf(countdown, "Prossima in %ds...", sec);
           showMessage(countdown, TFT_CYAN);
@@ -1468,7 +1468,7 @@ void tryPrintManualScheda() {
     Serial.println("[MANUAL] Scheda non trovata");
     showMessage("Scheda non trovata!", TFT_RED);
     delay(2000);
-    manualCursorPos = 5;  // Torna all'ultima cifra per correggere
+    manualCursorPos = 0;  // Torna alla prima cifra
     drawManualInput();
   }
 }
@@ -1615,7 +1615,7 @@ void printScheda(int index) {
 
     // Pausa tra etichette multiple
     if (i < numEtichette - 1) {
-      for (int sec = 10; sec > 0; sec--) {
+      for (int sec = 6; sec > 0; sec--) {
         char countdown[32];
         sprintf(countdown, "Prossima in %ds...", sec);
         showMessage(countdown, TFT_CYAN);
