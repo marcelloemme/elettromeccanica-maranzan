@@ -2,7 +2,7 @@
  * Elettromeccanica Maranzan - T4 Thermal Printer
  * Hardware: LilyGo T4 v1.3 + CSN-A2 TTL
  *
- * v0.9 - Auto-print nuove schede + print history
+ * v1.1 - Inserimento manuale numero scheda
  */
 
 #include <Arduino.h>
@@ -132,12 +132,19 @@ unsigned long lastButtonActivity = 0;
 #define SCREEN_TIMEOUT 30000  // 30 secondi
 bool screenOn = true;
 
+// Modalità inserimento manuale numero scheda
+bool manualInputMode = false;
+char manualNumero[8] = "26/0001";  // Formato AA/NNNN
+int manualCursorPos = 0;  // Posizione cursore (0-6, salta pos 2 che è /)
+#define MANUAL_LONG_PRESS_MS 2000
+
 // Forward declarations
 void showMessage(const char* msg, uint16_t color);
 void drawList();
 void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi);
 void drawHeader();
 void drawButtons();
+void tryPrintManualScheda();
 
 // ===== WIFI CONFIG MANAGEMENT =====
 
@@ -1259,6 +1266,231 @@ void showMessage(const char* msg, uint16_t color) {
   tft.print(msg);
 }
 
+// ===== MODALITA' INSERIMENTO MANUALE =====
+
+// Inizializza numero manuale con la scheda più recente
+void initManualNumero() {
+  if (numSchede > 0) {
+    strncpy(manualNumero, schede[0].numero, 7);
+    manualNumero[7] = '\0';
+  } else {
+    strcpy(manualNumero, "26/0001");
+  }
+  manualCursorPos = 0;
+}
+
+// Mappa posizione cursore logica (0-5) a posizione stringa (0-6, salta /)
+int cursorToStringPos(int cursorPos) {
+  if (cursorPos < 2) return cursorPos;  // 0,1 -> 0,1
+  return cursorPos + 1;  // 2,3,4,5 -> 3,4,5,6
+}
+
+// Disegna UI modalità inserimento manuale
+void drawManualInput() {
+  // Pulisci area centrale (sotto header, sopra pulsanti)
+  int areaTop = 32;
+  int areaHeight = 320 - areaTop - BUTTON_HEIGHT;
+  tft.fillRect(0, areaTop, 240, areaHeight, TFT_BLACK);
+
+  // Numero grande centrato
+  tft.setTextSize(4);  // Font grande
+
+  // Calcola larghezza totale: 7 caratteri × 24px = 168px
+  int charWidth = 24;
+  int totalWidth = 7 * charWidth;
+  int startX = (240 - totalWidth) / 2;
+  int numY = areaTop + (areaHeight / 2) - 30;
+
+  // Disegna ogni carattere
+  for (int i = 0; i < 7; i++) {
+    int x = startX + i * charWidth;
+    int logicalPos = (i < 2) ? i : (i > 2 ? i - 1 : -1);  // -1 per /
+    bool isSelected = (logicalPos == manualCursorPos);
+
+    if (isSelected) {
+      // Sfondo evidenziato
+      tft.fillRect(x - 2, numY - 4, charWidth, 36, TFT_NAVY);
+      tft.setTextColor(TFT_WHITE, TFT_NAVY);
+    } else {
+      tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    }
+
+    tft.setCursor(x, numY);
+    tft.print(manualNumero[i]);
+  }
+
+  // Istruzioni
+  tft.setTextSize(1);
+  tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
+  int instrY = numY + 50;
+  tft.setCursor(45, instrY);
+  tft.print("Frecce: cambia cifra");
+  tft.setCursor(45, instrY + 15);
+  tft.print("OK: prossima / stampa");
+  tft.setCursor(45, instrY + 30);
+  tft.print("OK 2s: annulla");
+}
+
+// Cambia cifra corrente (su/giù)
+void changeManualDigit(int delta) {
+  int strPos = cursorToStringPos(manualCursorPos);
+  char c = manualNumero[strPos];
+
+  if (c >= '0' && c <= '9') {
+    int digit = c - '0';
+    digit = (digit + delta + 10) % 10;  // Wrap 0-9
+    manualNumero[strPos] = '0' + digit;
+  }
+
+  drawManualInput();
+}
+
+// Avanza cursore o stampa
+void advanceManualCursor() {
+  manualCursorPos++;
+
+  if (manualCursorPos >= 6) {
+    // Ultima posizione raggiunta, cerca e stampa
+    tryPrintManualScheda();
+  } else {
+    drawManualInput();
+  }
+}
+
+// Cerca scheda via API e stampa
+void tryPrintManualScheda() {
+  showMessage("Ricerca scheda...", TFT_YELLOW);
+  Serial.print("[MANUAL] Cerco scheda: ");
+  Serial.println(manualNumero);
+
+  if (WiFi.status() != WL_CONNECTED) {
+    showMessage("WiFi non connesso!", TFT_RED);
+    delay(2000);
+    manualCursorPos = 5;  // Torna all'ultima cifra per correggere
+    drawManualInput();
+    return;
+  }
+
+  // Chiama API getRiparazione
+  HTTPClient http;
+  String url = String(API_URL) + "?action=getRiparazione&numero=" + String(manualNumero);
+
+  // URL encode del /
+  url.replace("/", "%2F");
+
+  http.begin(url);
+  http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+  http.setTimeout(10000);
+
+  int httpCode = http.GET();
+
+  if (httpCode == HTTP_CODE_OK) {
+    String response = http.getString();
+    Serial.print("[MANUAL] Response: ");
+    Serial.println(response);
+
+    JsonDocument doc;
+    DeserializationError error = deserializeJson(doc, response);
+
+    if (!error && !doc["error"]) {
+      // Scheda trovata, parsa e stampa
+      JsonObject rip = doc["riparazione"];
+
+      Scheda s;
+      memset(&s, 0, sizeof(Scheda));
+
+      strncpy(s.numero, rip["Numero"] | "", sizeof(s.numero) - 1);
+      strncpy(s.data, rip["Data Consegna"] | "", sizeof(s.data) - 1);
+      strncpy(s.cliente, rip["Cliente"] | "", sizeof(s.cliente) - 1);
+      strncpy(s.indirizzo, rip["Indirizzo"] | "", sizeof(s.indirizzo) - 1);
+      strncpy(s.telefono, rip["Telefono"] | "", sizeof(s.telefono) - 1);
+
+      // Parse attrezzi
+      JsonArray attrezzi = rip["Attrezzi"];
+      s.numAttrezzi = 0;
+      for (JsonObject att : attrezzi) {
+        if (s.numAttrezzi >= 5) break;
+        strncpy(s.attrezzi[s.numAttrezzi].marca, att["marca"] | "", 31);
+        strncpy(s.attrezzi[s.numAttrezzi].dotazione, att["dotazione"] | "", 31);
+        strncpy(s.attrezzi[s.numAttrezzi].note, att["note"] | "", 63);
+        s.numAttrezzi++;
+      }
+
+      http.end();
+
+      // Stampa
+      int numEtichette = max(1, s.numAttrezzi);
+      for (int i = 0; i < numEtichette; i++) {
+        char msg[32];
+        sprintf(msg, "Stampa %s (%d/%d)", s.numero, i + 1, numEtichette);
+        showMessage(msg, TFT_CYAN);
+        printEtichetta(s, i, numEtichette);
+
+        if (i < numEtichette - 1) {
+          for (int sec = 10; sec > 0; sec--) {
+            char countdown[32];
+            sprintf(countdown, "Prossima in %ds...", sec);
+            showMessage(countdown, TFT_CYAN);
+            delay(1000);
+          }
+        }
+      }
+
+      showMessage("Stampa completata!", TFT_GREEN);
+      delay(1500);
+
+      // Esci dalla modalità manuale
+      manualInputMode = false;
+      tft.fillScreen(TFT_BLACK);
+      drawHeader();
+      drawList();
+      drawButtons();
+
+    } else {
+      // Scheda non trovata
+      Serial.println("[MANUAL] Scheda non trovata");
+      showMessage("Scheda non trovata!", TFT_RED);
+      delay(2000);
+      manualCursorPos = 5;  // Torna all'ultima cifra per correggere
+      drawManualInput();
+    }
+  } else {
+    Serial.print("[MANUAL] HTTP error: ");
+    Serial.println(httpCode);
+    showMessage("Errore connessione!", TFT_RED);
+    delay(2000);
+    manualCursorPos = 5;
+    drawManualInput();
+  }
+
+  http.end();
+}
+
+// Entra in modalità inserimento manuale
+void enterManualInputMode() {
+  manualInputMode = true;
+  initManualNumero();
+
+  Serial.println("[MANUAL] Modalità inserimento manuale attivata");
+
+  tft.fillScreen(TFT_BLACK);
+  drawHeader();
+  drawManualInput();
+  drawButtons();
+}
+
+// Esci dalla modalità inserimento manuale
+void exitManualInputMode() {
+  manualInputMode = false;
+
+  Serial.println("[MANUAL] Modalità inserimento manuale disattivata");
+
+  tft.fillScreen(TFT_BLACK);
+  drawHeader();
+  drawList();
+  drawButtons();
+}
+
 // ===== FORMATTA DATA gg.mm.aa =====
 String formatDate(const char* isoDate) {
   // Input: "2025-01-21" -> Output: "21.01.25"
@@ -1551,6 +1783,8 @@ void loop() {
   static bool lastLeft = HIGH;
   static bool lastCenter = HIGH;
   static bool lastRight = HIGH;
+  static unsigned long btnCenterPressed = 0;
+  static bool centerLongPressHandled = false;
 
   bool currLeft = digitalRead(BTN_LEFT);
   bool currCenter = digitalRead(BTN_CENTER);
@@ -1587,7 +1821,7 @@ void loop() {
   }
 
   // === Mostra stato WiFi/connessione ===
-  if (showWifiStatus) {
+  if (showWifiStatus && !manualInputMode) {
     showWifiStatus = false;
     if (!wifiOK) {
       showMessage("WiFi disconnesso", TFT_RED);
@@ -1601,7 +1835,7 @@ void loop() {
   }
 
   // === Nuove schede pronte dal task di polling ===
-  if (newSchedeReady) {
+  if (newSchedeReady && !manualInputMode) {
     newSchedeReady = false;
     Serial.println("[LOOP] Processo nuove schede...");
 
@@ -1615,6 +1849,64 @@ void loop() {
     showMessage("Nuove schede!", TFT_CYAN);
     autoPrintNewSchede();
     drawList();
+  }
+
+  // ============================================
+  // MODALITA' INSERIMENTO MANUALE
+  // ============================================
+  if (manualInputMode) {
+    // === Long press CENTER per uscire ===
+    if (currCenter == LOW) {
+      if (lastCenter == HIGH) {
+        btnCenterPressed = now;
+        centerLongPressHandled = false;
+      } else if (!centerLongPressHandled && (now - btnCenterPressed >= MANUAL_LONG_PRESS_MS)) {
+        // Long press: esci dalla modalità
+        centerLongPressHandled = true;
+        exitManualInputMode();
+      }
+    }
+
+    // === Short press CENTER: avanza cursore ===
+    if (currCenter == HIGH && lastCenter == LOW && !centerLongPressHandled) {
+      advanceManualCursor();
+    }
+
+    // === SU (LEFT button): incrementa cifra ===
+    if (currLeft == LOW && lastLeft == HIGH) {
+      changeManualDigit(1);
+    }
+
+    // === GIU (RIGHT button): decrementa cifra ===
+    if (currRight == LOW && lastRight == HIGH) {
+      changeManualDigit(-1);
+    }
+
+    lastLeft = currLeft;
+    lastCenter = currCenter;
+    lastRight = currRight;
+    delay(30);
+    return;
+  }
+
+  // ============================================
+  // MODALITA' LISTA NORMALE
+  // ============================================
+
+  // === Long press CENTER per entrare in modalità manuale ===
+  if (currCenter == LOW) {
+    if (lastCenter == HIGH) {
+      btnCenterPressed = now;
+      centerLongPressHandled = false;
+    } else if (!centerLongPressHandled && (now - btnCenterPressed >= MANUAL_LONG_PRESS_MS)) {
+      // Long press: entra in modalità inserimento manuale
+      centerLongPressHandled = true;
+      enterManualInputMode();
+      lastLeft = currLeft;
+      lastCenter = currCenter;
+      lastRight = currRight;
+      return;
+    }
   }
 
   // === SU (LEFT button) ===
@@ -1671,8 +1963,8 @@ void loop() {
     }
   }
 
-  // === STAMPA (CENTER button) ===
-  if (currCenter == LOW && lastCenter == HIGH) {
+  // === STAMPA (CENTER button short press) ===
+  if (currCenter == HIGH && lastCenter == LOW && !centerLongPressHandled) {
     printScheda(selectedIndex);
 
     // Aggiungi a history se non già presente
