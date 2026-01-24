@@ -18,10 +18,13 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.2.1"
+#define FIRMWARE_VERSION "1.2.2"
 
 // OTA Update URL (GitHub raw)
 const char* OTA_URL = "https://raw.githubusercontent.com/marcelloemme/elettromeccanica-maranzan/main/hardware/EM_Maranzan_printer.bin";
+
+// WiFiClientSecure per HTTPS
+#include <WiFiClientSecure.h>
 
 // WiFi - rete di default (fallback se SD vuota)
 const char* DEFAULT_WIFI_SSID = "FASTWEB-RNHDU3";
@@ -185,8 +188,12 @@ bool performOTAUpdate() {
   int barX = 20, barY = 150, barW = 200, barH = 20;
   tft.drawRect(barX, barY, barW, barH, TFT_WHITE);
 
+  // Usa WiFiClientSecure per HTTPS (senza verifica certificato)
+  WiFiClientSecure client;
+  client.setInsecure();  // Ignora verifica certificato SSL
+
   HTTPClient http;
-  http.begin(OTA_URL);
+  http.begin(client, OTA_URL);
   http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
   http.setTimeout(30000);  // 30 secondi
 
@@ -232,7 +239,7 @@ bool performOTAUpdate() {
     return false;
   }
 
-  WiFiClient* stream = http.getStreamPtr();
+  Stream* stream = http.getStreamPtr();
   size_t written = 0;
   uint8_t buff[1024];
   int lastPercent = 0;
