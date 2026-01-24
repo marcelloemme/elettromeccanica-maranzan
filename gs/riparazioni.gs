@@ -21,6 +21,8 @@ function doGet(e) {
         return getClienti();
       case 'getRiparazione':
         return getRiparazione(e);
+      case 'getLastUpdate':
+        return getLastUpdate();
       default:
         return jsonResponse({ error: 'Azione non valida' }, 400);
     }
@@ -189,6 +191,9 @@ function createRiparazione(data) {
   ];
 
   sheet.appendRow(newRow);
+
+  // Aggiorna timestamp per trigger stampante T4
+  updatePrinterTimestamp(sheet);
 
   // Aggiorna/aggiungi cliente se c'è almeno il nome
   if (data.cliente) {
@@ -405,4 +410,32 @@ function jsonResponse(data, statusCode = 200) {
   return ContentService
     .createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ===== PRINTER TRIGGER (T4) =====
+
+/**
+ * Aggiorna timestamp in M1 per notificare la stampante T4
+ */
+function updatePrinterTimestamp(sheet) {
+  if (!sheet) {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    sheet = ss.getSheetByName(SHEET_NAME_RIPARAZIONI);
+  }
+  sheet.getRange('M1').setValue(Date.now());
+}
+
+/**
+ * Ritorna il timestamp dell'ultima modifica (per polling T4)
+ */
+function getLastUpdate() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_NAME_RIPARAZIONI);
+
+  if (!sheet) {
+    return jsonResponse({ ts: 0 });
+  }
+
+  const timestamp = sheet.getRange('M1').getValue();
+  return jsonResponse({ ts: timestamp || 0 });
 }
