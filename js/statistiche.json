@@ -1,38 +1,38 @@
 {
-  "generatedAt": "2026-01-23T18:59:42.043Z",
+  "generatedAt": "2026-01-24T18:25:29.916Z",
   "recapAttuale": {
-    "totaleInCorso": 95,
+    "totaleInCorso": 98,
     "oltre90gg": null,
     "top3Vecchie": [
       {
         "numero": "25/0015",
         "cliente": "PANIGHEL LUDOVICO",
         "dataConsegna": "2025-11-03T00:00:00.000Z",
-        "giorniAperti": 81
+        "giorniAperti": 82
       },
       {
         "numero": "25/0017",
         "cliente": "BOLZAN",
         "dataConsegna": "2025-11-05T00:00:00.000Z",
-        "giorniAperti": 79
+        "giorniAperti": 80
       },
       {
         "numero": "25/0020",
         "cliente": "SORIN",
         "dataConsegna": "2025-11-06T00:00:00.000Z",
-        "giorniAperti": 78
+        "giorniAperti": 79
       }
     ],
-    "testoNotifica": "Al momento hai 95 riparazioni attive. Le tre più vecchie sono:\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025;\n- 25/0020 - SORIN del 06/11/2025."
+    "testoNotifica": "Al momento hai 98 riparazioni attive. Le tre più vecchie sono:\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025;\n- 25/0020 - SORIN del 06/11/2025."
   },
   "recapSettimanale": {
-    "settimana": "Settimana scorsa (12.01-18.01)",
-    "inserite": 31,
-    "completate": 11,
-    "percInserite": 88.3,
-    "percCompletate": -49.2,
+    "settimana": "Questa settimana (19.01-25.01)",
+    "inserite": 26,
+    "completate": 23,
+    "percInserite": 57.4,
+    "percCompletate": 16,
     "mediaInserite": "16.5",
-    "mediaCompletate": "21.6"
+    "mediaCompletate": "19.8"
   },
   "tempiRiparazione": [
     {
@@ -279,7 +279,7 @@
     },
     "2026": {
       "create": {
-        "1": 75,
+        "1": 78,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -402,6 +402,12 @@
       "aggiunte": 3,
       "completate": 5,
       "delta": 2
+    },
+    {
+      "data": "2026-01-24",
+      "aggiunte": 3,
+      "completate": 0,
+      "delta": -3
     }
   ]
 }
