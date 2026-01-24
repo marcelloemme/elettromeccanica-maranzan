@@ -98,6 +98,12 @@ unsigned long lastKnownTimestamp = 0;
 TaskHandle_t pollTaskHandle = NULL;
 volatile bool newSchedeReady = false;  // Flag per comunicare col loop principale
 
+// WiFi retry
+unsigned long lastWifiRetry = 0;
+#define WIFI_RETRY_INTERVAL 60000  // 60 secondi
+volatile bool wifiError = false;  // Errore temporaneo (polling fallito)
+volatile bool showWifiStatus = false;  // Flag per aggiornare UI
+
 // Print history (schede già stampate)
 #define MAX_HISTORY 200
 char printHistory[MAX_HISTORY][12];  // Array di numeri scheda (es: "26/0021")
@@ -372,10 +378,12 @@ void markAllAsPrinted() {
 
 // ===== POLLING & AUTO-PRINT =====
 
-// Fetch timestamp da API
+// Fetch timestamp da API - ritorna 0 se errore, setta wifiError
 unsigned long fetchLastUpdate() {
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("[POLL] WiFi non connesso");
+    wifiError = true;
+    showWifiStatus = true;
     return 0;
   }
 
@@ -408,10 +416,25 @@ unsigned long fetchLastUpdate() {
       ts = (unsigned long)fmod(tsDouble, 1000000000.0);
       Serial.print("[POLL] Parsed ts: ");
       Serial.println(ts);
+
+      // Connessione OK, resetta errore
+      if (wifiError) {
+        wifiError = false;
+        showWifiStatus = true;
+        Serial.println("[POLL] Connessione ripristinata");
+      }
     } else {
       Serial.print("[POLL] JSON error: ");
       Serial.println(error.c_str());
+      wifiError = true;
+      showWifiStatus = true;
     }
+  } else {
+    // Errore HTTP (timeout, connection refused, etc)
+    Serial.print("[POLL] HTTP error: ");
+    Serial.println(httpCode);
+    wifiError = true;
+    showWifiStatus = true;
   }
 
   http.end();
@@ -533,11 +556,56 @@ bool checkTimestampChanged() {
   return false;
 }
 
+// Tenta riconnessione WiFi
+bool tryReconnectWifi() {
+  Serial.println("[WIFI] Tentativo riconnessione...");
+
+  WiFi.disconnect();
+  vTaskDelay(1000 / portTICK_PERIOD_MS);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+
+  int attempts = 0;
+  while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+    Serial.print(".");
+    attempts++;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.print("\n[WIFI] Riconnesso: ");
+    Serial.println(WiFi.localIP());
+    wifiOK = true;
+    wifiError = false;
+    showWifiStatus = true;
+    return true;
+  }
+
+  Serial.println("\n[WIFI] Riconnessione fallita");
+  return false;
+}
+
 // Task di polling su core 0 (loop principale gira su core 1)
 void pollTask(void* parameter) {
   Serial.println("[TASK] Poll task avviato su core 0");
 
+  unsigned long lastWifiCheck = 0;
+
   for (;;) {
+    unsigned long now = millis();
+
+    // Se WiFi disconnesso, prova a riconnettersi ogni 60s
+    if (WiFi.status() != WL_CONNECTED) {
+      wifiOK = false;
+      wifiError = true;
+      showWifiStatus = true;
+
+      if (now - lastWifiCheck >= WIFI_RETRY_INTERVAL) {
+        lastWifiCheck = now;
+        tryReconnectWifi();
+      }
+    }
+
+    // Polling normale se WiFi OK
     if (wifiOK && !newSchedeReady) {
       if (checkTimestampChanged()) {
         // Aspetta che Google Sheets aggiorni il CSV
@@ -953,23 +1021,23 @@ void setup() {
   // (all'avvio non vogliamo ristampare tutto)
   markAllAsPrinted();
 
-  // Leggi timestamp iniziale per polling
+  // Leggi timestamp iniziale per polling (se WiFi OK)
   if (wifiOK) {
     lastKnownTimestamp = fetchLastUpdate();
     Serial.print("[POLL] Timestamp iniziale: ");
     Serial.println(lastKnownTimestamp);
-
-    // Avvia task di polling su core 0 (loop gira su core 1)
-    xTaskCreatePinnedToCore(
-      pollTask,           // Funzione
-      "PollTask",         // Nome
-      8192,               // Stack size
-      NULL,               // Parametri
-      1,                  // Priorità
-      &pollTaskHandle,    // Handle
-      0                   // Core 0
-    );
   }
+
+  // Avvia SEMPRE task di polling su core 0 (gestisce anche retry WiFi)
+  xTaskCreatePinnedToCore(
+    pollTask,           // Funzione
+    "PollTask",         // Nome
+    8192,               // Stack size
+    NULL,               // Parametri
+    1,                  // Priorità
+    &pollTaskHandle,    // Handle
+    0                   // Core 0
+  );
 
   // Disegna UI
   tft.fillScreen(TFT_BLACK);
@@ -1021,6 +1089,20 @@ void loop() {
     screenOn = false;
     digitalWrite(TFT_BL, LOW);
     Serial.println("[SCREEN] Sleep");
+  }
+
+  // === Mostra stato WiFi/connessione ===
+  if (showWifiStatus) {
+    showWifiStatus = false;
+    if (!wifiOK) {
+      showMessage("WiFi disconnesso", TFT_RED);
+    } else if (wifiError) {
+      showMessage("Errore connessione", TFT_ORANGE);
+    } else {
+      showMessage("Connesso", TFT_GREEN);
+      delay(1500);
+      showMessage("", TFT_BLACK);
+    }
   }
 
   // === Nuove schede pronte dal task di polling ===
