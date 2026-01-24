@@ -1366,6 +1366,7 @@ void tryPrintManualScheda() {
   Serial.println(manualNumero);
 
   if (!sdOK) {
+    Serial.println("[MANUAL] SD non disponibile");
     showMessage("SD non disponibile!", TFT_RED);
     delay(2000);
     manualCursorPos = 5;
@@ -1375,12 +1376,16 @@ void tryPrintManualScheda() {
 
   File f = SD.open("/riparazioni.csv", FILE_READ);
   if (!f) {
+    Serial.println("[MANUAL] File CSV non trovato");
     showMessage("File CSV non trovato!", TFT_RED);
     delay(2000);
     manualCursorPos = 5;
     drawManualInput();
     return;
   }
+
+  Serial.print("[MANUAL] File aperto, dimensione: ");
+  Serial.println(f.size());
 
   bool found = false;
   Scheda s;
@@ -1391,10 +1396,13 @@ void tryPrintManualScheda() {
     f.readStringUntil('\n');
   }
 
+  int lineCount = 0;
+
   // Cerca la riga con il numero corrispondente
   while (f.available()) {
     String line = f.readStringUntil('\n');
     line.trim();
+    lineCount++;
 
     if (line.length() == 0) continue;
 
@@ -1403,7 +1411,8 @@ void tryPrintManualScheda() {
 
     if (numero.equals(manualNumero)) {
       // Trovata! Parsa la riga
-      Serial.println("[MANUAL] Scheda trovata nel CSV");
+      Serial.print("[MANUAL] Scheda trovata alla riga ");
+      Serial.println(lineCount);
 
       strncpy(s.numero, numero.c_str(), sizeof(s.numero) - 1);
       strncpy(s.data, getCSVField(line, 1).c_str(), sizeof(s.data) - 1);
@@ -1421,6 +1430,10 @@ void tryPrintManualScheda() {
   }
 
   f.close();
+  Serial.print("[MANUAL] Righe lette: ");
+  Serial.print(lineCount);
+  Serial.print(", trovata: ");
+  Serial.println(found ? "SI" : "NO");
 
   if (found) {
     // Stampa
