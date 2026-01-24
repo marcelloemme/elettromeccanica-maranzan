@@ -1375,10 +1375,9 @@ void tryPrintManualScheda() {
 
   // Chiama API getRiparazione
   HTTPClient http;
-  String url = String(API_URL) + "?action=getRiparazione&numero=" + String(manualNumero);
-
-  // URL encode del /
-  url.replace("/", "%2F");
+  String encodedNumero = String(manualNumero);
+  encodedNumero.replace("/", "%2F");  // URL encode solo del numero
+  String url = String(API_URL) + "?action=getRiparazione&numero=" + encodedNumero;
 
   http.begin(url);
   http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
