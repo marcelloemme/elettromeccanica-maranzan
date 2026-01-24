@@ -137,6 +137,8 @@ bool manualInputMode = false;
 char manualNumero[8] = "26/0001";  // Formato AA/NNNN
 int manualCursorPos = 0;  // Posizione cursore (0-6, salta pos 2 che è /)
 #define MANUAL_LONG_PRESS_MS 2000
+#define MANUAL_TIMEOUT_MS 20000  // 20 secondi timeout inattività
+unsigned long lastManualActivity = 0;
 
 // Forward declarations
 void showMessage(const char* msg, uint16_t color);
@@ -1470,6 +1472,7 @@ void tryPrintManualScheda() {
 void enterManualInputMode() {
   manualInputMode = true;
   initManualNumero();
+  lastManualActivity = millis();  // Inizializza timer inattività
 
   Serial.println("[MANUAL] Modalità inserimento manuale attivata");
 
@@ -1855,11 +1858,22 @@ void loop() {
   // MODALITA' INSERIMENTO MANUALE
   // ============================================
   if (manualInputMode) {
+    // === Timeout inattività 20s ===
+    if (now - lastManualActivity >= MANUAL_TIMEOUT_MS) {
+      Serial.println("[MANUAL] Timeout inattività");
+      exitManualInputMode();
+      lastLeft = currLeft;
+      lastCenter = currCenter;
+      lastRight = currRight;
+      return;
+    }
+
     // === Long press CENTER per uscire ===
     if (currCenter == LOW) {
       if (lastCenter == HIGH) {
         btnCenterPressed = now;
         centerLongPressHandled = false;
+        lastManualActivity = now;  // Reset timer
       } else if (!centerLongPressHandled && (now - btnCenterPressed >= MANUAL_LONG_PRESS_MS)) {
         // Long press: esci dalla modalità
         centerLongPressHandled = true;
@@ -1869,16 +1883,19 @@ void loop() {
 
     // === Short press CENTER: avanza cursore ===
     if (currCenter == HIGH && lastCenter == LOW && !centerLongPressHandled) {
+      lastManualActivity = now;  // Reset timer
       advanceManualCursor();
     }
 
     // === SU (LEFT button): incrementa cifra ===
     if (currLeft == LOW && lastLeft == HIGH) {
+      lastManualActivity = now;  // Reset timer
       changeManualDigit(1);
     }
 
     // === GIU (RIGHT button): decrementa cifra ===
     if (currRight == LOW && lastRight == HIGH) {
+      lastManualActivity = now;  // Reset timer
       changeManualDigit(-1);
     }
 
