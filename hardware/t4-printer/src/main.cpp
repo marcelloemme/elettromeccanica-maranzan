@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.4.8"
+#define FIRMWARE_VERSION "1.4.9"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -2227,6 +2227,18 @@ void setup() {
   // Stampante
   debugPrintln("[INIT] Stampante...");
   printerSerial.begin(19200, SERIAL_8N1, PRINTER_RX, PRINTER_TX);
+  delay(100);
+
+  // Imposta densità stampa più alta per carta adesiva più spessa
+  // ESC 7 n1 n2 n3: n1=max heating dots (default 7), n2=heating time (default 80), n3=heating interval (default 2)
+  // Valori più alti = stampa più scura
+  printerSerial.write(0x1B);  // ESC
+  printerSerial.write(0x37);  // '7'
+  printerSerial.write(11);    // n1: heating dots (max 11, default 7)
+  printerSerial.write(120);   // n2: heating time (max 255, default 80) - più alto = più scuro
+  printerSerial.write(40);    // n3: heating interval (default 2) - più alto = più lento ma migliore qualità
+  printerSerial.flush();
+  debugPrintln("[INIT] Stampante densita' aumentata");
 
   // SD
   debugPrintln("[INIT] SD card...");
