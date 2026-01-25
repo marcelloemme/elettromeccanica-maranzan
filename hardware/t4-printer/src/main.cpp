@@ -18,7 +18,10 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.2.3"
+#define FIRMWARE_VERSION "1.3.0"
+
+// Modalità debug print (stampa seriale su carta)
+bool debugPrintMode = false;
 
 // OTA Update URL (GitHub raw)
 const char* OTA_URL = "https://raw.githubusercontent.com/marcelloemme/elettromeccanica-maranzan/main/hardware/EM_Maranzan_printer.bin";
@@ -159,13 +162,116 @@ void drawButtons();
 void tryPrintManualScheda();
 bool performOTAUpdate();
 
+// ===== DEBUG PRINT (Serial + Stampante) =====
+
+// Flag per sopprimere log JSON durante parsing
+bool suppressJsonLogs = false;
+
+// Stampa su seriale + carta (se debugPrintMode attivo)
+void debugPrint(const char* msg) {
+  Serial.print(msg);
+  if (debugPrintMode) {
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(1);
+    printerSerial.print(msg);
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);
+  }
+}
+
+void debugPrint(const String& msg) {
+  debugPrint(msg.c_str());
+}
+
+void debugPrint(int val) {
+  Serial.print(val);
+  if (debugPrintMode) {
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(1);
+    printerSerial.print(val);
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);
+  }
+}
+
+void debugPrint(unsigned long val) {
+  Serial.print(val);
+  if (debugPrintMode) {
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(1);
+    printerSerial.print(val);
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);
+  }
+}
+
+void debugPrint(size_t val) {
+  Serial.print((unsigned long)val);
+  if (debugPrintMode) {
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(1);
+    printerSerial.print((unsigned long)val);
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);
+  }
+}
+
+void debugPrintln(const char* msg) {
+  Serial.println(msg);
+  if (debugPrintMode) {
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(1);
+    printerSerial.println(msg);
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);
+  }
+}
+
+void debugPrintln(const String& msg) {
+  debugPrintln(msg.c_str());
+}
+
+void debugPrintln(int val) {
+  Serial.println(val);
+  if (debugPrintMode) {
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(1);
+    printerSerial.println(val);
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);
+  }
+}
+
+void debugPrintln(unsigned long val) {
+  Serial.println(val);
+  if (debugPrintMode) {
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(1);
+    printerSerial.println(val);
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);
+  }
+}
+
+void debugPrintln(size_t val) {
+  Serial.println((unsigned long)val);
+  if (debugPrintMode) {
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(1);
+    printerSerial.println((unsigned long)val);
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);
+  }
+}
+
+void debugPrintln() {
+  Serial.println();
+  if (debugPrintMode) {
+    printerSerial.println();
+  }
+}
+
+// Per IPAddress
+void debugPrintln(IPAddress ip) {
+  Serial.println(ip);
+  if (debugPrintMode) {
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(1);
+    printerSerial.println(ip);
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);
+  }
+}
+
 // ===== OTA UPDATE =====
 
 // Esegue aggiornamento OTA da GitHub
 bool performOTAUpdate() {
-  Serial.println("[OTA] Avvio aggiornamento firmware...");
-  Serial.print("[OTA] URL: ");
-  Serial.println(OTA_URL);
+  debugPrintln("[OTA] Avvio aggiornamento firmware...");
+  debugPrint("[OTA] URL: ");
+  debugPrintln(OTA_URL);
 
   // Mostra su display
   tft.fillScreen(TFT_BLACK);
@@ -200,13 +306,13 @@ bool performOTAUpdate() {
   int httpCode = http.GET();
   int contentLength = http.getSize();
 
-  Serial.print("[OTA] HTTP code: ");
-  Serial.println(httpCode);
-  Serial.print("[OTA] Content length: ");
-  Serial.println(contentLength);
+  debugPrint("[OTA] HTTP code: ");
+  debugPrintln(httpCode);
+  debugPrint("[OTA] Content length: ");
+  debugPrintln(contentLength);
 
   if (httpCode != HTTP_CODE_OK) {
-    Serial.println("[OTA] Download fallito");
+    debugPrintln("[OTA] Download fallito");
     tft.setTextColor(TFT_RED, TFT_BLACK);
     tft.setCursor(20, 200);
     tft.println("Download fallito!");
@@ -219,7 +325,7 @@ bool performOTAUpdate() {
   }
 
   if (contentLength <= 0) {
-    Serial.println("[OTA] File non trovato o vuoto");
+    debugPrintln("[OTA] File non trovato o vuoto");
     tft.setTextColor(TFT_ORANGE, TFT_BLACK);
     tft.setCursor(20, 200);
     tft.println("File non trovato");
@@ -230,7 +336,7 @@ bool performOTAUpdate() {
 
   // Inizia update
   if (!Update.begin(contentLength)) {
-    Serial.println("[OTA] Spazio insufficiente");
+    debugPrintln("[OTA] Spazio insufficiente");
     tft.setTextColor(TFT_RED, TFT_BLACK);
     tft.setCursor(20, 200);
     tft.println("Spazio insufficiente!");
@@ -256,7 +362,7 @@ bool performOTAUpdate() {
       size_t bytesWritten = Update.write(buff, bytesRead);
 
       if (bytesWritten != bytesRead) {
-        Serial.println("[OTA] Errore scrittura");
+        debugPrintln("[OTA] Errore scrittura");
         Update.abort();
         http.end();
         tft.setTextColor(TFT_RED, TFT_BLACK);
@@ -290,7 +396,7 @@ bool performOTAUpdate() {
 
   if (Update.end()) {
     if (Update.isFinished()) {
-      Serial.println("[OTA] Aggiornamento completato!");
+      debugPrintln("[OTA] Aggiornamento completato!");
 
       tft.fillRect(20, 200, 220, 40, TFT_BLACK);
       tft.setTextColor(TFT_GREEN, TFT_BLACK);
@@ -308,8 +414,8 @@ bool performOTAUpdate() {
     }
   }
 
-  Serial.print("[OTA] Errore finale: ");
-  Serial.println(Update.getError());
+  debugPrint("[OTA] Errore finale: ");
+  debugPrintln(Update.getError());
   tft.setTextColor(TFT_RED, TFT_BLACK);
   tft.setCursor(20, 200);
   tft.println("Errore aggiornamento!");
@@ -324,13 +430,13 @@ void loadWifiConfig() {
   numSavedNetworks = 0;
 
   if (!sdOK) {
-    Serial.println("[WIFI] SD non disponibile, uso default");
+    debugPrintln("[WIFI] SD non disponibile, uso default");
     return;
   }
 
   File f = SD.open("/wifi_config.txt", FILE_READ);
   if (!f) {
-    Serial.println("[WIFI] Config non trovata, uso default");
+    debugPrintln("[WIFI] Config non trovata, uso default");
     return;
   }
 
@@ -348,16 +454,16 @@ void loadWifiConfig() {
       strncpy(savedNetworks[numSavedNetworks].pass, pass.c_str(), 64);
       savedNetworks[numSavedNetworks].pass[64] = '\0';
 
-      Serial.print("[WIFI] Caricata rete: ");
-      Serial.println(savedNetworks[numSavedNetworks].ssid);
+      debugPrint("[WIFI] Caricata rete: ");
+      debugPrintln(savedNetworks[numSavedNetworks].ssid);
       numSavedNetworks++;
     }
   }
   f.close();
 
-  Serial.print("[WIFI] Caricate ");
-  Serial.print(numSavedNetworks);
-  Serial.println(" reti");
+  debugPrint("[WIFI] Caricate ");
+  debugPrint(numSavedNetworks);
+  debugPrintln(" reti");
 }
 
 // Salva reti WiFi su SD
@@ -366,7 +472,7 @@ void saveWifiConfig() {
 
   File f = SD.open("/wifi_config.txt", FILE_WRITE);
   if (!f) {
-    Serial.println("[WIFI] Errore scrittura config");
+    debugPrintln("[WIFI] Errore scrittura config");
     return;
   }
 
@@ -377,7 +483,7 @@ void saveWifiConfig() {
   }
   f.close();
 
-  Serial.println("[WIFI] Config salvata");
+  debugPrintln("[WIFI] Config salvata");
 }
 
 // Aggiunge una rete (FIFO se pieno)
@@ -397,8 +503,8 @@ void addWifiNetwork(const char* ssid, const char* pass) {
       savedNetworks[numSavedNetworks - 1] = temp;
 
       saveWifiConfig();
-      Serial.print("[WIFI] Aggiornata rete: ");
-      Serial.println(ssid);
+      debugPrint("[WIFI] Aggiornata rete: ");
+      debugPrintln(ssid);
       return;
     }
   }
@@ -419,16 +525,16 @@ void addWifiNetwork(const char* ssid, const char* pass) {
   numSavedNetworks++;
 
   saveWifiConfig();
-  Serial.print("[WIFI] Aggiunta rete: ");
-  Serial.println(ssid);
+  debugPrint("[WIFI] Aggiunta rete: ");
+  debugPrintln(ssid);
 }
 
 // Tenta connessione a una rete specifica
 bool tryConnectToNetwork(int index) {
   if (index < 0 || index >= numSavedNetworks) return false;
 
-  Serial.print("[WIFI] Provo: ");
-  Serial.println(savedNetworks[index].ssid);
+  debugPrint("[WIFI] Provo: ");
+  debugPrintln(savedNetworks[index].ssid);
 
   WiFi.disconnect();
   delay(100);
@@ -437,20 +543,20 @@ bool tryConnectToNetwork(int index) {
   int attempts = 0;
   while (WiFi.status() != WL_CONNECTED && attempts < 20) {
     delay(500);
-    Serial.print(".");
+    debugPrint(".");
     attempts++;
   }
 
   if (WiFi.status() == WL_CONNECTED) {
-    Serial.print("\n[WIFI] Connesso a ");
-    Serial.print(savedNetworks[index].ssid);
-    Serial.print(": ");
-    Serial.println(WiFi.localIP());
+    debugPrint("\n[WIFI] Connesso a ");
+    debugPrint(savedNetworks[index].ssid);
+    debugPrint(": ");
+    debugPrintln(WiFi.localIP());
     currentNetworkIndex = index;
     return true;
   }
 
-  Serial.println("\n[WIFI] Fallito");
+  debugPrintln("\n[WIFI] Fallito");
   return false;
 }
 
@@ -471,8 +577,8 @@ bool tryConnectAllNetworks() {
   }
 
   if (!defaultInList) {
-    Serial.print("[WIFI] Provo default: ");
-    Serial.println(DEFAULT_WIFI_SSID);
+    debugPrint("[WIFI] Provo default: ");
+    debugPrintln(DEFAULT_WIFI_SSID);
 
     WiFi.disconnect();
     delay(100);
@@ -481,13 +587,13 @@ bool tryConnectAllNetworks() {
     int attempts = 0;
     while (WiFi.status() != WL_CONNECTED && attempts < 20) {
       delay(500);
-      Serial.print(".");
+      debugPrint(".");
       attempts++;
     }
 
     if (WiFi.status() == WL_CONNECTED) {
-      Serial.print("\n[WIFI] Connesso a default: ");
-      Serial.println(WiFi.localIP());
+      debugPrint("\n[WIFI] Connesso a default: ");
+      debugPrintln(WiFi.localIP());
       return true;
     }
   }
@@ -637,7 +743,7 @@ void handleRoot() {
 
 // Handler scansione reti
 void handleScan() {
-  Serial.println("[AP] Scansione reti...");
+  debugPrintln("[AP] Scansione reti...");
   int n = WiFi.scanNetworks();
 
   String json = "{\"networks\":[";
@@ -661,8 +767,8 @@ void handleSave() {
     return;
   }
 
-  Serial.print("[AP] Salvo rete: ");
-  Serial.println(ssid);
+  debugPrint("[AP] Salvo rete: ");
+  debugPrintln(ssid);
 
   addWifiNetwork(ssid.c_str(), pass.c_str());
 
@@ -683,7 +789,7 @@ void handleNotFound() {
 void startConfigMode() {
   configMode = true;
 
-  Serial.println("\n[AP] Avvio modalità configurazione...");
+  debugPrintln("\n[AP] Avvio modalità configurazione...");
 
   // Mostra su display
   tft.fillScreen(TFT_BLACK);
@@ -719,8 +825,8 @@ void startConfigMode() {
   IPAddress apIP(192, 168, 4, 1);
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
 
-  Serial.print("[AP] IP: ");
-  Serial.println(WiFi.softAPIP());
+  debugPrint("[AP] IP: ");
+  debugPrintln(WiFi.softAPIP());
 
   // Avvia DNS server per captive portal
   dnsServer.start(DNS_PORT, "*", apIP);
@@ -732,7 +838,7 @@ void startConfigMode() {
   webServer.onNotFound(handleNotFound);
   webServer.begin();
 
-  Serial.println("[AP] Server avviato");
+  debugPrintln("[AP] Server avviato");
 
   // Loop modalità config
   while (configMode) {
@@ -773,12 +879,14 @@ String getCSVField(const String& line, int fieldIndex) {
 void parseAttrezziJSON(String json, Scheda& s) {
   s.numAttrezzi = 0;
 
-  // Debug
-  Serial.print("[JSON] Input: ");
-  Serial.println(json.substring(0, min((int)json.length(), 80)));
+  // Debug (soppresso durante parsing massivo CSV)
+  if (!suppressJsonLogs) {
+    debugPrint("[JSON] Input: ");
+    debugPrintln(json.substring(0, min((int)json.length(), 80)));
+  }
 
   if (json.length() < 3) {
-    Serial.println("[JSON] Troppo corto");
+    if (!suppressJsonLogs) debugPrintln("[JSON] Troppo corto");
     return;
   }
 
@@ -792,7 +900,7 @@ void parseAttrezziJSON(String json, Scheda& s) {
 
   if (!json.startsWith("[")) {
     // Non è un JSON array, tratta come testo semplice
-    Serial.println("[JSON] Non e' un array, uso come testo");
+    if (!suppressJsonLogs) debugPrintln("[JSON] Non e' un array, uso come testo");
     strncpy(s.attrezzi[0].marca, json.c_str(), sizeof(s.attrezzi[0].marca) - 1);
     s.attrezzi[0].dotazione[0] = '\0';
     s.attrezzi[0].note[0] = '\0';
@@ -805,8 +913,10 @@ void parseAttrezziJSON(String json, Scheda& s) {
   DeserializationError error = deserializeJson(doc, json);
 
   if (error) {
-    Serial.print("[JSON] Parse error: ");
-    Serial.println(error.c_str());
+    if (!suppressJsonLogs) {
+      debugPrint("[JSON] Parse error: ");
+      debugPrintln(error.c_str());
+    }
     // Fallback: mostra raw
     strncpy(s.attrezzi[0].marca, json.c_str(), sizeof(s.attrezzi[0].marca) - 1);
     s.numAttrezzi = 1;
@@ -814,9 +924,11 @@ void parseAttrezziJSON(String json, Scheda& s) {
   }
 
   JsonArray arr = doc.as<JsonArray>();
-  Serial.print("[JSON] Trovati ");
-  Serial.print(arr.size());
-  Serial.println(" attrezzi");
+  if (!suppressJsonLogs) {
+    debugPrint("[JSON] Trovati ");
+    debugPrint((int)arr.size());
+    debugPrintln(" attrezzi");
+  }
 
   for (JsonObject obj : arr) {
     if (s.numAttrezzi >= 5) break;
@@ -830,10 +942,12 @@ void parseAttrezziJSON(String json, Scheda& s) {
     strncpy(a.dotazione, dotazione, sizeof(a.dotazione) - 1);
     strncpy(a.note, note, sizeof(a.note) - 1);
 
-    Serial.print("[JSON] Attrezzo ");
-    Serial.print(s.numAttrezzi);
-    Serial.print(": ");
-    Serial.println(a.marca);
+    if (!suppressJsonLogs) {
+      debugPrint("[JSON] Attrezzo ");
+      debugPrint(s.numAttrezzi);
+      debugPrint(": ");
+      debugPrintln(a.marca);
+    }
 
     s.numAttrezzi++;
   }
@@ -843,6 +957,9 @@ void parseCSV(const String& csv) {
   numSchede = 0;
   int lineStart = 0;
   bool firstLine = true;
+
+  // Sopprimi log JSON durante parsing massivo
+  suppressJsonLogs = true;
 
   // Prima conta le righe per prendere le ultime 50
   int totalLines = 0;
@@ -908,9 +1025,12 @@ void parseCSV(const String& csv) {
     schede[numSchede - 1 - i] = temp;
   }
 
-  Serial.print("[CSV] Parsed ");
-  Serial.print(numSchede);
-  Serial.println(" schede (ultime, ordine decrescente)");
+  // Riattiva log JSON
+  suppressJsonLogs = false;
+
+  debugPrint("[CSV] Parsed ");
+  debugPrint(numSchede);
+  debugPrintln(" schede (ultime, ordine decrescente)");
 }
 
 // ===== PRINT HISTORY =====
@@ -922,7 +1042,7 @@ void loadPrintHistory() {
 
   File f = SD.open("/print_history.txt", FILE_READ);
   if (!f) {
-    Serial.println("[HISTORY] File non trovato, creo nuovo");
+    debugPrintln("[HISTORY] File non trovato, creo nuovo");
     return;
   }
 
@@ -937,9 +1057,9 @@ void loadPrintHistory() {
   }
   f.close();
 
-  Serial.print("[HISTORY] Caricate ");
-  Serial.print(historyCount);
-  Serial.println(" schede gia' stampate");
+  debugPrint("[HISTORY] Caricate ");
+  debugPrint(historyCount);
+  debugPrintln(" schede gia' stampate");
 }
 
 // Salva history su SD
@@ -948,7 +1068,7 @@ void savePrintHistory() {
 
   File f = SD.open("/print_history.txt", FILE_WRITE);
   if (!f) {
-    Serial.println("[HISTORY] Errore scrittura");
+    debugPrintln("[HISTORY] Errore scrittura");
     return;
   }
 
@@ -957,9 +1077,9 @@ void savePrintHistory() {
   }
   f.close();
 
-  Serial.print("[HISTORY] Salvate ");
-  Serial.print(historyCount);
-  Serial.println(" schede");
+  debugPrint("[HISTORY] Salvate ");
+  debugPrint(historyCount);
+  debugPrintln(" schede");
 }
 
 // Verifica se scheda è già stampata
@@ -994,9 +1114,9 @@ void markAllAsPrinted() {
     addToHistory(schede[i].numero);
   }
   savePrintHistory();
-  Serial.print("[HISTORY] Reset history con ");
-  Serial.print(historyCount);
-  Serial.println(" schede dal CSV");
+  debugPrint("[HISTORY] Reset history con ");
+  debugPrint(historyCount);
+  debugPrintln(" schede dal CSV");
 }
 
 // ===== POLLING & AUTO-PRINT =====
@@ -1004,13 +1124,13 @@ void markAllAsPrinted() {
 // Fetch timestamp da API - ritorna 0 se errore, setta wifiError
 unsigned long fetchLastUpdate() {
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("[POLL] WiFi non connesso");
+    debugPrintln("[POLL] WiFi non connesso");
     wifiError = true;
     showWifiStatus = true;
     return 0;
   }
 
-  Serial.println("[POLL] Fetching timestamp...");
+  debugPrintln("[POLL] Fetching timestamp...");
 
   HTTPClient http;
   String url = String(API_URL) + "?action=getLastUpdate";
@@ -1021,13 +1141,13 @@ unsigned long fetchLastUpdate() {
   int httpCode = http.GET();
   unsigned long ts = 0;
 
-  Serial.print("[POLL] HTTP code: ");
-  Serial.println(httpCode);
+  debugPrint("[POLL] HTTP code: ");
+  debugPrintln(httpCode);
 
   if (httpCode == HTTP_CODE_OK) {
     String response = http.getString();
-    Serial.print("[POLL] Response: ");
-    Serial.println(response);
+    debugPrint("[POLL] Response: ");
+    debugPrintln(response);
 
     // Parse JSON: {"ts":1234567890}
     JsonDocument doc;
@@ -1037,25 +1157,25 @@ unsigned long fetchLastUpdate() {
       // Usiamo solo parte del valore per confronto
       double tsDouble = doc["ts"] | 0.0;
       ts = (unsigned long)fmod(tsDouble, 1000000000.0);
-      Serial.print("[POLL] Parsed ts: ");
-      Serial.println(ts);
+      debugPrint("[POLL] Parsed ts: ");
+      debugPrintln(ts);
 
       // Connessione OK, resetta errore
       if (wifiError) {
         wifiError = false;
         showWifiStatus = true;
-        Serial.println("[POLL] Connessione ripristinata");
+        debugPrintln("[POLL] Connessione ripristinata");
       }
     } else {
-      Serial.print("[POLL] JSON error: ");
-      Serial.println(error.c_str());
+      debugPrint("[POLL] JSON error: ");
+      debugPrintln(error.c_str());
       wifiError = true;
       showWifiStatus = true;
     }
   } else {
     // Errore HTTP (timeout, connection refused, etc)
-    Serial.print("[POLL] HTTP error: ");
-    Serial.println(httpCode);
+    debugPrint("[POLL] HTTP error: ");
+    debugPrintln(httpCode);
     wifiError = true;
     showWifiStatus = true;
   }
@@ -1069,7 +1189,7 @@ bool downloadCSV() {
   if (WiFi.status() != WL_CONNECTED) return false;
 
   showMessage("Download CSV...", TFT_YELLOW);
-  Serial.println("[AUTO] Download CSV...");
+  debugPrintln("[AUTO] Download CSV...");
 
   HTTPClient http;
   http.begin(CSV_URL);
@@ -1078,9 +1198,9 @@ bool downloadCSV() {
 
   if (httpCode == HTTP_CODE_OK) {
     csvData = http.getString();
-    Serial.print("[AUTO] CSV: ");
-    Serial.print(csvData.length());
-    Serial.println(" bytes");
+    debugPrint("[AUTO] CSV: ");
+    debugPrint(csvData.length());
+    debugPrintln(" bytes");
 
     // Salva su SD
     if (sdOK) {
@@ -1095,8 +1215,8 @@ bool downloadCSV() {
     return true;
   }
 
-  Serial.print("[AUTO] HTTP error: ");
-  Serial.println(httpCode);
+  debugPrint("[AUTO] HTTP error: ");
+  debugPrintln(httpCode);
   http.end();
   return false;
 }
@@ -1107,29 +1227,29 @@ void autoPrintNewSchede() {
 
   for (int i = 0; i < numSchede; i++) {
     if (!isAlreadyPrinted(schede[i].numero)) {
-      Serial.print("[AUTO] Nuova scheda: ");
-      Serial.println(schede[i].numero);
+      debugPrint("[AUTO] Nuova scheda: ");
+      debugPrintln(schede[i].numero);
 
       // Stampa
       Scheda& s = schede[i];
       int numEtichette = max(1, s.numAttrezzi);
-      Serial.print("[AUTO] numAttrezzi=");
-      Serial.print(s.numAttrezzi);
-      Serial.print(" -> numEtichette=");
-      Serial.println(numEtichette);
+      debugPrint("[AUTO] numAttrezzi=");
+      debugPrint(s.numAttrezzi);
+      debugPrint(" -> numEtichette=");
+      debugPrintln(numEtichette);
 
       for (int j = 0; j < numEtichette; j++) {
-        Serial.print("[AUTO] Stampo etichetta ");
-        Serial.print(j + 1);
-        Serial.print("/");
-        Serial.println(numEtichette);
+        debugPrint("[AUTO] Stampo etichetta ");
+        debugPrint(j + 1);
+        debugPrint("/");
+        debugPrintln(numEtichette);
 
         char msg[40];
         sprintf(msg, "Auto: %s (%d/%d)", s.numero, j + 1, numEtichette);
         showMessage(msg, TFT_CYAN);
 
         printEtichetta(s, j, numEtichette);
-        Serial.println("[AUTO] printEtichetta completato");
+        debugPrintln("[AUTO] printEtichetta completato");
 
         // Pausa tra etichette multiple
         if (j < numEtichette - 1) {
@@ -1153,9 +1273,9 @@ void autoPrintNewSchede() {
     char msg[32];
     sprintf(msg, "Stampate %d nuove", printed);
     showMessage(msg, TFT_GREEN);
-    Serial.print("[AUTO] Stampate ");
-    Serial.print(printed);
-    Serial.println(" nuove schede");
+    debugPrint("[AUTO] Stampate ");
+    debugPrint(printed);
+    debugPrintln(" nuove schede");
 
     // Aggiorna UI
     drawList();
@@ -1169,10 +1289,10 @@ bool checkTimestampChanged() {
   unsigned long serverTs = fetchLastUpdate();
 
   if (serverTs > lastKnownTimestamp) {
-    Serial.print("[POLL] Timestamp cambiato: ");
-    Serial.print(lastKnownTimestamp);
-    Serial.print(" -> ");
-    Serial.println(serverTs);
+    debugPrint("[POLL] Timestamp cambiato: ");
+    debugPrint(lastKnownTimestamp);
+    debugPrint(" -> ");
+    debugPrintln(serverTs);
     lastKnownTimestamp = serverTs;
     return true;
   }
@@ -1181,7 +1301,7 @@ bool checkTimestampChanged() {
 
 // Tenta riconnessione WiFi (rotazione su tutte le reti)
 bool tryReconnectWifi() {
-  Serial.println("[WIFI] Tentativo riconnessione...");
+  debugPrintln("[WIFI] Tentativo riconnessione...");
 
   // Prova la prossima rete nella lista
   int startIndex = currentNetworkIndex;
@@ -1191,8 +1311,8 @@ bool tryReconnectWifi() {
     currentNetworkIndex = (currentNetworkIndex + 1) % numSavedNetworks;
     tried++;
 
-    Serial.print("[WIFI] Provo: ");
-    Serial.println(savedNetworks[currentNetworkIndex].ssid);
+    debugPrint("[WIFI] Provo: ");
+    debugPrintln(savedNetworks[currentNetworkIndex].ssid);
 
     WiFi.disconnect();
     vTaskDelay(500 / portTICK_PERIOD_MS);
@@ -1201,21 +1321,21 @@ bool tryReconnectWifi() {
     int attempts = 0;
     while (WiFi.status() != WL_CONNECTED && attempts < 15) {
       vTaskDelay(500 / portTICK_PERIOD_MS);
-      Serial.print(".");
+      debugPrint(".");
       attempts++;
     }
 
     if (WiFi.status() == WL_CONNECTED) {
-      Serial.print("\n[WIFI] Riconnesso a ");
-      Serial.print(savedNetworks[currentNetworkIndex].ssid);
-      Serial.print(": ");
-      Serial.println(WiFi.localIP());
+      debugPrint("\n[WIFI] Riconnesso a ");
+      debugPrint(savedNetworks[currentNetworkIndex].ssid);
+      debugPrint(": ");
+      debugPrintln(WiFi.localIP());
       wifiOK = true;
       wifiError = false;
       showWifiStatus = true;
       return true;
     }
-    Serial.println(" fallito");
+    debugPrintln(" fallito");
   }
 
   // Fallback: prova default se non nelle salvate
@@ -1228,8 +1348,8 @@ bool tryReconnectWifi() {
   }
 
   if (!defaultInList && numSavedNetworks == 0) {
-    Serial.print("[WIFI] Provo default: ");
-    Serial.println(DEFAULT_WIFI_SSID);
+    debugPrint("[WIFI] Provo default: ");
+    debugPrintln(DEFAULT_WIFI_SSID);
 
     WiFi.disconnect();
     vTaskDelay(500 / portTICK_PERIOD_MS);
@@ -1238,13 +1358,13 @@ bool tryReconnectWifi() {
     int attempts = 0;
     while (WiFi.status() != WL_CONNECTED && attempts < 15) {
       vTaskDelay(500 / portTICK_PERIOD_MS);
-      Serial.print(".");
+      debugPrint(".");
       attempts++;
     }
 
     if (WiFi.status() == WL_CONNECTED) {
-      Serial.print("\n[WIFI] Riconnesso a default: ");
-      Serial.println(WiFi.localIP());
+      debugPrint("\n[WIFI] Riconnesso a default: ");
+      debugPrintln(WiFi.localIP());
       wifiOK = true;
       wifiError = false;
       showWifiStatus = true;
@@ -1252,13 +1372,13 @@ bool tryReconnectWifi() {
     }
   }
 
-  Serial.println("[WIFI] Riconnessione fallita su tutte le reti");
+  debugPrintln("[WIFI] Riconnessione fallita su tutte le reti");
   return false;
 }
 
 // Task di polling su core 0 (loop principale gira su core 1)
 void pollTask(void* parameter) {
-  Serial.println("[TASK] Poll task avviato su core 0");
+  debugPrintln("[TASK] Poll task avviato su core 0");
 
   unsigned long lastWifiCheck = 0;
 
@@ -1281,7 +1401,7 @@ void pollTask(void* parameter) {
     if (wifiOK && !newSchedeReady) {
       if (checkTimestampChanged()) {
         // Aspetta che Google Sheets aggiorni il CSV
-        Serial.println("[TASK] Nuova scheda rilevata, attendo 5s...");
+        debugPrintln("[TASK] Nuova scheda rilevata, attendo 5s...");
         vTaskDelay(5000 / portTICK_PERIOD_MS);
 
         // Scarica CSV con retry
@@ -1298,16 +1418,16 @@ void pollTask(void* parameter) {
             }
 
             if (newCount > 0) {
-              Serial.print("[TASK] Trovate ");
-              Serial.print(newCount);
-              Serial.println(" nuove schede - segnalo al loop");
+              debugPrint("[TASK] Trovate ");
+              debugPrint(newCount);
+              debugPrintln(" nuove schede - segnalo al loop");
               newSchedeReady = true;  // Segnala al loop principale
               break;
             }
 
-            Serial.print("[TASK] Retry ");
-            Serial.print(retry + 1);
-            Serial.println("/10");
+            debugPrint("[TASK] Retry ");
+            debugPrint(retry + 1);
+            debugPrintln("/10");
             vTaskDelay(3000 / portTICK_PERIOD_MS);
           }
         }
@@ -1531,11 +1651,11 @@ void advanceManualCursor() {
 // Cerca scheda nel CSV su SD e stampa
 void tryPrintManualScheda() {
   showMessage("Ricerca scheda...", TFT_YELLOW);
-  Serial.print("[MANUAL] Cerco scheda: ");
-  Serial.println(manualNumero);
+  debugPrint("[MANUAL] Cerco scheda: ");
+  debugPrintln(manualNumero);
 
   if (!sdOK) {
-    Serial.println("[MANUAL] SD non disponibile");
+    debugPrintln("[MANUAL] SD non disponibile");
     showMessage("SD non disponibile!", TFT_RED);
     delay(2000);
     manualCursorPos = 0;  // Torna alla prima cifra
@@ -1545,7 +1665,7 @@ void tryPrintManualScheda() {
 
   File f = SD.open("/riparazioni.csv", FILE_READ);
   if (!f) {
-    Serial.println("[MANUAL] File CSV non trovato");
+    debugPrintln("[MANUAL] File CSV non trovato");
     showMessage("File CSV non trovato!", TFT_RED);
     delay(2000);
     manualCursorPos = 0;  // Torna alla prima cifra
@@ -1553,8 +1673,8 @@ void tryPrintManualScheda() {
     return;
   }
 
-  Serial.print("[MANUAL] File aperto, dimensione: ");
-  Serial.println(f.size());
+  debugPrint("[MANUAL] File aperto, dimensione: ");
+  debugPrintln(f.size());
 
   bool found = false;
   Scheda s;
@@ -1580,8 +1700,8 @@ void tryPrintManualScheda() {
 
     if (numero.equals(manualNumero)) {
       // Trovata! Parsa la riga
-      Serial.print("[MANUAL] Scheda trovata alla riga ");
-      Serial.println(lineCount);
+      debugPrint("[MANUAL] Scheda trovata alla riga ");
+      debugPrintln(lineCount);
 
       strncpy(s.numero, numero.c_str(), sizeof(s.numero) - 1);
       strncpy(s.data, getCSVField(line, 1).c_str(), sizeof(s.data) - 1);
@@ -1599,10 +1719,10 @@ void tryPrintManualScheda() {
   }
 
   f.close();
-  Serial.print("[MANUAL] Righe lette: ");
-  Serial.print(lineCount);
-  Serial.print(", trovata: ");
-  Serial.println(found ? "SI" : "NO");
+  debugPrint("[MANUAL] Righe lette: ");
+  debugPrint(lineCount);
+  debugPrint(", trovata: ");
+  debugPrintln(found ? "SI" : "NO");
 
   if (found) {
     // Stampa
@@ -1634,7 +1754,7 @@ void tryPrintManualScheda() {
     drawButtons();
 
   } else {
-    Serial.println("[MANUAL] Scheda non trovata");
+    debugPrintln("[MANUAL] Scheda non trovata");
     showMessage("Scheda non trovata!", TFT_RED);
     delay(2000);
     manualCursorPos = 0;  // Torna alla prima cifra
@@ -1648,7 +1768,7 @@ void enterManualInputMode() {
   initManualNumero();
   lastManualActivity = millis();  // Inizializza timer inattività
 
-  Serial.println("[MANUAL] Modalità inserimento manuale attivata");
+  debugPrintln("[MANUAL] Modalità inserimento manuale attivata");
 
   tft.fillScreen(TFT_BLACK);
   drawHeader();
@@ -1660,7 +1780,7 @@ void enterManualInputMode() {
 void exitManualInputMode() {
   manualInputMode = false;
 
-  Serial.println("[MANUAL] Modalità inserimento manuale disattivata");
+  debugPrintln("[MANUAL] Modalità inserimento manuale disattivata");
 
   tft.fillScreen(TFT_BLACK);
   drawHeader();
@@ -1765,11 +1885,11 @@ void printScheda(int index) {
   Scheda& s = schede[index];
   int numEtichette = max(1, s.numAttrezzi);
 
-  Serial.print("[PRINT] Stampa scheda ");
-  Serial.print(s.numero);
-  Serial.print(" - ");
-  Serial.print(numEtichette);
-  Serial.println(" etichette");
+  debugPrint("[PRINT] Stampa scheda ");
+  debugPrint(s.numero);
+  debugPrint(" - ");
+  debugPrint(numEtichette);
+  debugPrintln(" etichette");
 
   for (int i = 0; i < numEtichette; i++) {
     char msg[32];
@@ -1793,7 +1913,7 @@ void printScheda(int index) {
     }
   }
 
-  Serial.println("[PRINT] Completato");
+  debugPrintln("[PRINT] Completato");
   showMessage("Stampa OK!", TFT_GREEN);
 }
 
@@ -1802,11 +1922,11 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
 
-  Serial.println("\n\n=================================");
-  Serial.print("T4 Thermal Printer - v");
-  Serial.println(FIRMWARE_VERSION);
-  Serial.println("Auto-print + WiFi + OTA");
-  Serial.println("=================================\n");
+  debugPrintln("\n\n=================================");
+  debugPrint("T4 Thermal Printer - v");
+  debugPrintln(FIRMWARE_VERSION);
+  debugPrintln("Auto-print + WiFi + OTA");
+  debugPrintln("=================================\n");
 
   // Pulsanti
   pinMode(BTN_LEFT, INPUT_PULLUP);
@@ -1829,17 +1949,17 @@ void setup() {
   tft.println("...");
 
   // Stampante
-  Serial.println("[INIT] Stampante...");
+  debugPrintln("[INIT] Stampante...");
   printerSerial.begin(19200, SERIAL_8N1, PRINTER_RX, PRINTER_TX);
 
   // SD
-  Serial.println("[INIT] SD card...");
+  debugPrintln("[INIT] SD card...");
   sdSPI.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
   if (SD.begin(SD_CS, sdSPI)) {
     sdOK = true;
-    Serial.println("[OK] SD card");
+    debugPrintln("[OK] SD card");
   } else {
-    Serial.println("[FAIL] SD card");
+    debugPrintln("[FAIL] SD card");
   }
 
   // Carica reti WiFi salvate
@@ -1850,14 +1970,26 @@ void setup() {
 
   // Pulsante CENTRALE premuto -> modalità configurazione WiFi
   if (digitalRead(BTN_CENTER) == LOW) {
-    Serial.println("[INIT] Pulsante centrale premuto - modalità config WiFi");
+    debugPrintln("[INIT] Pulsante centrale premuto - modalità config WiFi");
     startConfigMode();
     // Non ritorna mai da qui (riavvia dopo config)
   }
 
+  // Pulsante GIU (RIGHT) premuto -> modalità debug print
+  if (digitalRead(BTN_RIGHT) == LOW) {
+    debugPrintMode = true;
+    debugPrintln("[INIT] Pulsante GIU premuto - DEBUG PRINT MODE ATTIVO");
+    // Stampa intestazione debug su carta
+    printerSerial.write(0x1B); printerSerial.write('@'); // Reset stampante
+    delay(50);
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(1); // Font condensato
+    printerSerial.println("=== DEBUG MODE v" FIRMWARE_VERSION " ===");
+    printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);
+  }
+
   // Pulsante SU (LEFT) premuto -> OTA Update
   if (digitalRead(BTN_LEFT) == LOW) {
-    Serial.println("[INIT] Pulsante SU premuto - modalità OTA Update");
+    debugPrintln("[INIT] Pulsante SU premuto - modalità OTA Update");
 
     // Prima connetti WiFi
     tft.setCursor(10, 130);
@@ -1869,7 +2001,7 @@ void setup() {
       performOTAUpdate();
       // Se fallisce, continua avvio normale
     } else {
-      Serial.println("[OTA] WiFi non disponibile");
+      debugPrintln("[OTA] WiFi non disponibile");
       tft.fillScreen(TFT_BLACK);
       tft.setTextColor(TFT_RED, TFT_BLACK);
       tft.setTextSize(2);
@@ -1887,7 +2019,7 @@ void setup() {
   }
 
   // WiFi - tenta connessione a rotazione
-  Serial.println("[INIT] WiFi...");
+  debugPrintln("[INIT] WiFi...");
   tft.setCursor(10, 130);
   tft.setTextSize(1);
   tft.print("WiFi...");
@@ -1895,14 +2027,14 @@ void setup() {
   if (tryConnectAllNetworks()) {
     wifiOK = true;
   } else {
-    Serial.println("[FAIL] Nessuna rete disponibile");
+    debugPrintln("[FAIL] Nessuna rete disponibile");
   }
 
   // Download CSV
   if (wifiOK) {
     tft.setCursor(10, 145);
     tft.print("Download CSV...");
-    Serial.println("[INIT] Download CSV...");
+    debugPrintln("[INIT] Download CSV...");
 
     HTTPClient http;
     http.begin(CSV_URL);
@@ -1911,9 +2043,9 @@ void setup() {
 
     if (httpCode == HTTP_CODE_OK) {
       csvData = http.getString();
-      Serial.print("[OK] CSV: ");
-      Serial.print(csvData.length());
-      Serial.println(" bytes");
+      debugPrint("[OK] CSV: ");
+      debugPrint(csvData.length());
+      debugPrintln(" bytes");
 
       // Salva su SD
       if (sdOK) {
@@ -1928,8 +2060,8 @@ void setup() {
       parseCSV(csvData);
 
     } else {
-      Serial.print("[FAIL] HTTP: ");
-      Serial.println(httpCode);
+      debugPrint("[FAIL] HTTP: ");
+      debugPrintln(httpCode);
 
       // Prova da SD
       if (sdOK) {
@@ -1938,7 +2070,7 @@ void setup() {
           csvData = f.readString();
           f.close();
           parseCSV(csvData);
-          Serial.println("[OK] CSV da SD");
+          debugPrintln("[OK] CSV da SD");
         }
       }
     }
@@ -1950,7 +2082,7 @@ void setup() {
       csvData = f.readString();
       f.close();
       parseCSV(csvData);
-      Serial.println("[OK] CSV da SD (offline)");
+      debugPrintln("[OK] CSV da SD (offline)");
     }
   }
 
@@ -1964,8 +2096,8 @@ void setup() {
   // Leggi timestamp iniziale per polling (se WiFi OK)
   if (wifiOK) {
     lastKnownTimestamp = fetchLastUpdate();
-    Serial.print("[POLL] Timestamp iniziale: ");
-    Serial.println(lastKnownTimestamp);
+    debugPrint("[POLL] Timestamp iniziale: ");
+    debugPrintln(lastKnownTimestamp);
   }
 
   // Avvia SEMPRE task di polling su core 0 (gestisce anche retry WiFi)
@@ -1988,7 +2120,7 @@ void setup() {
   // Inizializza timer screen sleep
   lastButtonActivity = millis();
 
-  Serial.println("\n[READY] Auto-print attivo (dual-core)");
+  debugPrintln("\n[READY] Auto-print attivo (dual-core)");
 }
 
 // ===== LOOP =====
@@ -2016,7 +2148,7 @@ void loop() {
     if (!screenOn) {
       screenOn = true;
       digitalWrite(TFT_BL, HIGH);
-      Serial.println("[SCREEN] Riattivato");
+      debugPrintln("[SCREEN] Riattivato");
       // Non processare il pulsante che ha risvegliato lo schermo
       lastLeft = currLeft;
       lastCenter = currCenter;
@@ -2030,7 +2162,7 @@ void loop() {
   if (screenOn && (now - lastButtonActivity >= SCREEN_TIMEOUT)) {
     screenOn = false;
     digitalWrite(TFT_BL, LOW);
-    Serial.println("[SCREEN] Sleep");
+    debugPrintln("[SCREEN] Sleep");
   }
 
   // === Mostra stato WiFi/connessione ===
@@ -2050,7 +2182,7 @@ void loop() {
   // === Nuove schede pronte dal task di polling ===
   if (newSchedeReady && !manualInputMode) {
     newSchedeReady = false;
-    Serial.println("[LOOP] Processo nuove schede...");
+    debugPrintln("[LOOP] Processo nuove schede...");
 
     // Riaccendi schermo per mostrare stampa
     if (!screenOn) {
@@ -2070,7 +2202,7 @@ void loop() {
   if (manualInputMode) {
     // === Timeout inattività 20s ===
     if (now - lastManualActivity >= MANUAL_TIMEOUT_MS) {
-      Serial.println("[MANUAL] Timeout inattività");
+      debugPrintln("[MANUAL] Timeout inattività");
       exitManualInputMode();
       lastLeft = currLeft;
       lastCenter = currCenter;
