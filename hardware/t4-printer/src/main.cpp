@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.4.7"
+#define FIRMWARE_VERSION "1.4.8"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -123,7 +123,7 @@ String csvData = "";
 
 // Auto-print polling
 unsigned long lastKnownTimestamp = 0;
-#define POLL_INTERVAL 5000  // 5 secondi
+#define POLL_INTERVAL 2500  // 2.5 secondi
 
 // Task polling su core separato
 TaskHandle_t pollTaskHandle = NULL;
@@ -2077,8 +2077,12 @@ void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi) {
   // Spazio 1mm (ESC J 7)
   printerSerial.write(0x1B); printerSerial.write('J'); printerSerial.write(7);
 
-  // === Cliente (normale) ===
-  printerSerial.println(s.cliente);
+  // === Cliente (normale, max 32 char) ===
+  String clienteStr = String(s.cliente);
+  if (clienteStr.length() > 32) {
+    clienteStr = clienteStr.substring(0, 31) + ".";
+  }
+  printerSerial.println(clienteStr);
 
   // === Data - Telefono - Indirizzo (condensato) ===
   printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(1);  // font condensato
