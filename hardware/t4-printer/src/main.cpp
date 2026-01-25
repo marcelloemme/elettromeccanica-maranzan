@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.4.6"
+#define FIRMWARE_VERSION "1.4.7"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -2021,14 +2021,23 @@ void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi) {
 
   // === NUMERO SCHEDA (bold, reverse, riga intera nera) ===
   // Se stampa da sleep, usa 31 caratteri per compensare eventuale byte spurio
+  // Il byte spurio occupa 1 char, quindi stampiamo 31 char ma centriamo su 32
   int rowWidth = printFromSleep ? 31 : 32;
+  bool fromSleep = printFromSleep;
   printFromSleep = false;  // Reset flag dopo averlo usato
 
   String numStr = String(s.numero);
   if (totAttrezzi > 1) {
     numStr += " (" + String(attrezzoIdx + 1) + "/" + String(totAttrezzi) + ")";
   }
-  int padding = (rowWidth - numStr.length()) / 2;
+
+  // Calcola padding: se da sleep, centra come se fosse 32 ma togli 1 a destra
+  int totalWidth = 32;  // Sempre 32 per il calcolo del centro
+  int padding = (totalWidth - numStr.length()) / 2;
+  if (fromSleep && padding > 0) {
+    padding--;  // Sposta il testo 1 char a sinistra (il byte spurio è già lì)
+  }
+
   char rigaNera[33];
   memset(rigaNera, ' ', rowWidth);
   rigaNera[rowWidth] = '\0';
@@ -2093,17 +2102,38 @@ void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi) {
   // Spazio 1mm
   printerSerial.write(0x1B); printerSerial.write('J'); printerSerial.write(7);
 
-  // === Attrezzo - Dotazione ===
+  // === Attrezzo - Dotazione (max 32 caratteri) ===
   if (attrezzoIdx < s.numAttrezzi) {
     Attrezzo& a = s.attrezzi[attrezzoIdx];
 
     if (strlen(a.marca) > 0) {
-      printerSerial.print(a.marca);
-      if (strlen(a.dotazione) > 0) {
-        printerSerial.print(" - ");
-        printerSerial.print(a.dotazione);
+      String attrezzoLine = String(a.marca);
+      bool hasDotazione = strlen(a.dotazione) > 0;
+
+      if (hasDotazione) {
+        // "marca - dotazione" deve stare in 32 char
+        // Se troppo lungo, tronca la marca e aggiungi "."
+        String separator = " - ";
+        String dotazione = String(a.dotazione);
+        int totalLen = attrezzoLine.length() + separator.length() + dotazione.length();
+
+        if (totalLen > 32) {
+          // Calcola spazio disponibile per la marca
+          // marca + " - " + dotazione <= 32
+          // marca <= 32 - 3 - dotazione.length() - 1 (per il punto)
+          int maxMarcaLen = 32 - separator.length() - dotazione.length() - 1;
+          if (maxMarcaLen < 1) maxMarcaLen = 1;
+          attrezzoLine = attrezzoLine.substring(0, maxMarcaLen) + ".";
+        }
+        attrezzoLine += separator + dotazione;
+      } else {
+        // Solo marca, tronca a 32 se necessario
+        if (attrezzoLine.length() > 32) {
+          attrezzoLine = attrezzoLine.substring(0, 31) + ".";
+        }
       }
-      printerSerial.println();
+
+      printerSerial.println(attrezzoLine);
     }
 
     // Note (condensato)
