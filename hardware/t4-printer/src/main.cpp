@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.5.0"
+#define FIRMWARE_VERSION "1.5.1"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -2019,26 +2019,20 @@ void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi) {
   printerSerial.flush();
   delay(50);
 
-  // === NUMERO SCHEDA (bold, reverse, riga intera nera) ===
-  // Se stampa da sleep, usa 31 caratteri per compensare eventuale byte spurio
-  // Il byte spurio occupa 1 char, quindi stampiamo 31 char ma centriamo su 32
-  int rowWidth = printFromSleep ? 31 : 32;
-  bool fromSleep = printFromSleep;
-  printFromSleep = false;  // Reset flag dopo averlo usato
+  // === NUMERO SCHEDA (bold, reverse, riga nera) ===
+  // Usa sempre 31 caratteri per evitare wrap da byte spurio occasionale
+  const int rowWidth = 31;
 
   String numStr = String(s.numero);
   if (totAttrezzi > 1) {
     numStr += " (" + String(attrezzoIdx + 1) + "/" + String(totAttrezzi) + ")";
   }
 
-  // Calcola padding: se da sleep, centra come se fosse 32 ma togli 1 a destra
-  int totalWidth = 32;  // Sempre 32 per il calcolo del centro
-  int padding = (totalWidth - numStr.length()) / 2;
-  if (fromSleep && padding > 0) {
-    padding--;  // Sposta il testo 1 char a sinistra (il byte spurio è già lì)
-  }
+  // Centra il testo nella riga di 31 caratteri
+  int padding = (rowWidth - numStr.length()) / 2;
+  if (padding < 0) padding = 0;
 
-  char rigaNera[33];
+  char rigaNera[32];
   memset(rigaNera, ' ', rowWidth);
   rigaNera[rowWidth] = '\0';
   // Copia il numero al centro
