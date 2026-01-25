@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.3.0"
+#define FIRMWARE_VERSION "1.3.1"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -1442,11 +1442,11 @@ void drawButtons() {
   int btnY = 320 - BUTTON_HEIGHT;
   int btnWidth = 80;
 
-  // Sfondo pulsanti
+  // Sfondo pulsanti (bordo grigio)
   tft.fillRect(0, btnY, 240, BUTTON_HEIGHT, TFT_DARKGREY);
 
-  // Pulsante SU (sinistra) - triangolo su centrato
-  tft.fillRect(1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_NAVY);
+  // Pulsante SU (sinistra) - sfondo nero, triangolo bianco
+  tft.fillRect(1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_BLACK);
   int leftCenter = btnWidth / 2;
   tft.fillTriangle(
     leftCenter - 15, btnY + 28,   // punta basso sx
@@ -1455,17 +1455,15 @@ void drawButtons() {
     TFT_WHITE
   );
 
-  // Pulsante OK (centro)
-  tft.fillRect(btnWidth + 1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_DARKGREEN);
-  tft.setTextColor(TFT_WHITE, TFT_DARKGREEN);
+  // Pulsante OK (centro) - sfondo nero, testo bianco
+  tft.fillRect(btnWidth + 1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_BLACK);
+  tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.setTextSize(2);
-  // "OK" = 2 caratteri × 12px = 24px
-  // Centro nel pulsante: btnWidth + (80 - 24) / 2 = btnWidth + 28
   tft.setCursor(btnWidth + 28, btnY + 12);
   tft.print("OK");
 
-  // Pulsante GIU (destra) - triangolo giù centrato
-  tft.fillRect(btnWidth * 2 + 1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_NAVY);
+  // Pulsante GIU (destra) - sfondo nero, triangolo bianco
+  tft.fillRect(btnWidth * 2 + 1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_BLACK);
   int rightCenter = btnWidth * 2 + btnWidth / 2;
   tft.fillTriangle(
     rightCenter - 15, btnY + 10,  // punta alto sx
@@ -1477,26 +1475,27 @@ void drawButtons() {
 
 void drawList() {
   // Area lista (sotto header, sopra pulsanti)
-  int listTop = 32;
+  int listTop = BUTTON_HEIGHT;  // Inizia dopo header (40px)
   int listHeight = 320 - listTop - BUTTON_HEIGHT;
-  tft.fillRect(0, listTop, 240, listHeight, TFT_BLACK);
+  tft.fillRect(0, listTop, 236, listHeight, TFT_BLACK);  // 236 per non coprire scrollbar
 
   // Usa font built-in numero 2 (piccolo, proporzionale) size 2
-  // Font 1 size 1 = 6x8, Font 1 size 2 = 12x16
-  // Font 2 size 1 = 16px alto, una via di mezzo
   tft.setTextFont(2);  // Font 2: 16px alto
   tft.setTextSize(1);
+
+  // Offset verticale per creare spazio sopra la prima riga (come una riga vuota)
+  int topPadding = ROW_HEIGHT;
 
   for (int i = 0; i < VISIBLE_ROWS && (scrollOffset + i) < numSchede; i++) {
     int idx = scrollOffset + i;
     Scheda& s = schede[idx];
 
-    int y = listTop + 2 + i * ROW_HEIGHT;
+    int y = listTop + topPadding + i * ROW_HEIGHT;
 
-    // Riga selezionata = sfondo blu
+    // Riga selezionata = sfondo bianco, testo nero
     if (idx == selectedIndex) {
-      tft.fillRect(0, y - 1, 234, ROW_HEIGHT, TFT_NAVY);
-      tft.setTextColor(TFT_WHITE, TFT_NAVY);
+      tft.fillRect(0, y - 1, 234, ROW_HEIGHT, TFT_WHITE);
+      tft.setTextColor(TFT_BLACK, TFT_WHITE);
     } else {
       tft.setTextColor(s.completato ? TFT_DARKGREY : TFT_WHITE, TFT_BLACK);
     }
@@ -1514,7 +1513,7 @@ void drawList() {
 
     // Indicatore stato completato
     if (s.completato) {
-      tft.setTextColor(TFT_GREEN, idx == selectedIndex ? TFT_NAVY : TFT_BLACK);
+      tft.setTextColor(TFT_GREEN, idx == selectedIndex ? TFT_WHITE : TFT_BLACK);
       tft.setCursor(224, y);
       tft.print("V");
     }
@@ -1523,7 +1522,7 @@ void drawList() {
   // Torna al font di default
   tft.setTextFont(1);
 
-  // Scrollbar
+  // Scrollbar (occupa tutta l'altezza della lista, a destra)
   if (numSchede > VISIBLE_ROWS) {
     int barHeight = (listHeight * VISIBLE_ROWS) / numSchede;
     if (barHeight < 10) barHeight = 10;
@@ -1535,22 +1534,24 @@ void drawList() {
 }
 
 void drawHeader() {
-  tft.fillRect(0, 0, 240, 30, TFT_BLACK);
+  // Header stessa altezza dei pulsanti (BUTTON_HEIGHT = 40)
+  tft.fillRect(0, 0, 240, BUTTON_HEIGHT, TFT_BLACK);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.setTextSize(2);
   // "EM Maranzan" = 11 caratteri × 12px = 132px
-  // Centro: (240 - 132) / 2 = 54
-  tft.setCursor(54, 8);
+  // Centro orizzontale: (240 - 132) / 2 = 54
+  // Centro verticale: (40 - 16) / 2 = 12
+  tft.setCursor(54, 12);
   tft.print("EM Maranzan");
 
   // Linea separatore
-  tft.drawFastHLine(0, 30, 240, TFT_DARKGREY);
+  tft.drawFastHLine(0, BUTTON_HEIGHT - 1, 240, TFT_DARKGREY);
 }
 
 void showMessage(const char* msg, uint16_t color) {
-  // Mostra messaggio temporaneo sopra i pulsanti
+  // Mostra messaggio temporaneo sopra i pulsanti (non copre scrollbar a destra)
   int msgY = 320 - BUTTON_HEIGHT - 20;
-  tft.fillRect(0, msgY, 240, 18, TFT_BLACK);
+  tft.fillRect(0, msgY, 232, 18, TFT_BLACK);  // 232 invece di 240 per non coprire scrollbar
   tft.setTextColor(color, TFT_BLACK);
   tft.setTextSize(1);
   tft.setCursor(5, msgY + 4);
@@ -1579,7 +1580,7 @@ int cursorToStringPos(int cursorPos) {
 // Disegna UI modalità inserimento manuale
 void drawManualInput() {
   // Pulisci area centrale (sotto header, sopra pulsanti)
-  int areaTop = 32;
+  int areaTop = BUTTON_HEIGHT;  // Usa stessa altezza header
   int areaHeight = 320 - areaTop - BUTTON_HEIGHT;
   tft.fillRect(0, areaTop, 240, areaHeight, TFT_BLACK);
 
@@ -1599,9 +1600,9 @@ void drawManualInput() {
     bool isSelected = (logicalPos == manualCursorPos);
 
     if (isSelected) {
-      // Sfondo evidenziato
-      tft.fillRect(x - 2, numY - 4, charWidth, 36, TFT_NAVY);
-      tft.setTextColor(TFT_WHITE, TFT_NAVY);
+      // Sfondo bianco, testo nero (come riga selezionata nella lista)
+      tft.fillRect(x - 2, numY - 4, charWidth, 36, TFT_WHITE);
+      tft.setTextColor(TFT_BLACK, TFT_WHITE);
     } else {
       tft.setTextColor(TFT_WHITE, TFT_BLACK);
     }
@@ -2149,11 +2150,15 @@ void loop() {
       screenOn = true;
       digitalWrite(TFT_BL, HIGH);
       debugPrintln("[SCREEN] Riattivato");
-      // Non processare il pulsante che ha risvegliato lo schermo
-      lastLeft = currLeft;
-      lastCenter = currCenter;
-      lastRight = currRight;
-      delay(30);
+      // Aspetta che tutti i pulsanti vengano rilasciati prima di continuare
+      while (digitalRead(BTN_LEFT) == LOW || digitalRead(BTN_CENTER) == LOW || digitalRead(BTN_RIGHT) == LOW) {
+        delay(10);
+      }
+      // Reset stati pulsanti per evitare azioni indesiderate
+      lastLeft = HIGH;
+      lastCenter = HIGH;
+      lastRight = HIGH;
+      delay(50);  // Debounce extra
       return;
     }
   }
