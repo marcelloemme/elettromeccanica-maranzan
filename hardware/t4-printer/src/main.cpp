@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.4.4"
+#define FIRMWARE_VERSION "1.4.5"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -1307,9 +1307,12 @@ bool fetchAndPrintLastScheda() {
   }
 
   // Riaccendi schermo per mostrare stampa
+  // IMPORTANTE: il digitalWrite può causare rumore sulla seriale della stampante
+  // Delay dopo accensione per stabilizzare prima di stampare
   if (!screenOn) {
     screenOn = true;
     digitalWrite(TFT_BL, HIGH);
+    delay(100);  // Attesa stabilizzazione dopo accensione backlight
   }
 
   // Stampa
@@ -2425,9 +2428,11 @@ void loop() {
     debugPrintln("[LOOP] Processo nuove schede...");
 
     // Riaccendi schermo per mostrare stampa
+    // IMPORTANTE: delay dopo accensione per evitare rumore sulla seriale stampante
     if (!screenOn) {
       screenOn = true;
       digitalWrite(TFT_BL, HIGH);
+      delay(100);  // Attesa stabilizzazione dopo accensione backlight
       lastButtonActivity = now;
     }
 
