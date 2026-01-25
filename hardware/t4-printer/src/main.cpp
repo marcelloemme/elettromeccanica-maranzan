@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.4.9"
+#define FIRMWARE_VERSION "1.5.0"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -2224,6 +2224,52 @@ void setup() {
   tft.print(FIRMWARE_VERSION);
   tft.println("...");
 
+  // === Menu pulsanti avvio (OTA / WIFI / SER) per 2 secondi ===
+  int btnY = 320 - BUTTON_HEIGHT;
+  int btnWidth = 80;
+
+  // Sfondo pulsanti (bordo grigio)
+  tft.fillRect(0, btnY, 240, BUTTON_HEIGHT, TFT_DARKGREY);
+
+  // Pulsante OTA (sinistra)
+  tft.fillRect(1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_BLACK);
+  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  tft.setTextSize(2);
+  tft.setCursor(22, btnY + 12);
+  tft.print("OTA");
+
+  // Pulsante WIFI (centro)
+  tft.fillRect(btnWidth + 1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_BLACK);
+  tft.setCursor(btnWidth + 12, btnY + 12);
+  tft.print("WIFI");
+
+  // Pulsante SER (destra)
+  tft.fillRect(btnWidth * 2 + 1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_BLACK);
+  tft.setCursor(btnWidth * 2 + 22, btnY + 12);
+  tft.print("SER");
+
+  // Attendi 2 secondi controllando i pulsanti
+  int bootMenuSelection = -1;  // -1 = nessuna selezione
+  unsigned long bootMenuStart = millis();
+  while (millis() - bootMenuStart < 2000) {
+    if (digitalRead(BTN_LEFT) == LOW) {
+      bootMenuSelection = 0;  // OTA
+      break;
+    }
+    if (digitalRead(BTN_CENTER) == LOW) {
+      bootMenuSelection = 1;  // WIFI
+      break;
+    }
+    if (digitalRead(BTN_RIGHT) == LOW) {
+      bootMenuSelection = 2;  // SER (debug)
+      break;
+    }
+    delay(50);
+  }
+
+  // Pulisci area pulsanti
+  tft.fillRect(0, btnY, 240, BUTTON_HEIGHT, TFT_BLACK);
+
   // Stampante
   debugPrintln("[INIT] Stampante...");
   printerSerial.begin(19200, SERIAL_8N1, PRINTER_RX, PRINTER_TX);
@@ -2253,20 +2299,18 @@ void setup() {
   // Carica reti WiFi salvate
   loadWifiConfig();
 
-  // Controlla pulsanti all'avvio
-  delay(100);  // Debounce
-
-  // Pulsante CENTRALE premuto -> modalità configurazione WiFi
-  if (digitalRead(BTN_CENTER) == LOW) {
-    debugPrintln("[INIT] Pulsante centrale premuto - modalità config WiFi");
+  // Gestisci selezione menu avvio
+  if (bootMenuSelection == 1) {
+    // WIFI selezionato -> modalità configurazione WiFi
+    debugPrintln("[INIT] WIFI selezionato - modalità config WiFi");
     startConfigMode();
     // Non ritorna mai da qui (riavvia dopo config)
   }
 
-  // Pulsante GIU (RIGHT) premuto -> modalità debug print
-  if (digitalRead(BTN_RIGHT) == LOW) {
+  if (bootMenuSelection == 2) {
+    // SER selezionato -> modalità debug print
     debugPrintMode = true;
-    debugPrintln("[INIT] Pulsante GIU premuto - DEBUG PRINT MODE ATTIVO");
+    debugPrintln("[INIT] SER selezionato - DEBUG PRINT MODE ATTIVO");
     // Stampa intestazione debug su carta
     printerSerial.write(0x1B); printerSerial.write('@'); // Reset stampante
     delay(50);
@@ -2275,9 +2319,9 @@ void setup() {
     printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);
   }
 
-  // Pulsante SU (LEFT) premuto -> OTA Update
-  if (digitalRead(BTN_LEFT) == LOW) {
-    debugPrintln("[INIT] Pulsante SU premuto - modalità OTA Update");
+  if (bootMenuSelection == 0) {
+    // OTA selezionato -> modalità OTA Update
+    debugPrintln("[INIT] OTA selezionato - modalità OTA Update");
 
     // Prima connetti WiFi
     tft.setCursor(10, 130);
@@ -2434,6 +2478,7 @@ void loop() {
 
     // Risveglia schermo se spento
     if (!screenOn) {
+      printFromSleep = true;  // Prima stampa dopo sleep userà 31 caratteri
       screenOn = true;
       digitalWrite(TFT_BL, HIGH);
       debugPrintln("[SCREEN] Riattivato");
@@ -2445,7 +2490,7 @@ void loop() {
       lastLeft = HIGH;
       lastCenter = HIGH;
       lastRight = HIGH;
-      delay(50);  // Debounce extra
+      delay(100);  // Delay più lungo per stabilizzazione
       return;
     }
   }
