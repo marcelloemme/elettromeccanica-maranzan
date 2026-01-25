@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.4.0"
+#define FIRMWARE_VERSION "1.4.1"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -1018,11 +1018,29 @@ void parseCSV(const String& csv) {
     }
   }
 
-  // Inverti l'ordine per avere le più recenti prima
-  for (int i = 0; i < numSchede / 2; i++) {
-    Scheda temp = schede[i];
-    schede[i] = schede[numSchede - 1 - i];
-    schede[numSchede - 1 - i] = temp;
+  // Ordina per numero decrescente (anno + progressivo)
+  // Bubble sort semplice (max 50 elementi)
+  for (int i = 0; i < numSchede - 1; i++) {
+    for (int j = 0; j < numSchede - i - 1; j++) {
+      // Estrai anno e progressivo da "AA/NNNN"
+      int annoA = 0, progA = 0, annoB = 0, progB = 0;
+      sscanf(schede[j].numero, "%d/%d", &annoA, &progA);
+      sscanf(schede[j + 1].numero, "%d/%d", &annoB, &progB);
+
+      // Ordine decrescente: prima per anno, poi per progressivo
+      bool shouldSwap = false;
+      if (annoA < annoB) {
+        shouldSwap = true;
+      } else if (annoA == annoB && progA < progB) {
+        shouldSwap = true;
+      }
+
+      if (shouldSwap) {
+        Scheda temp = schede[j];
+        schede[j] = schede[j + 1];
+        schede[j + 1] = temp;
+      }
+    }
   }
 
   // Riattiva log JSON
@@ -1030,7 +1048,7 @@ void parseCSV(const String& csv) {
 
   debugPrint("[CSV] Parsed ");
   debugPrint(numSchede);
-  debugPrintln(" schede (ultime, ordine decrescente)");
+  debugPrintln(" schede (ordinate per anno/prog decrescente)");
 }
 
 // ===== PRINT HISTORY =====

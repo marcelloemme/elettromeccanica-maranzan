@@ -109,12 +109,20 @@ function getRiparazioni(e) {
   }
 
   // Ordina per numero decrescente (più recenti prima)
+  // Considera sia anno che progressivo: 26/0079 > 25/0133
   riparazioni.sort((a, b) => {
-    const extractProgressivo = (numero) => {
-      const match = numero.match(/\/(\d+)$/);
-      return match ? parseInt(match[1]) : 0;
+    const extractParts = (numero) => {
+      const match = numero.match(/^(\d{2})\/(\d+)$/);
+      if (match) {
+        return { anno: parseInt(match[1]), prog: parseInt(match[2]) };
+      }
+      return { anno: 0, prog: 0 };
     };
-    return extractProgressivo(b.Numero) - extractProgressivo(a.Numero);
+    const pa = extractParts(a.Numero);
+    const pb = extractParts(b.Numero);
+    // Prima ordina per anno decrescente, poi per progressivo decrescente
+    if (pb.anno !== pa.anno) return pb.anno - pa.anno;
+    return pb.prog - pa.prog;
   });
 
   // Parametro limit opzionale (per stampante T4: ?limit=1 ritorna solo l'ultima)
