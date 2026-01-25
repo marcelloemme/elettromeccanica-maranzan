@@ -24,6 +24,10 @@ let dataDal = null; // Data inizio filtro (Date object o null)
 let dataAl = null;  // Data fine filtro (Date object o null)
 let isPulsanteAttivoMostraTutte = false; // Stato pulsante toggle
 
+// Stato ordinamento
+let sortColumn = 'numero'; // Default: ordina per numero
+let sortDirection = 'desc'; // Default: decrescente
+
 // Init (ottimizzato con cache)
 (async () => {
   // 1. Prova cache prima per mostrare dati istantaneamente
@@ -105,6 +109,41 @@ function setupEventListeners() {
       }
     });
   }
+
+  // Bottone + (nuovo) -> vai a riparazioni-nuovo
+  const btnNuovo = document.getElementById('btn-nuovo');
+  if (btnNuovo) {
+    btnNuovo.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(10);
+      window.location.href = '/html/riparazioni-nuovo.html';
+    });
+    btnNuovo.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (navigator.vibrate) navigator.vibrate(10);
+        window.location.href = '/html/riparazioni-nuovo.html';
+      }
+    });
+  }
+
+  // Ordinamento colonne
+  document.querySelectorAll('.th-sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const column = th.dataset.sort;
+      if (sortColumn === column) {
+        // Stesso header: inverte direzione
+        sortDirection = sortDirection === 'desc' ? 'asc' : 'desc';
+      } else {
+        // Nuovo header: imposta colonna e reset a decrescente
+        sortColumn = column;
+        sortDirection = 'desc';
+      }
+      // Aggiorna classe active
+      document.querySelectorAll('.th-sortable').forEach(t => t.classList.remove('active'));
+      th.classList.add('active');
+      renderTabella();
+    });
+  });
 
   // Filtri stato (multi-selezione)
   filterIncorso.addEventListener('click', () => {
@@ -232,22 +271,8 @@ function renderTabella() {
 
   emptyMessage.classList.add('hidden');
 
-  // Ordina per numero (più recenti in cima)
-  // Formato: "26/0001" -> anno=26, prog=0001
-  riparazioni.sort((a, b) => {
-    const parseNumero = (num) => {
-      const match = String(num).match(/^(\d+)\/(\d+)$/);
-      if (!match) return { anno: 0, prog: 0 };
-      return { anno: parseInt(match[1], 10), prog: parseInt(match[2], 10) };
-    };
-
-    const aNum = parseNumero(a.Numero);
-    const bNum = parseNumero(b.Numero);
-
-    // Prima per anno (decrescente), poi per progressivo (decrescente)
-    if (aNum.anno !== bNum.anno) return bNum.anno - aNum.anno;
-    return bNum.prog - aNum.prog;
-  });
+  // Ordina in base alla colonna selezionata
+  ordinaRiparazioni(riparazioni);
 
   tbody.innerHTML = riparazioni.map(r => {
     // Data inserimento (consegna)
@@ -274,6 +299,72 @@ function renderTabella() {
       </tr>
     `;
   }).join('');
+}
+
+// Ordina riparazioni in base a sortColumn e sortDirection
+function ordinaRiparazioni(riparazioni) {
+  const dir = sortDirection === 'desc' ? -1 : 1;
+
+  riparazioni.sort((a, b) => {
+    let cmp = 0;
+
+    switch (sortColumn) {
+      case 'numero':
+        // Formato: "26/0001" -> anno=26, prog=0001
+        const parseNumero = (num) => {
+          const match = String(num).match(/^(\d+)\/(\d+)$/);
+          if (!match) return { anno: 0, prog: 0 };
+          return { anno: parseInt(match[1], 10), prog: parseInt(match[2], 10) };
+        };
+        const aNum = parseNumero(a.Numero);
+        const bNum = parseNumero(b.Numero);
+        if (aNum.anno !== bNum.anno) {
+          cmp = aNum.anno - bNum.anno;
+        } else {
+          cmp = aNum.prog - bNum.prog;
+        }
+        break;
+
+      case 'data-ins':
+        const dataInsA = a['Data Consegna'] || a['Data consegna'] || a.DataConsegna || '';
+        const dataInsB = b['Data Consegna'] || b['Data consegna'] || b.DataConsegna || '';
+        const dateA = dataInsA ? new Date(dataInsA).getTime() : 0;
+        const dateB = dataInsB ? new Date(dataInsB).getTime() : 0;
+        cmp = dateA - dateB;
+        break;
+
+      case 'data-com':
+        // Completate con data in cima (decrescente), senza data in fondo
+        const dataComA = a['Data Completamento'] || a['Data completamento'] || a.DataCompletamento || '';
+        const dataComB = b['Data Completamento'] || b['Data completamento'] || b.DataCompletamento || '';
+        const hasA = !!dataComA;
+        const hasB = !!dataComB;
+        if (hasA && !hasB) return -1 * dir; // A ha data, B no -> A prima (in desc)
+        if (!hasA && hasB) return 1 * dir;  // B ha data, A no -> B prima (in desc)
+        if (!hasA && !hasB) return 0;       // Entrambi senza data
+        // Entrambi hanno data: ordina per data
+        const dateComA = new Date(dataComA).getTime();
+        const dateComB = new Date(dataComB).getTime();
+        cmp = dateComA - dateComB;
+        break;
+
+      case 'cliente':
+        const clienteA = (a.Cliente || '').toLowerCase();
+        const clienteB = (b.Cliente || '').toLowerCase();
+        cmp = clienteA.localeCompare(clienteB);
+        break;
+
+      case 'stato':
+        // In corso (false) prima di Completato (true) in ordine decrescente
+        // false = 0, true = 1 -> per avere "In corso" prima in desc: confronto inverso
+        const statoA = a.Completato ? 1 : 0;
+        const statoB = b.Completato ? 1 : 0;
+        cmp = statoA - statoB;
+        break;
+    }
+
+    return cmp * dir;
+  });
 }
 
 // Formatta data

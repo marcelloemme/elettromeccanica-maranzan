@@ -49,22 +49,6 @@ let paesiUnici = []; // Lista paesi per autocomplete indirizzo
   appMain.style.opacity = '1';
   appMain.style.transition = 'opacity 0.3s ease';
 
-  // Burger menu -> torna all'archivio
-  const burgerMenu = document.getElementById('burger-menu');
-  if (burgerMenu) {
-    burgerMenu.addEventListener('click', () => {
-      if (navigator.vibrate) navigator.vibrate(10);
-      window.location.href = '/html/riparazioni-archivio.html';
-    });
-    burgerMenu.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        if (navigator.vibrate) navigator.vibrate(10);
-        window.location.href = '/html/riparazioni-archivio.html';
-      }
-    });
-  }
-
   // Carica dati in background
   loadClientiCached();
   mostraProssimoNumero();
@@ -415,7 +399,7 @@ popupOk.addEventListener('click', () => {
   window.location.reload();
 });
 
-// Bottone annulla - torna a /private senza conferma
+// Bottone annulla - torna all'archivio senza conferma
 btnAnnulla.addEventListener('click', () => {
-  window.location.href = '/private.html';
+  window.location.href = '/html/riparazioni-archivio.html';
 });
