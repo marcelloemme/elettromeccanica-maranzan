@@ -667,6 +667,13 @@ body.touch-app {
   transform: none;
 }
 
+@media (max-width: 768px) {
+  .header-archivio .header-row h1 {
+    text-align: left;
+    padding-left: 16px;
+  }
+}
+
 .counter {
   font-size: 14px;
   color: var(--success);
