@@ -35,8 +35,12 @@ let sortDirection = 'desc'; // Default: decrescente
   if (cached && cached.length > 0) {
     tutteRiparazioni = cached;
 
-    // Imposta filtro date DOPO aver caricato i dati
-    impostaFiltroDateDefault();
+    setupEventListeners();
+
+    // Prova a ripristinare stato salvato, altrimenti usa default
+    if (!ripristinaStatoArchivio()) {
+      impostaFiltroDateDefault();
+    }
     renderTabella();
     scrollToScheda();
 
@@ -44,8 +48,6 @@ let sortDirection = 'desc'; // Default: decrescente
     loadingOverlay.classList.add('hidden');
     appMain.style.opacity = '1';
     appMain.style.transition = 'opacity 0.3s ease';
-
-    setupEventListeners();
 
     // 2. Aggiorna in background per avere dati freschi
     caricaRiparazioniBackground();
@@ -55,12 +57,14 @@ let sortDirection = 'desc'; // Default: decrescente
   // 3. Fallback: nessuna cache, carica da API
   await caricaRiparazioni();
 
-  // Imposta filtro date DOPO aver caricato i dati
-  impostaFiltroDateDefault();
+  setupEventListeners();
+
+  // Prova a ripristinare stato salvato, altrimenti usa default
+  if (!ripristinaStatoArchivio()) {
+    impostaFiltroDateDefault();
+  }
   renderTabella();
   scrollToScheda();
-
-  setupEventListeners();
 
   // Nascondi loading
   loadingOverlay.classList.add('hidden');
@@ -388,7 +392,75 @@ function formatData(dataStr) {
 
 // Apri dettaglio scheda
 function apriDettaglio(numero) {
+  // Salva stato filtri e ordinamento prima di uscire
+  salvaStatoArchivio();
   window.location.href = `/html/riparazioni-dettaglio.html?numero=${encodeURIComponent(numero)}`;
+}
+
+// Salva stato archivio in sessionStorage
+function salvaStatoArchivio() {
+  const stato = {
+    sortColumn,
+    sortDirection,
+    filtroIncorso,
+    filtroCompletato,
+    searchQuery,
+    dataDal: dataDal ? dataDal.toISOString() : null,
+    dataAl: dataAl ? dataAl.toISOString() : null,
+    isPulsanteAttivoMostraTutte
+  };
+  sessionStorage.setItem('archivioStato', JSON.stringify(stato));
+}
+
+// Ripristina stato archivio da sessionStorage
+function ripristinaStatoArchivio() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const scrollTo = urlParams.get('scrollTo');
+
+  // Ripristina solo se si torna dal dettaglio (scrollTo presente)
+  if (!scrollTo) return false;
+
+  const statoJson = sessionStorage.getItem('archivioStato');
+  if (!statoJson) return false;
+
+  try {
+    const stato = JSON.parse(statoJson);
+
+    // Ripristina ordinamento
+    sortColumn = stato.sortColumn || 'numero';
+    sortDirection = stato.sortDirection || 'desc';
+
+    // Aggiorna classe active sugli header
+    document.querySelectorAll('.th-sortable').forEach(th => {
+      th.classList.toggle('active', th.dataset.sort === sortColumn);
+    });
+
+    // Ripristina filtri stato
+    filtroIncorso = stato.filtroIncorso || false;
+    filtroCompletato = stato.filtroCompletato || false;
+    filterIncorso.classList.toggle('active', filtroIncorso);
+    filterCompletato.classList.toggle('active', filtroCompletato);
+
+    // Ripristina ricerca
+    searchQuery = stato.searchQuery || '';
+    searchInput.value = searchQuery;
+
+    // Ripristina date
+    dataDal = stato.dataDal ? new Date(stato.dataDal) : null;
+    dataAl = stato.dataAl ? new Date(stato.dataAl) : null;
+    if (dataDal) dataDalInput.value = formatDateToInput(dataDal);
+    if (dataAl) dataAlInput.value = formatDateToInput(dataAl);
+
+    // Ripristina stato pulsante
+    isPulsanteAttivoMostraTutte = stato.isPulsanteAttivoMostraTutte || false;
+    btnMostraTutto.classList.toggle('active', isPulsanteAttivoMostraTutte);
+    btnMostraTutto.textContent = isPulsanteAttivoMostraTutte ? 'Tutte' : 'Tutte in corso';
+
+    return true;
+  } catch (e) {
+    console.warn('Errore ripristino stato archivio:', e);
+    return false;
+  }
 }
 
 // Scrolla alla scheda specificata nel parametro scrollTo
