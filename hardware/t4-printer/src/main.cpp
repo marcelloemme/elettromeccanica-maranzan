@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.4.3"
+#define FIRMWARE_VERSION "1.4.4"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -2002,40 +2002,61 @@ String formatDate(const char* isoDate) {
 
 // ===== STAMPA SINGOLA ETICHETTA =====
 void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi) {
-  // Inizializza
-  printerSerial.write(0x1B);
-  printerSerial.write('@');
+  // Reset completo stampante e svuota buffer
+  printerSerial.flush();
+  while (printerSerial.available()) printerSerial.read();  // Svuota buffer RX
+
+  printerSerial.write(0x1B); printerSerial.write('@');  // ESC @ = reset
+  delay(100);  // Attesa più lunga per reset completo
+
+  // Assicura stato pulito: disattiva tutto esplicitamente
+  printerSerial.write(0x1D); printerSerial.write('B'); printerSerial.write(0);  // reverse OFF
+  printerSerial.write(0x1B); printerSerial.write('E'); printerSerial.write(0);  // bold OFF
+  printerSerial.write(0x1B); printerSerial.write('M'); printerSerial.write(0);  // font normale
+  printerSerial.flush();
   delay(50);
 
-  // === NUMERO SCHEDA (normale, bold, reverse, riga intera nera) ===
+  // === NUMERO SCHEDA (bold, reverse, riga intera nera) ===
   // Costruisci prima la stringa completa (32 caratteri esatti)
   String numStr = String(s.numero);
   if (totAttrezzi > 1) {
     numStr += " (" + String(attrezzoIdx + 1) + "/" + String(totAttrezzi) + ")";
   }
   int padding = (32 - numStr.length()) / 2;
-  String rigaNera = "";
-  for (int p = 0; p < padding; p++) rigaNera += " ";
-  rigaNera += numStr;
-  while (rigaNera.length() < 32) rigaNera += " ";
+  char rigaNera[33];
+  memset(rigaNera, ' ', 32);  // Riempi di spazi
+  rigaNera[32] = '\0';
+  // Copia il numero al centro
+  for (int i = 0; i < (int)numStr.length() && (padding + i) < 32; i++) {
+    rigaNera[padding + i] = numStr[i];
+  }
 
-  // Attiva reverse e bold, poi flush e delay per sincronizzazione
-  printerSerial.write(0x1D); printerSerial.write('B'); printerSerial.write(1);  // reverse ON
-  printerSerial.write(0x1B); printerSerial.write('E'); printerSerial.write(1);  // bold
-  printerSerial.flush();  // Aspetta che i comandi siano inviati
-  delay(20);              // Attesa per processamento stampante
-
-  // Stampa la riga (senza println per evitare newline in modalità reverse)
-  printerSerial.print(rigaNera);
-  printerSerial.flush();  // Aspetta che il testo sia inviato
-
-  // Disattiva reverse e bold PRIMA del newline
-  printerSerial.write(0x1D); printerSerial.write('B'); printerSerial.write(0);  // reverse OFF
-  printerSerial.write(0x1B); printerSerial.write('E'); printerSerial.write(0);  // bold off
+  // Attiva bold, flush, delay, poi reverse
+  printerSerial.write(0x1B); printerSerial.write('E'); printerSerial.write(1);  // bold ON
   printerSerial.flush();
-  delay(10);
+  delay(30);
 
-  // Ora il newline (in modalità normale)
+  printerSerial.write(0x1D); printerSerial.write('B'); printerSerial.write(1);  // reverse ON
+  printerSerial.flush();
+  delay(30);
+
+  // Stampa carattere per carattere per massima affidabilità
+  for (int i = 0; i < 32; i++) {
+    printerSerial.write(rigaNera[i]);
+  }
+  printerSerial.flush();
+  delay(20);
+
+  // Disattiva reverse, poi bold, poi newline
+  printerSerial.write(0x1D); printerSerial.write('B'); printerSerial.write(0);  // reverse OFF
+  printerSerial.flush();
+  delay(20);
+
+  printerSerial.write(0x1B); printerSerial.write('E'); printerSerial.write(0);  // bold OFF
+  printerSerial.flush();
+  delay(20);
+
+  // Newline in stato completamente pulito
   printerSerial.println();
 
   // Spazio 1mm (ESC J 7)
