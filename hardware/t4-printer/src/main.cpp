@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.4.1"
+#define FIRMWARE_VERSION "1.4.2"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -128,6 +128,7 @@ unsigned long lastKnownTimestamp = 0;
 // Task polling su core separato
 TaskHandle_t pollTaskHandle = NULL;
 volatile bool newSchedeReady = false;  // Flag per comunicare col loop principale
+char lastFastPrintNumero[12] = "";    // Numero stampato via API (per verificare CSV)
 
 // WiFi retry
 unsigned long lastWifiRetry = 0;
@@ -1051,6 +1052,16 @@ void parseCSV(const String& csv) {
   debugPrintln(" schede (ordinate per anno/prog decrescente)");
 }
 
+// Verifica se una scheda esiste nella lista corrente
+bool isSchedaInList(const char* numero) {
+  for (int i = 0; i < numSchede; i++) {
+    if (strcmp(schede[i].numero, numero) == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // ===== PRINT HISTORY =====
 
 // Carica history da SD
@@ -1268,7 +1279,7 @@ bool fetchAndPrintLastScheda() {
 
   strncpy(s.numero, numero, sizeof(s.numero) - 1);
 
-  const char* data = obj["Data Consegna"] | "";
+  const char* data = obj["Data consegna"] | "";
   strncpy(s.data, data, sizeof(s.data) - 1);
 
   const char* cliente = obj["Cliente"] | "";
@@ -1326,6 +1337,10 @@ bool fetchAndPrintLastScheda() {
   // Aggiungi a history
   addToHistory(s.numero);
   savePrintHistory();
+
+  // Salva numero per verifica CSV
+  strncpy(lastFastPrintNumero, s.numero, sizeof(lastFastPrintNumero) - 1);
+  lastFastPrintNumero[sizeof(lastFastPrintNumero) - 1] = '\0';
 
   showMessage("Stampa rapida OK!", TFT_GREEN);
   debugPrintln("[FAST] Stampa completata");
@@ -1563,13 +1578,29 @@ void pollTask(void* parameter) {
         }
 
         // === AGGIORNAMENTO CSV in background ===
-        // Continua a provare finché il CSV non si aggiorna
+        // Continua a provare finché il CSV non contiene la nuova scheda
         debugPrintln("[TASK] Aggiorno CSV in background...");
-        vTaskDelay(3000 / portTICK_PERIOD_MS);  // Breve attesa iniziale
 
-        for (int retry = 0; retry < 15; retry++) {
+        for (int retry = 0; retry < 10; retry++) {
+          vTaskDelay(10000 / portTICK_PERIOD_MS);  // 10 secondi tra tentativi
+
+          debugPrint("[TASK] CSV tentativo ");
+          debugPrint(retry + 1);
+          debugPrintln("/10");
+
           if (downloadCSV()) {
             parseCSV(csvData);
+
+            // Se abbiamo stampato via API, verifica che il CSV contenga quella scheda
+            if (stampataRapida && lastFastPrintNumero[0] != '\0') {
+              if (!isSchedaInList(lastFastPrintNumero)) {
+                debugPrint("[TASK] CSV non contiene ancora ");
+                debugPrintln(lastFastPrintNumero);
+                continue;  // Riprova
+              }
+              debugPrint("[TASK] CSV contiene ");
+              debugPrintln(lastFastPrintNumero);
+            }
 
             // Verifica se ci sono nuove schede non ancora stampate
             int newCount = 0;
@@ -1585,21 +1616,22 @@ void pollTask(void* parameter) {
               debugPrint(newCount);
               debugPrintln(" schede da stampare");
               newSchedeReady = true;
-              break;
             } else {
-              // CSV aggiornato, nessuna scheda nuova (già stampata via API)
-              debugPrintln("[TASK] CSV aggiornato, lista sincronizzata");
-              // Aggiorna display con nuova lista
+              // CSV aggiornato con la nuova scheda, lista sincronizzata
+              debugPrint("[TASK] Lista sincronizzata (");
+              debugPrint(numSchede);
+              debugPrintln(" schede)");
               newSchedeReady = true;  // Trigger redraw lista
-              break;
             }
-          }
 
-          debugPrint("[TASK] CSV retry ");
-          debugPrint(retry + 1);
-          debugPrintln("/15");
-          vTaskDelay(3000 / portTICK_PERIOD_MS);
+            // Reset numero stampato via API
+            lastFastPrintNumero[0] = '\0';
+            break;
+          }
         }
+
+        // Reset anche se tutti i tentativi falliscono
+        lastFastPrintNumero[0] = '\0';
       }
     }
     vTaskDelay(POLL_INTERVAL / portTICK_PERIOD_MS);
