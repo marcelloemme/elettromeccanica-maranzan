@@ -641,19 +641,21 @@ body.touch-app {
   }
 }
 
-/* Header archivio con icone a fianco */
+/* Header archivio con icone a destra */
 .header-archivio .header-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
+  position: relative;
 }
 
 .header-archivio .header-row h1 {
   margin: 0;
+  text-align: center;
 }
 
 .header-archivio .header-icons {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   gap: 16px;
   align-items: center;
@@ -663,13 +665,6 @@ body.touch-app {
 .header-archivio .header-icons .menu-inside {
   position: static;
   transform: none;
-}
-
-@media (max-width: 768px) {
-  .header-archivio .header-row {
-    justify-content: space-between;
-    padding: 0 16px;
-  }
 }
 
 .counter {
