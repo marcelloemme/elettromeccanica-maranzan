@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.4.5"
+#define FIRMWARE_VERSION "1.4.6"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -145,6 +145,7 @@ int historyCount = 0;
 unsigned long lastButtonActivity = 0;
 #define SCREEN_TIMEOUT 30000  // 30 secondi
 bool screenOn = true;
+bool printFromSleep = false;  // Flag: stampa partita con schermo spento
 
 // Modalità inserimento manuale numero scheda
 bool manualInputMode = false;
@@ -1307,12 +1308,11 @@ bool fetchAndPrintLastScheda() {
   }
 
   // Riaccendi schermo per mostrare stampa
-  // IMPORTANTE: il digitalWrite può causare rumore sulla seriale della stampante
-  // Delay dopo accensione per stabilizzare prima di stampare
   if (!screenOn) {
+    printFromSleep = true;  // Segnala a printEtichetta di usare 31 caratteri
     screenOn = true;
     digitalWrite(TFT_BL, HIGH);
-    delay(100);  // Attesa stabilizzazione dopo accensione backlight
+    delay(100);
   }
 
   // Stampa
@@ -2020,17 +2020,20 @@ void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi) {
   delay(50);
 
   // === NUMERO SCHEDA (bold, reverse, riga intera nera) ===
-  // Costruisci prima la stringa completa (32 caratteri esatti)
+  // Se stampa da sleep, usa 31 caratteri per compensare eventuale byte spurio
+  int rowWidth = printFromSleep ? 31 : 32;
+  printFromSleep = false;  // Reset flag dopo averlo usato
+
   String numStr = String(s.numero);
   if (totAttrezzi > 1) {
     numStr += " (" + String(attrezzoIdx + 1) + "/" + String(totAttrezzi) + ")";
   }
-  int padding = (32 - numStr.length()) / 2;
+  int padding = (rowWidth - numStr.length()) / 2;
   char rigaNera[33];
-  memset(rigaNera, ' ', 32);  // Riempi di spazi
-  rigaNera[32] = '\0';
+  memset(rigaNera, ' ', rowWidth);
+  rigaNera[rowWidth] = '\0';
   // Copia il numero al centro
-  for (int i = 0; i < (int)numStr.length() && (padding + i) < 32; i++) {
+  for (int i = 0; i < (int)numStr.length() && (padding + i) < rowWidth; i++) {
     rigaNera[padding + i] = numStr[i];
   }
 
@@ -2043,8 +2046,8 @@ void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi) {
   printerSerial.flush();
   delay(30);
 
-  // Stampa carattere per carattere per massima affidabilità
-  for (int i = 0; i < 32; i++) {
+  // Stampa carattere per carattere
+  for (int i = 0; i < rowWidth; i++) {
     printerSerial.write(rigaNera[i]);
   }
   printerSerial.flush();
@@ -2428,11 +2431,11 @@ void loop() {
     debugPrintln("[LOOP] Processo nuove schede...");
 
     // Riaccendi schermo per mostrare stampa
-    // IMPORTANTE: delay dopo accensione per evitare rumore sulla seriale stampante
     if (!screenOn) {
+      printFromSleep = true;  // Segnala a printEtichetta di usare 31 caratteri
       screenOn = true;
       digitalWrite(TFT_BL, HIGH);
-      delay(100);  // Attesa stabilizzazione dopo accensione backlight
+      delay(100);
       lastButtonActivity = now;
     }
 
