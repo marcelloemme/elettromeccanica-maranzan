@@ -233,7 +233,7 @@ function aggiornaNavigazione() {
 function setupEventListeners() {
   btnCompleta.addEventListener('click', apriCompleta);
   btnModifica.addEventListener('click', apriModifica);
-  btnArchivio.addEventListener('click', () => window.location.href = '/html/riparazioni-archivio.html');
+  btnArchivio.addEventListener('click', () => window.location.href = `/html/riparazioni-archivio.html?scrollTo=${encodeURIComponent(riparazioneCorrente.Numero)}`);
   btnPrev.addEventListener('click', navigaPrev);
   btnNext.addEventListener('click', navigaNext);
 

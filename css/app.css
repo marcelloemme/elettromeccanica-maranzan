@@ -1683,3 +1683,13 @@ button:active {
     margin-bottom: 0.75rem;
   }
 }
+
+/* ===== Highlight riga scroll-to ===== */
+.highlight-row {
+  animation: highlight-fade 1.5s ease-out;
+}
+
+@keyframes highlight-fade {
+  0% { background: var(--accent-color, #007AFF); }
+  100% { background: transparent; }
+}

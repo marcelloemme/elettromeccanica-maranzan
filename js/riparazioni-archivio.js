@@ -34,6 +34,7 @@ let isPulsanteAttivoMostraTutte = false; // Stato pulsante toggle
     // Imposta filtro date DOPO aver caricato i dati
     impostaFiltroDateDefault();
     renderTabella();
+    scrollToScheda();
 
     // Nascondi loading
     loadingOverlay.classList.add('hidden');
@@ -53,6 +54,7 @@ let isPulsanteAttivoMostraTutte = false; // Stato pulsante toggle
   // Imposta filtro date DOPO aver caricato i dati
   impostaFiltroDateDefault();
   renderTabella();
+  scrollToScheda();
 
   setupEventListeners();
 
@@ -296,6 +298,27 @@ function formatData(dataStr) {
 // Apri dettaglio scheda
 function apriDettaglio(numero) {
   window.location.href = `/html/riparazioni-dettaglio.html?numero=${encodeURIComponent(numero)}`;
+}
+
+// Scrolla alla scheda specificata nel parametro scrollTo
+function scrollToScheda() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const scrollTo = urlParams.get('scrollTo');
+  if (!scrollTo) return;
+
+  // Trova la riga con quel numero
+  const righe = tbody.querySelectorAll('tr');
+  for (const riga of righe) {
+    const tdNumero = riga.querySelector('.td-numero strong');
+    if (tdNumero && tdNumero.textContent === scrollTo) {
+      // Scrolla la riga al centro della viewport
+      riga.scrollIntoView({ behavior: 'instant', block: 'center' });
+      // Evidenzia brevemente la riga
+      riga.classList.add('highlight-row');
+      setTimeout(() => riga.classList.remove('highlight-row'), 1500);
+      break;
+    }
+  }
 }
 
 // Ricarica quando si torna alla pagina (per vedere modifiche)
