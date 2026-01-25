@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.2.2"
+#define FIRMWARE_VERSION "1.2.3"
 
 // OTA Update URL (GitHub raw)
 const char* OTA_URL = "https://raw.githubusercontent.com/marcelloemme/elettromeccanica-maranzan/main/hardware/EM_Maranzan_printer.bin";
@@ -1133,7 +1133,7 @@ void autoPrintNewSchede() {
 
         // Pausa tra etichette multiple
         if (j < numEtichette - 1) {
-          for (int sec = 6; sec > 0; sec--) {
+          for (int sec = 8; sec > 0; sec--) {
             char countdown[32];
             sprintf(countdown, "Prossima in %ds...", sec);
             showMessage(countdown, TFT_CYAN);
@@ -1614,7 +1614,7 @@ void tryPrintManualScheda() {
       printEtichetta(s, i, numEtichette);
 
       if (i < numEtichette - 1) {
-        for (int sec = 6; sec > 0; sec--) {
+        for (int sec = 8; sec > 0; sec--) {
           char countdown[32];
           sprintf(countdown, "Prossima in %ds...", sec);
           showMessage(countdown, TFT_CYAN);
@@ -1784,7 +1784,7 @@ void printScheda(int index) {
 
     // Pausa tra etichette multiple
     if (i < numEtichette - 1) {
-      for (int sec = 6; sec > 0; sec--) {
+      for (int sec = 8; sec > 0; sec--) {
         char countdown[32];
         sprintf(countdown, "Prossima in %ds...", sec);
         showMessage(countdown, TFT_CYAN);
