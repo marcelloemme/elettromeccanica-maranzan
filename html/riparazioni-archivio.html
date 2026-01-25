@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
   <title>Archivio Riparazioni - EM Maranzan</title>
-  <link rel="stylesheet" href="/css/app.css?v=65" />
+  <link rel="stylesheet" href="/css/app.css?v=66" />
   <!-- PWA / Manifest & iOS meta -->
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
@@ -25,22 +25,24 @@
   <main class="app" style="opacity: 0;">
     <!-- Sticky header section -->
     <div class="sticky-header">
-      <header class="header header-archivio" style="position: relative;">
-        <h1>Archivio Riparazioni</h1>
-        <div class="header-icons" style="position: absolute; right: 16px; bottom: -10px; display: flex; gap: 12px;">
-          <span class="menu-inside" id="btn-nuovo" role="button" aria-label="Nuova riparazione" tabindex="0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-          </span>
-          <span class="menu-inside" id="burger-menu" role="button" aria-label="Torna a Private" tabindex="0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-              <line x1="3" y1="6" x2="21" y2="6"/>
-              <line x1="3" y1="12" x2="21" y2="12"/>
-              <line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
-          </span>
+      <header class="header header-archivio">
+        <div class="header-row">
+          <h1>Archivio Riparazioni</h1>
+          <div class="header-icons">
+            <span class="menu-inside" id="btn-nuovo" role="button" aria-label="Nuova riparazione" tabindex="0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </span>
+            <span class="menu-inside" id="burger-menu" role="button" aria-label="Torna a Private" tabindex="0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            </span>
+          </div>
         </div>
       </header>
 
@@ -91,7 +93,7 @@
   </main>
 
   <script src="/js/cache-manager.js"></script>
-  <script src="/js/riparazioni-archivio.js?v=9"></script>
+  <script src="/js/riparazioni-archivio.js?v=10"></script>
 
   <script>
     // Swipe da sinistra per tornare a /private

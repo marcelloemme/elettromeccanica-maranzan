@@ -334,14 +334,14 @@ function ordinaRiparazioni(riparazioni) {
         break;
 
       case 'data-com':
-        // Completate con data in cima (decrescente), senza data in fondo
+        // Completate con data in cima, senza data sempre in fondo (indipendente da direzione)
         const dataComA = a['Data Completamento'] || a['Data completamento'] || a.DataCompletamento || '';
         const dataComB = b['Data Completamento'] || b['Data completamento'] || b.DataCompletamento || '';
         const hasA = !!dataComA;
         const hasB = !!dataComB;
-        if (hasA && !hasB) return -1 * dir; // A ha data, B no -> A prima (in desc)
-        if (!hasA && hasB) return 1 * dir;  // B ha data, A no -> B prima (in desc)
-        if (!hasA && !hasB) return 0;       // Entrambi senza data
+        if (hasA && !hasB) return -1; // A ha data, B no -> A sempre prima
+        if (!hasA && hasB) return 1;  // B ha data, A no -> B sempre prima
+        if (!hasA && !hasB) return 0; // Entrambi senza data
         // Entrambi hanno data: ordina per data
         const dateComA = new Date(dataComA).getTime();
         const dateComB = new Date(dataComB).getTime();
