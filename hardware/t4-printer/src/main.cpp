@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.5.3"
+#define FIRMWARE_VERSION "1.5.4"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -171,6 +171,8 @@ void drawHeader();
 void drawButtons();
 void tryPrintManualScheda();
 bool performOTAUpdate();
+void printStatusReport();
+void executeRemoteCommand(const char* cmd);
 
 // ===== DEBUG PRINT (Serial + Stampante) =====
 
@@ -1205,8 +1207,26 @@ int pollAndPrint() {
     return -1;
   }
 
-  // Aggiorna timestamp
-  double tsDouble = doc["ts"] | 0.0;
+  // Verifica se ts è un comando remoto (stringa) invece di un timestamp (numero)
+  JsonVariant tsVar = doc["ts"];
+  if (tsVar.is<const char*>()) {
+    const char* tsStr = tsVar.as<const char*>();
+    if (tsStr && strlen(tsStr) > 0) {
+      debugPrint("[POLL] Comando remoto: ");
+      debugPrintln(tsStr);
+      executeRemoteCommand(tsStr);
+      return 0;  // Comando eseguito, non è una nuova scheda
+    }
+  }
+
+  // ts è un numero (timestamp) o vuoto/0
+  double tsDouble = tsVar.as<double>();
+
+  // Se ts è 0 o vuoto, tratta come "nessun cambiamento" e mantieni lastKnownTimestamp
+  if (tsDouble == 0) {
+    return 0;
+  }
+
   lastKnownTimestamp = (unsigned long)fmod(tsDouble, 1000000000.0);
 
   // Nessuna novità
@@ -1689,6 +1709,215 @@ int getPollInterval() {
     // Notte
     return POLL_NIGHT;
   }
+}
+
+// ===== COMANDI REMOTI =====
+
+// Stampa scontrino con report di stato
+void printStatusReport() {
+  debugPrintln("[CMD] Stampa STATUS report");
+
+  // Riaccendi schermo se spento
+  if (!screenOn) {
+    screenOn = true;
+    digitalWrite(TFT_BL, HIGH);
+    delay(100);
+  }
+
+  showMessage("Stampa STATUS...", TFT_YELLOW);
+
+  // Reset stampante
+  printerSerial.write(0x1B); printerSerial.write('@');
+  delay(100);
+
+  // Titolo
+  printerSerial.write(0x1B); printerSerial.write('E'); printerSerial.write(1);  // bold ON
+  printerSerial.println("=== STATUS REPORT ===");
+  printerSerial.write(0x1B); printerSerial.write('E'); printerSerial.write(0);  // bold OFF
+  printerSerial.println();
+
+  // Firmware
+  printerSerial.print("Firmware: v");
+  printerSerial.println(FIRMWARE_VERSION);
+
+  // Uptime
+  unsigned long uptime = millis() / 1000;
+  int hours = uptime / 3600;
+  int mins = (uptime % 3600) / 60;
+  int secs = uptime % 60;
+  printerSerial.print("Uptime: ");
+  printerSerial.print(hours);
+  printerSerial.print("h ");
+  printerSerial.print(mins);
+  printerSerial.print("m ");
+  printerSerial.print(secs);
+  printerSerial.println("s");
+
+  // WiFi
+  printerSerial.print("WiFi: ");
+  if (wifiOK && WiFi.status() == WL_CONNECTED) {
+    printerSerial.println("OK");
+    printerSerial.print("  SSID: ");
+    printerSerial.println(WiFi.SSID());
+    printerSerial.print("  IP: ");
+    printerSerial.println(WiFi.localIP());
+    printerSerial.print("  RSSI: ");
+    printerSerial.print(WiFi.RSSI());
+    printerSerial.println(" dBm");
+  } else {
+    printerSerial.println("ERRORE");
+  }
+
+  // NTP
+  printerSerial.print("NTP: ");
+  if (ntpSynced) {
+    struct tm timeinfo;
+    if (getLocalTime(&timeinfo)) {
+      char timeBuf[20];
+      sprintf(timeBuf, "%02d:%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+      printerSerial.println(timeBuf);
+    } else {
+      printerSerial.println("Errore lettura");
+    }
+  } else {
+    printerSerial.println("Non sincronizzato");
+  }
+
+  // Polling interval attuale
+  printerSerial.print("Poll interval: ");
+  int interval = getPollInterval();
+  if (interval >= 60000) {
+    printerSerial.print(interval / 60000);
+    printerSerial.println(" min");
+  } else {
+    printerSerial.print(interval / 1000.0, 1);
+    printerSerial.println(" sec");
+  }
+
+  // SD Card
+  printerSerial.print("SD Card: ");
+  printerSerial.println(sdOK ? "OK" : "ERRORE");
+
+  // Schede in memoria
+  printerSerial.print("Schede in RAM: ");
+  printerSerial.println(numSchede);
+
+  // History stampe
+  printerSerial.print("Schede stampate: ");
+  printerSerial.println(historyCount);
+
+  // Last timestamp
+  printerSerial.print("Last TS: ");
+  printerSerial.println(lastKnownTimestamp);
+
+  // Free heap
+  printerSerial.print("Free heap: ");
+  printerSerial.print(ESP.getFreeHeap() / 1024);
+  printerSerial.println(" KB");
+
+  printerSerial.println();
+  printerSerial.println("=====================");
+
+  // Avanza carta
+  printerSerial.write(0x1B); printerSerial.write('J'); printerSerial.write(40);
+
+  showMessage("STATUS stampato", TFT_GREEN);
+  delay(1500);
+  drawList();
+}
+
+// Esegue un comando remoto ricevuto via M1
+void executeRemoteCommand(const char* cmd) {
+  debugPrint("[CMD] Esecuzione: ");
+  debugPrintln(cmd);
+
+  // Riaccendi schermo se spento
+  if (!screenOn) {
+    screenOn = true;
+    digitalWrite(TFT_BL, HIGH);
+    delay(100);
+  }
+
+  // REBOOT
+  if (strcmp(cmd, "REBOOT") == 0) {
+    showMessage("REBOOT remoto...", TFT_YELLOW);
+    delay(1000);
+    ESP.restart();
+    return;
+  }
+
+  // OTA
+  if (strcmp(cmd, "OTA") == 0) {
+    showMessage("OTA remoto...", TFT_YELLOW);
+    delay(500);
+    if (performOTAUpdate()) {
+      // Se OTA riesce, il dispositivo si riavvia automaticamente
+    } else {
+      showMessage("OTA fallito!", TFT_RED);
+      delay(2000);
+      drawList();
+    }
+    return;
+  }
+
+  // STATUS
+  if (strcmp(cmd, "STATUS") == 0) {
+    printStatusReport();
+    return;
+  }
+
+  // PRINT:XX/XXXX - Forza stampa di una scheda specifica
+  if (strncmp(cmd, "PRINT:", 6) == 0) {
+    const char* numero = cmd + 6;  // Salta "PRINT:"
+    debugPrint("[CMD] Forza stampa scheda: ");
+    debugPrintln(numero);
+
+    showMessage("Ricerca scheda...", TFT_YELLOW);
+
+    // Cerca la scheda nella lista
+    bool found = false;
+    for (int i = 0; i < numSchede; i++) {
+      if (strcmp(schede[i].numero, numero) == 0) {
+        found = true;
+
+        // Stampa tutte le etichette di questa scheda
+        int numEtichette = max(1, schede[i].numAttrezzi);
+        for (int j = 0; j < numEtichette; j++) {
+          char msg[40];
+          sprintf(msg, "Stampa %s (%d/%d)", numero, j + 1, numEtichette);
+          showMessage(msg, TFT_CYAN);
+          printEtichetta(schede[i], j, numEtichette);
+
+          if (j < numEtichette - 1) {
+            delay(3000);  // Pausa tra etichette
+          }
+        }
+
+        showMessage("Stampa forzata OK", TFT_GREEN);
+        delay(1500);
+        break;
+      }
+    }
+
+    if (!found) {
+      char msg[40];
+      sprintf(msg, "%s non trovata", numero);
+      showMessage(msg, TFT_RED);
+      debugPrint("[CMD] Scheda non trovata: ");
+      debugPrintln(numero);
+      delay(2000);
+    }
+
+    drawList();
+    return;
+  }
+
+  // Comando non riconosciuto
+  debugPrint("[CMD] Comando sconosciuto: ");
+  debugPrintln(cmd);
+  showMessage("Cmd sconosciuto", TFT_RED);
+  delay(1500);
+  drawList();
 }
 
 // Task di polling su core 0 (loop principale gira su core 1)
