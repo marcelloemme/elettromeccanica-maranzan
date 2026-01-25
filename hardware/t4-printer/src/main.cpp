@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.4.2"
+#define FIRMWARE_VERSION "1.4.3"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -2008,22 +2008,35 @@ void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi) {
   delay(50);
 
   // === NUMERO SCHEDA (normale, bold, reverse, riga intera nera) ===
-  printerSerial.write(0x1D); printerSerial.write('B'); printerSerial.write(1);  // reverse ON
-  printerSerial.write(0x1B); printerSerial.write('E'); printerSerial.write(1);  // bold
-
-  // Costruisci stringa centrata con padding per riempire tutta la riga (32 caratteri)
+  // Costruisci prima la stringa completa (32 caratteri esatti)
   String numStr = String(s.numero);
   if (totAttrezzi > 1) {
     numStr += " (" + String(attrezzoIdx + 1) + "/" + String(totAttrezzi) + ")";
   }
   int padding = (32 - numStr.length()) / 2;
-  for (int p = 0; p < padding; p++) printerSerial.print(" ");
-  printerSerial.print(numStr);
-  for (int p = 0; p < (32 - padding - numStr.length()); p++) printerSerial.print(" ");
-  printerSerial.println();
+  String rigaNera = "";
+  for (int p = 0; p < padding; p++) rigaNera += " ";
+  rigaNera += numStr;
+  while (rigaNera.length() < 32) rigaNera += " ";
 
+  // Attiva reverse e bold, poi flush e delay per sincronizzazione
+  printerSerial.write(0x1D); printerSerial.write('B'); printerSerial.write(1);  // reverse ON
+  printerSerial.write(0x1B); printerSerial.write('E'); printerSerial.write(1);  // bold
+  printerSerial.flush();  // Aspetta che i comandi siano inviati
+  delay(20);              // Attesa per processamento stampante
+
+  // Stampa la riga (senza println per evitare newline in modalità reverse)
+  printerSerial.print(rigaNera);
+  printerSerial.flush();  // Aspetta che il testo sia inviato
+
+  // Disattiva reverse e bold PRIMA del newline
   printerSerial.write(0x1D); printerSerial.write('B'); printerSerial.write(0);  // reverse OFF
   printerSerial.write(0x1B); printerSerial.write('E'); printerSerial.write(0);  // bold off
+  printerSerial.flush();
+  delay(10);
+
+  // Ora il newline (in modalità normale)
+  printerSerial.println();
 
   // Spazio 1mm (ESC J 7)
   printerSerial.write(0x1B); printerSerial.write('J'); printerSerial.write(7);
