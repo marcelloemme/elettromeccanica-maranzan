@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.5.2"
+#define FIRMWARE_VERSION "1.5.3"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -123,7 +123,15 @@ String csvData = "";
 
 // Auto-print polling
 unsigned long lastKnownTimestamp = 0;
-#define POLL_INTERVAL 1500  // 1.5 secondi
+
+// Polling dinamico basato su fascia oraria (per rispettare limiti API Google)
+// Lavoro (7:30-19:15): 2.2s  |  Transizione (7:00-7:30, 19:15-19:45): 60s  |  Notte: 3600s
+#define POLL_FAST     2200     // 2.2 secondi durante orario lavoro
+#define POLL_TRANS    60000    // 1 minuto durante transizione
+#define POLL_NIGHT    3600000  // 1 ora durante notte
+
+// NTP time sync
+bool ntpSynced = false;
 
 // Task polling su core separato
 TaskHandle_t pollTaskHandle = NULL;
@@ -1646,6 +1654,43 @@ bool tryReconnectWifi() {
   return false;
 }
 
+// Calcola intervallo polling in base all'ora corrente (NTP)
+// Lavoro (7:30-19:15): 2.2s  |  Transizione (7:00-7:30, 19:15-19:45): 60s  |  Notte: 3600s
+int getPollInterval() {
+  if (!ntpSynced) {
+    // Se NTP non sincronizzato, usa intervallo conservativo
+    return POLL_TRANS;
+  }
+
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    // Fallback se getLocalTime fallisce
+    return POLL_TRANS;
+  }
+
+  int hour = timeinfo.tm_hour;
+  int minute = timeinfo.tm_min;
+  int totalMinutes = hour * 60 + minute;  // Minuti dall'inizio del giorno
+
+  // Fasce orarie in minuti:
+  // Lavoro: 7:30 (450) - 19:15 (1155)
+  // Transizione mattina: 7:00 (420) - 7:30 (450)
+  // Transizione sera: 19:15 (1155) - 19:45 (1185)
+  // Notte: tutto il resto
+
+  if (totalMinutes >= 450 && totalMinutes < 1155) {
+    // Fascia lavoro: 7:30 - 19:15
+    return POLL_FAST;
+  } else if ((totalMinutes >= 420 && totalMinutes < 450) ||
+             (totalMinutes >= 1155 && totalMinutes < 1185)) {
+    // Fascia transizione: 7:00-7:30 o 19:15-19:45
+    return POLL_TRANS;
+  } else {
+    // Notte
+    return POLL_NIGHT;
+  }
+}
+
 // Task di polling su core 0 (loop principale gira su core 1)
 void pollTask(void* parameter) {
   debugPrintln("[TASK] Poll task avviato su core 0");
@@ -1724,8 +1769,9 @@ void pollTask(void* parameter) {
         lastFastPrintNumero[0] = '\0';
       }
     }
+    // Polling dinamico basato su fascia oraria
     // In modalità debug stampa su carta: polling più lento per risparmiare carta
-    int pollDelay = debugPrintMode ? 5000 : POLL_INTERVAL;
+    int pollDelay = debugPrintMode ? 5000 : getPollInterval();
     vTaskDelay(pollDelay / portTICK_PERIOD_MS);
   }
 }
@@ -2441,6 +2487,21 @@ void setup() {
 
   if (tryConnectAllNetworks()) {
     wifiOK = true;
+
+    // Sincronizza NTP per polling basato su fascia oraria
+    debugPrintln("[NTP] Sincronizzazione...");
+    configTime(3600, 3600, "pool.ntp.org", "time.google.com");  // GMT+1, DST+1 (Italia)
+
+    struct tm timeinfo;
+    if (getLocalTime(&timeinfo, 5000)) {  // Timeout 5 secondi
+      ntpSynced = true;
+      debugPrint("[NTP] OK: ");
+      debugPrint(timeinfo.tm_hour);
+      debugPrint(":");
+      debugPrintln(timeinfo.tm_min);
+    } else {
+      debugPrintln("[NTP] Fallito, uso polling conservativo");
+    }
   } else {
     debugPrintln("[FAIL] Nessuna rete disponibile");
   }
