@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.5.1"
+#define FIRMWARE_VERSION "1.5.2"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -123,7 +123,7 @@ String csvData = "";
 
 // Auto-print polling
 unsigned long lastKnownTimestamp = 0;
-#define POLL_INTERVAL 2500  // 2.5 secondi
+#define POLL_INTERVAL 1500  // 1.5 secondi
 
 // Task polling su core separato
 TaskHandle_t pollTaskHandle = NULL;
@@ -1151,82 +1151,185 @@ void markAllAsPrinted() {
 
 // ===== POLLING & AUTO-PRINT =====
 
-// Fetch timestamp da API - ritorna 0 se errore, setta wifiError
-unsigned long fetchLastUpdate() {
+// Polling ottimizzato: singola chiamata che verifica timestamp E ritorna scheda
+// Ritorna: 0 = nessuna novità, 1 = stampata nuova scheda, -1 = errore
+int pollAndPrint() {
   if (WiFi.status() != WL_CONNECTED) {
     debugPrintln("[POLL] WiFi non connesso");
     wifiError = true;
     showWifiStatus = true;
+    return -1;
+  }
+
+  HTTPClient http;
+  String url = String(API_URL) + "?action=pollPrinter&ts=" + String(lastKnownTimestamp);
+  http.begin(url);
+  http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+  http.setTimeout(8000);  // 8 secondi (ridotto per velocità)
+
+  int httpCode = http.GET();
+
+  if (httpCode != HTTP_CODE_OK) {
+    debugPrint("[POLL] HTTP error: ");
+    debugPrintln(httpCode);
+    http.end();
+    wifiError = true;
+    showWifiStatus = true;
+    return -1;
+  }
+
+  String response = http.getString();
+  http.end();
+
+  // Connessione OK
+  if (wifiError) {
+    wifiError = false;
+    showWifiStatus = true;
+    debugPrintln("[POLL] Connessione ripristinata");
+  }
+
+  // Parse JSON
+  JsonDocument doc;
+  DeserializationError error = deserializeJson(doc, response);
+  if (error) {
+    debugPrint("[POLL] JSON error: ");
+    debugPrintln(error.c_str());
+    return -1;
+  }
+
+  // Aggiorna timestamp
+  double tsDouble = doc["ts"] | 0.0;
+  lastKnownTimestamp = (unsigned long)fmod(tsDouble, 1000000000.0);
+
+  // Nessuna novità
+  if (!doc["changed"].as<bool>()) {
     return 0;
   }
 
-  debugPrintln("[POLL] Fetching timestamp...");
+  debugPrintln("[POLL] Nuova scheda rilevata!");
+
+  // Verifica che ci sia una riparazione
+  if (doc["riparazione"].isNull()) {
+    debugPrintln("[POLL] Riparazione null");
+    return 0;
+  }
+
+  JsonObject obj = doc["riparazione"].as<JsonObject>();
+  const char* numero = obj["Numero"] | "";
+
+  // Controlla se già stampata
+  if (isAlreadyPrinted(numero)) {
+    debugPrint("[POLL] Scheda ");
+    debugPrint(numero);
+    debugPrintln(" gia' stampata");
+    return 0;
+  }
+
+  debugPrint("[POLL] Nuova scheda: ");
+  debugPrintln(numero);
+  showMessage("Nuova scheda!", TFT_CYAN);
+
+  // Costruisci scheda per stampa
+  Scheda s;
+  memset(&s, 0, sizeof(Scheda));
+
+  strncpy(s.numero, numero, sizeof(s.numero) - 1);
+  strncpy(s.data, obj["Data consegna"] | "", sizeof(s.data) - 1);
+  strncpy(s.cliente, obj["Cliente"] | "", sizeof(s.cliente) - 1);
+  strncpy(s.indirizzo, obj["Indirizzo"] | "", sizeof(s.indirizzo) - 1);
+  strncpy(s.telefono, obj["Telefono"] | "", sizeof(s.telefono) - 1);
+
+  // Parse attrezzi
+  JsonArray attrezzi = obj["Attrezzi"].as<JsonArray>();
+  s.numAttrezzi = 0;
+  for (JsonObject att : attrezzi) {
+    if (s.numAttrezzi >= 5) break;
+    Attrezzo& a = s.attrezzi[s.numAttrezzi];
+    strncpy(a.marca, att["marca"] | "", sizeof(a.marca) - 1);
+    strncpy(a.dotazione, att["dotazione"] | "", sizeof(a.dotazione) - 1);
+    strncpy(a.note, att["note"] | "", sizeof(a.note) - 1);
+    s.numAttrezzi++;
+  }
+
+  // Riaccendi schermo
+  if (!screenOn) {
+    screenOn = true;
+    digitalWrite(TFT_BL, HIGH);
+    delay(100);
+  }
+
+  // Stampa
+  int numEtichette = max(1, s.numAttrezzi);
+  debugPrint("[POLL] Stampo ");
+  debugPrint(numEtichette);
+  debugPrintln(" etichette");
+
+  for (int i = 0; i < numEtichette; i++) {
+    char msg[40];
+    sprintf(msg, "Stampa %s (%d/%d)", s.numero, i + 1, numEtichette);
+    showMessage(msg, TFT_CYAN);
+    printEtichetta(s, i, numEtichette);
+
+    if (i < numEtichette - 1) {
+      for (int sec = 8; sec > 0; sec--) {
+        char countdown[32];
+        sprintf(countdown, "Prossima in %ds...", sec);
+        showMessage(countdown, TFT_CYAN);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+      }
+    }
+  }
+
+  // Salva in history
+  addToHistory(s.numero);
+  savePrintHistory();
+
+  // Salva numero per sync CSV
+  strncpy(lastFastPrintNumero, s.numero, sizeof(lastFastPrintNumero) - 1);
+
+  showMessage("Stampato!", TFT_GREEN);
+  debugPrintln("[POLL] Stampa completata");
+
+  return 1;
+}
+
+// === FUNZIONI LEGACY (mantenute per compatibilità) ===
+
+// Fetch timestamp da API - ritorna 0 se errore
+unsigned long fetchLastUpdate() {
+  if (WiFi.status() != WL_CONNECTED) return 0;
 
   HTTPClient http;
   String url = String(API_URL) + "?action=getLastUpdate";
   http.begin(url);
   http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
-  http.setTimeout(10000);  // 10 secondi
+  http.setTimeout(8000);
 
   int httpCode = http.GET();
   unsigned long ts = 0;
 
-  debugPrint("[POLL] HTTP code: ");
-  debugPrintln(httpCode);
-
   if (httpCode == HTTP_CODE_OK) {
     String response = http.getString();
-    debugPrint("[POLL] Response: ");
-    debugPrintln(response);
-
-    // Parse JSON: {"ts":1234567890}
     JsonDocument doc;
-    DeserializationError error = deserializeJson(doc, response);
-    if (!error) {
-      // Il timestamp JS è troppo grande per unsigned long (32 bit su ESP32)
-      // Usiamo solo parte del valore per confronto
+    if (!deserializeJson(doc, response)) {
       double tsDouble = doc["ts"] | 0.0;
       ts = (unsigned long)fmod(tsDouble, 1000000000.0);
-      debugPrint("[POLL] Parsed ts: ");
-      debugPrintln(ts);
-
-      // Connessione OK, resetta errore
-      if (wifiError) {
-        wifiError = false;
-        showWifiStatus = true;
-        debugPrintln("[POLL] Connessione ripristinata");
-      }
-    } else {
-      debugPrint("[POLL] JSON error: ");
-      debugPrintln(error.c_str());
-      wifiError = true;
-      showWifiStatus = true;
     }
-  } else {
-    // Errore HTTP (timeout, connection refused, etc)
-    debugPrint("[POLL] HTTP error: ");
-    debugPrintln(httpCode);
-    wifiError = true;
-    showWifiStatus = true;
   }
 
   http.end();
   return ts;
 }
 
-// Fetch rapido ultima scheda via API (per stampa veloce)
-// Ritorna true se trovata e stampata una nuova scheda
+// Fetch rapido ultima scheda (legacy, non più usata nel polling)
 bool fetchAndPrintLastScheda() {
   if (WiFi.status() != WL_CONNECTED) return false;
-
-  debugPrintln("[FAST] Fetch ultima scheda via API...");
-  showMessage("Fetch rapido...", TFT_CYAN);
 
   HTTPClient http;
   String url = String(API_URL) + "?action=getRiparazioni&limit=1";
   http.begin(url);
   http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
-  http.setTimeout(15000);  // 15 secondi
+  http.setTimeout(8000);
 
   int httpCode = http.GET();
 
@@ -1564,28 +1667,16 @@ void pollTask(void* parameter) {
       }
     }
 
-    // Polling normale se WiFi OK
+    // Polling ottimizzato: singola chiamata che verifica E stampa
     if (wifiOK && !newSchedeReady) {
-      if (checkTimestampChanged()) {
-        debugPrintln("[TASK] Nuova scheda rilevata!");
+      int result = pollAndPrint();
 
-        // === STAMPA RAPIDA via API (immediata) ===
-        // L'API risponde subito, il CSV pubblicato ha delay
-        debugPrintln("[TASK] Tentativo stampa rapida via API...");
-        bool stampataRapida = fetchAndPrintLastScheda();
-
-        if (stampataRapida) {
-          debugPrintln("[TASK] Stampa rapida completata!");
-        } else {
-          debugPrintln("[TASK] Stampa rapida fallita, attendo CSV...");
-        }
-
-        // === AGGIORNAMENTO CSV in background ===
-        // Continua a provare finché il CSV non contiene la nuova scheda
+      if (result == 1) {
+        // Stampata nuova scheda, aggiorna CSV in background
         debugPrintln("[TASK] Aggiorno CSV in background...");
 
         for (int retry = 0; retry < 10; retry++) {
-          vTaskDelay(10000 / portTICK_PERIOD_MS);  // 10 secondi tra tentativi
+          vTaskDelay(10000 / portTICK_PERIOD_MS);
 
           debugPrint("[TASK] CSV tentativo ");
           debugPrint(retry + 1);
@@ -1594,18 +1685,18 @@ void pollTask(void* parameter) {
           if (downloadCSV()) {
             parseCSV(csvData);
 
-            // Se abbiamo stampato via API, verifica che il CSV contenga quella scheda
-            if (stampataRapida && lastFastPrintNumero[0] != '\0') {
+            // Verifica che CSV contenga la scheda stampata
+            if (lastFastPrintNumero[0] != '\0') {
               if (!isSchedaInList(lastFastPrintNumero)) {
                 debugPrint("[TASK] CSV non contiene ancora ");
                 debugPrintln(lastFastPrintNumero);
-                continue;  // Riprova
+                continue;
               }
-              debugPrint("[TASK] CSV contiene ");
+              debugPrint("[TASK] CSV sincronizzato con ");
               debugPrintln(lastFastPrintNumero);
             }
 
-            // Verifica se ci sono nuove schede non ancora stampate
+            // Verifica altre schede non stampate
             int newCount = 0;
             for (int i = 0; i < numSchede; i++) {
               if (!isAlreadyPrinted(schede[i].numero)) {
@@ -1614,30 +1705,28 @@ void pollTask(void* parameter) {
             }
 
             if (newCount > 0) {
-              // Ci sono schede non stampate (stampa rapida fallita o multiple schede)
-              debugPrint("[TASK] Trovate ");
+              debugPrint("[TASK] Trovate altre ");
               debugPrint(newCount);
               debugPrintln(" schede da stampare");
               newSchedeReady = true;
             } else {
-              // CSV aggiornato con la nuova scheda, lista sincronizzata
               debugPrint("[TASK] Lista sincronizzata (");
               debugPrint(numSchede);
               debugPrintln(" schede)");
-              newSchedeReady = true;  // Trigger redraw lista
+              newSchedeReady = true;
             }
 
-            // Reset numero stampato via API
             lastFastPrintNumero[0] = '\0';
             break;
           }
         }
 
-        // Reset anche se tutti i tentativi falliscono
         lastFastPrintNumero[0] = '\0';
       }
     }
-    vTaskDelay(POLL_INTERVAL / portTICK_PERIOD_MS);
+    // In modalità debug stampa su carta: polling più lento per risparmiare carta
+    int pollDelay = debugPrintMode ? 5000 : POLL_INTERVAL;
+    vTaskDelay(pollDelay / portTICK_PERIOD_MS);
   }
 }
 

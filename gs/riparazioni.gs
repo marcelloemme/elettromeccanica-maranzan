@@ -23,6 +23,8 @@ function doGet(e) {
         return getRiparazione(e);
       case 'getLastUpdate':
         return getLastUpdate();
+      case 'pollPrinter':
+        return pollPrinter(e);
       default:
         return jsonResponse({ error: 'Azione non valida' }, 400);
     }
@@ -452,4 +454,76 @@ function getLastUpdate() {
 
   const timestamp = sheet.getRange('M1').getValue();
   return jsonResponse({ ts: timestamp || 0 });
+}
+
+/**
+ * Polling ottimizzato per stampante T4 (singola chiamata)
+ * Parametri: ts = ultimo timestamp conosciuto
+ * Ritorna: { changed: bool, ts: number, riparazione?: object }
+ */
+function pollPrinter(e) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(SHEET_NAME_RIPARAZIONI);
+
+  if (!sheet) {
+    return jsonResponse({ changed: false, ts: 0 });
+  }
+
+  const currentTs = sheet.getRange('M1').getValue() || 0;
+  const clientTs = parseInt(e.parameter.ts) || 0;
+
+  // Se timestamp non cambiato, risposta veloce
+  if (currentTs <= clientTs) {
+    return jsonResponse({ changed: false, ts: currentTs });
+  }
+
+  // Timestamp cambiato: leggi ultima riparazione
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) {
+    return jsonResponse({ changed: true, ts: currentTs, riparazione: null });
+  }
+
+  const headers = data[0];
+  const rows = data.slice(1);
+
+  // Trova l'ultima riparazione (ordinata per anno/progressivo)
+  let riparazioni = rows.map(row => {
+    let obj = {};
+    headers.forEach((header, i) => {
+      if (header === 'Attrezzi') {
+        try {
+          obj[header] = row[i] ? JSON.parse(row[i]) : [];
+        } catch(err) {
+          obj[header] = [];
+        }
+      } else if (header === 'Completato' || header === 'DDT') {
+        obj[header] = row[i] === true || row[i] === 'TRUE';
+      } else {
+        obj[header] = row[i] || '';
+      }
+    });
+    return obj;
+  });
+
+  // Ordina per anno/progressivo decrescente
+  riparazioni.sort((a, b) => {
+    const extractParts = (numero) => {
+      const match = (numero || '').toString().match(/^(\d{2})\/(\d+)$/);
+      if (match) {
+        return { anno: parseInt(match[1]), prog: parseInt(match[2]) };
+      }
+      return { anno: 0, prog: 0 };
+    };
+    const pa = extractParts(a.Numero);
+    const pb = extractParts(b.Numero);
+    if (pb.anno !== pa.anno) return pb.anno - pa.anno;
+    return pb.prog - pa.prog;
+  });
+
+  // Ritorna la prima (più recente)
+  return jsonResponse({
+    changed: true,
+    ts: currentTs,
+    riparazione: riparazioni[0] || null
+  });
 }
