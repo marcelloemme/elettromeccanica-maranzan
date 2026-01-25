@@ -646,13 +646,23 @@ body.touch-app {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 16px;
+}
+
+.header-archivio .header-row h1 {
+  margin: 0;
 }
 
 .header-archivio .header-icons {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
+}
+
+/* Override position absolute per icone nell'header archivio */
+.header-archivio .header-icons .menu-inside {
+  position: static;
+  transform: none;
 }
 
 @media (max-width: 768px) {
