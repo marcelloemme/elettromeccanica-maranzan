@@ -117,6 +117,12 @@ function getRiparazioni(e) {
     return extractProgressivo(b.Numero) - extractProgressivo(a.Numero);
   });
 
+  // Parametro limit opzionale (per stampante T4: ?limit=1 ritorna solo l'ultima)
+  const limit = parseInt(e.parameter.limit);
+  if (limit > 0 && limit < riparazioni.length) {
+    riparazioni = riparazioni.slice(0, limit);
+  }
+
   return jsonResponse({ riparazioni });
 }
 

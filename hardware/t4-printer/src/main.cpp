@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.3.1"
+#define FIRMWARE_VERSION "1.4.0"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -1184,6 +1184,137 @@ unsigned long fetchLastUpdate() {
   return ts;
 }
 
+// Fetch rapido ultima scheda via API (per stampa veloce)
+// Ritorna true se trovata e stampata una nuova scheda
+bool fetchAndPrintLastScheda() {
+  if (WiFi.status() != WL_CONNECTED) return false;
+
+  debugPrintln("[FAST] Fetch ultima scheda via API...");
+  showMessage("Fetch rapido...", TFT_CYAN);
+
+  HTTPClient http;
+  String url = String(API_URL) + "?action=getRiparazioni&limit=1";
+  http.begin(url);
+  http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+  http.setTimeout(15000);  // 15 secondi
+
+  int httpCode = http.GET();
+
+  if (httpCode != HTTP_CODE_OK) {
+    debugPrint("[FAST] HTTP error: ");
+    debugPrintln(httpCode);
+    http.end();
+    return false;
+  }
+
+  String response = http.getString();
+  http.end();
+
+  debugPrint("[FAST] Response: ");
+  debugPrint(response.length());
+  debugPrintln(" bytes");
+
+  // Parse JSON
+  JsonDocument doc;
+  DeserializationError error = deserializeJson(doc, response);
+  if (error) {
+    debugPrint("[FAST] JSON error: ");
+    debugPrintln(error.c_str());
+    return false;
+  }
+
+  JsonArray arr = doc["riparazioni"].as<JsonArray>();
+  if (arr.size() == 0) {
+    debugPrintln("[FAST] Nessuna scheda trovata");
+    return false;
+  }
+
+  // Prendi la prima (ultima inserita)
+  JsonObject obj = arr[0];
+  const char* numero = obj["Numero"] | "";
+
+  // Controlla se già stampata
+  if (isAlreadyPrinted(numero)) {
+    debugPrint("[FAST] Scheda ");
+    debugPrint(numero);
+    debugPrintln(" gia' stampata");
+    return false;
+  }
+
+  debugPrint("[FAST] Nuova scheda: ");
+  debugPrintln(numero);
+
+  // Costruisci scheda temporanea per stampa
+  Scheda s;
+  memset(&s, 0, sizeof(Scheda));
+
+  strncpy(s.numero, numero, sizeof(s.numero) - 1);
+
+  const char* data = obj["Data Consegna"] | "";
+  strncpy(s.data, data, sizeof(s.data) - 1);
+
+  const char* cliente = obj["Cliente"] | "";
+  strncpy(s.cliente, cliente, sizeof(s.cliente) - 1);
+
+  const char* indirizzo = obj["Indirizzo"] | "";
+  strncpy(s.indirizzo, indirizzo, sizeof(s.indirizzo) - 1);
+
+  const char* telefono = obj["Telefono"] | "";
+  strncpy(s.telefono, telefono, sizeof(s.telefono) - 1);
+
+  // Parse attrezzi
+  JsonArray attrezzi = obj["Attrezzi"].as<JsonArray>();
+  s.numAttrezzi = 0;
+  for (JsonObject att : attrezzi) {
+    if (s.numAttrezzi >= 5) break;
+    Attrezzo& a = s.attrezzi[s.numAttrezzi];
+    const char* marca = att["marca"] | "";
+    const char* dotazione = att["dotazione"] | "";
+    const char* note = att["note"] | "";
+    strncpy(a.marca, marca, sizeof(a.marca) - 1);
+    strncpy(a.dotazione, dotazione, sizeof(a.dotazione) - 1);
+    strncpy(a.note, note, sizeof(a.note) - 1);
+    s.numAttrezzi++;
+  }
+
+  // Riaccendi schermo per mostrare stampa
+  if (!screenOn) {
+    screenOn = true;
+    digitalWrite(TFT_BL, HIGH);
+  }
+
+  // Stampa
+  int numEtichette = max(1, s.numAttrezzi);
+  debugPrint("[FAST] Stampo ");
+  debugPrint(numEtichette);
+  debugPrintln(" etichette");
+
+  for (int i = 0; i < numEtichette; i++) {
+    char msg[40];
+    sprintf(msg, "Fast: %s (%d/%d)", s.numero, i + 1, numEtichette);
+    showMessage(msg, TFT_CYAN);
+    printEtichetta(s, i, numEtichette);
+
+    if (i < numEtichette - 1) {
+      for (int sec = 8; sec > 0; sec--) {
+        char countdown[32];
+        sprintf(countdown, "Prossima in %ds...", sec);
+        showMessage(countdown, TFT_CYAN);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+      }
+    }
+  }
+
+  // Aggiungi a history
+  addToHistory(s.numero);
+  savePrintHistory();
+
+  showMessage("Stampa rapida OK!", TFT_GREEN);
+  debugPrintln("[FAST] Stampa completata");
+
+  return true;
+}
+
 // Download CSV e ritorna true se OK
 bool downloadCSV() {
   if (WiFi.status() != WL_CONNECTED) return false;
@@ -1400,16 +1531,29 @@ void pollTask(void* parameter) {
     // Polling normale se WiFi OK
     if (wifiOK && !newSchedeReady) {
       if (checkTimestampChanged()) {
-        // Aspetta che Google Sheets aggiorni il CSV
-        debugPrintln("[TASK] Nuova scheda rilevata, attendo 5s...");
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
+        debugPrintln("[TASK] Nuova scheda rilevata!");
 
-        // Scarica CSV con retry
-        for (int retry = 0; retry < 10; retry++) {
+        // === STAMPA RAPIDA via API (immediata) ===
+        // L'API risponde subito, il CSV pubblicato ha delay
+        debugPrintln("[TASK] Tentativo stampa rapida via API...");
+        bool stampataRapida = fetchAndPrintLastScheda();
+
+        if (stampataRapida) {
+          debugPrintln("[TASK] Stampa rapida completata!");
+        } else {
+          debugPrintln("[TASK] Stampa rapida fallita, attendo CSV...");
+        }
+
+        // === AGGIORNAMENTO CSV in background ===
+        // Continua a provare finché il CSV non si aggiorna
+        debugPrintln("[TASK] Aggiorno CSV in background...");
+        vTaskDelay(3000 / portTICK_PERIOD_MS);  // Breve attesa iniziale
+
+        for (int retry = 0; retry < 15; retry++) {
           if (downloadCSV()) {
             parseCSV(csvData);
 
-            // Verifica se ci sono nuove schede
+            // Verifica se ci sono nuove schede non ancora stampate
             int newCount = 0;
             for (int i = 0; i < numSchede; i++) {
               if (!isAlreadyPrinted(schede[i].numero)) {
@@ -1418,18 +1562,25 @@ void pollTask(void* parameter) {
             }
 
             if (newCount > 0) {
+              // Ci sono schede non stampate (stampa rapida fallita o multiple schede)
               debugPrint("[TASK] Trovate ");
               debugPrint(newCount);
-              debugPrintln(" nuove schede - segnalo al loop");
-              newSchedeReady = true;  // Segnala al loop principale
+              debugPrintln(" schede da stampare");
+              newSchedeReady = true;
+              break;
+            } else {
+              // CSV aggiornato, nessuna scheda nuova (già stampata via API)
+              debugPrintln("[TASK] CSV aggiornato, lista sincronizzata");
+              // Aggiorna display con nuova lista
+              newSchedeReady = true;  // Trigger redraw lista
               break;
             }
-
-            debugPrint("[TASK] Retry ");
-            debugPrint(retry + 1);
-            debugPrintln("/10");
-            vTaskDelay(3000 / portTICK_PERIOD_MS);
           }
+
+          debugPrint("[TASK] CSV retry ");
+          debugPrint(retry + 1);
+          debugPrintln("/15");
+          vTaskDelay(3000 / portTICK_PERIOD_MS);
         }
       }
     }
