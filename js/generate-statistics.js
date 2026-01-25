@@ -233,6 +233,12 @@ const tutteCompletateConData = riparazioni.filter(r => {
 // Salva array completo per filtraggio frontend
 const tempiRiparazione = tutteCompletateConData;
 
+// Riparazioni attive con giorni aperti (per calcolo mediana incluse attive)
+const riparazioniAttive = inCorsoOrdinate.map(r => ({
+  numero: r.numero,
+  giorniAperti: r.giorniAperti
+}));
+
 // 4. GRAFICI MENSILI (per anno disponibile)
 const anniDisponibili = [...new Set(riparazioni.map(r => {
   const data = parseDate(r['Data consegna']);
@@ -322,6 +328,7 @@ const output = {
   recapAttuale,
   recapSettimanale,
   tempiRiparazione,
+  riparazioniAttive,
   grafici,
   anniDisponibili,
   deltaGiornaliero: deltaArray

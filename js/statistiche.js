@@ -4,8 +4,6 @@ const recapSettimanaleEl = document.getElementById('recap-settimanale');
 const recapSettimanaleSection = document.getElementById('recap-settimanale-section');
 const tempiSection = document.getElementById('tempi-section');
 const tempoMedioEl = document.getElementById('tempo-medio');
-const recordVelocitaEl = document.getElementById('record-velocita');
-const recordLentezzaEl = document.getElementById('record-lentezza');
 const percentualiTempoEl = document.getElementById('percentuali-tempo');
 const titoloDeltaEl = document.getElementById('titolo-delta');
 const chartDeltaCanvas = document.getElementById('chart-delta');
@@ -309,6 +307,17 @@ window.cambiaPeriodoTempi = (giorni) => {
   renderTempiRiparazione();
 };
 
+// Calcola mediana di un array di numeri
+function calcolaMediana(valori) {
+  if (valori.length === 0) return 0;
+  const ordinati = [...valori].sort((a, b) => a - b);
+  const meta = Math.floor(ordinati.length / 2);
+  if (ordinati.length % 2 === 0) {
+    return Math.round((ordinati[meta - 1] + ordinati[meta]) / 2);
+  }
+  return ordinati[meta];
+}
+
 // Aggiorna tempi riparazione
 function aggiornaTempiRiparazione() {
   const oggi = new Date();
@@ -327,37 +336,36 @@ function aggiornaTempiRiparazione() {
 
   if (completateFiltrate.length === 0) {
     tempoMedioEl.innerHTML = 'Nessuna riparazione completata in questo periodo.';
-    recordVelocitaEl.innerHTML = '';
-    recordLentezzaEl.innerHTML = '';
     percentualiTempoEl.innerHTML = '';
     return;
   }
 
-  // Calcola statistiche
-  const sommaGiorni = completateFiltrate.reduce((sum, r) => sum + r.giorni, 0);
-  const mediaGiorni = Math.round(sommaGiorni / completateFiltrate.length);
+  // Calcola mediana completate
+  const giorniCompletate = completateFiltrate.map(r => r.giorni);
+  const medianaCompletate = calcolaMediana(giorniCompletate);
 
-  const ordinatiPerGiorni = [...completateFiltrate].sort((a, b) => a.giorni - b.giorni);
-  const piuVeloce = ordinatiPerGiorni[0];
-  const piuLenta = ordinatiPerGiorni[ordinatiPerGiorni.length - 1];
+  // Calcola mediana incluse attive (tempo minimo attuale)
+  const giorniAttive = (statistiche.riparazioniAttive || []).map(r => r.giorniAperti);
+  const tuttiGiorni = [...giorniCompletate, ...giorniAttive];
+  const medianaConAttive = calcolaMediana(tuttiGiorni);
 
   // Percentuali esclusive (non cumulative)
   const entro14 = completateFiltrate.filter(r => r.giorni <= 14).length;
   const tra15e30 = completateFiltrate.filter(r => r.giorni > 14 && r.giorni <= 30).length;
   const tra31e60 = completateFiltrate.filter(r => r.giorni > 30 && r.giorni <= 60).length;
+  const oltre60 = completateFiltrate.filter(r => r.giorni > 60).length;
 
   const percEntro14 = ((entro14 / completateFiltrate.length) * 100).toFixed(1);
   const percEntro30 = ((tra15e30 / completateFiltrate.length) * 100).toFixed(1);
   const percEntro60 = ((tra31e60 / completateFiltrate.length) * 100).toFixed(1);
+  const percOltre60 = ((oltre60 / completateFiltrate.length) * 100).toFixed(1);
 
   // Render (mobile: "giorni" → "gg")
   const isMobile = window.innerWidth <= 768;
   const unitaGiorni = isMobile ? 'gg' : 'giorni';
 
-  tempoMedioEl.innerHTML = `Il tempo medio per una riparazione è di <strong>${mediaGiorni} ${unitaGiorni}</strong>.`;
-  recordVelocitaEl.innerHTML = `Record di velocità: <strong>${piuVeloce.giorni} ${unitaGiorni}</strong> (${piuVeloce.numero} - ${piuVeloce.cliente})`;
-  recordLentezzaEl.innerHTML = `Riparazione più lenta: <strong>${piuLenta.giorni} ${unitaGiorni}</strong> (${piuLenta.numero} - ${piuLenta.cliente})`;
-  percentualiTempoEl.innerHTML = `<strong>${percEntro14}%</strong> completate entro 14 ${unitaGiorni}, <strong>${percEntro30}%</strong> entro 1 mese, <strong>${percEntro60}%</strong> entro 2 mesi.`;
+  tempoMedioEl.innerHTML = `Tempo medio riparazione: <strong>${medianaCompletate} ${unitaGiorni}</strong> (solo completate) · <strong>${medianaConAttive} ${unitaGiorni}</strong> (incluse attive).`;
+  percentualiTempoEl.innerHTML = `<strong>${percEntro14}%</strong> entro 14 ${unitaGiorni}, <strong>${percEntro30}%</strong> entro 1 mese, <strong>${percEntro60}%</strong> entro 2 mesi, <strong>${percOltre60}%</strong> oltre.`;
 }
 
 // Render grafico delta giornaliero
