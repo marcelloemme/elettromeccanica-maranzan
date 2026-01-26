@@ -1,4 +1,7 @@
 (() => {
+  // API Endpoint (stesso di magazzino-dettaglio e magazzino-nuovo)
+  const API_URL = 'https://script.google.com/macros/s/AKfycbzgXCGMef3UX9GEaS8inOXE7TKz00fbj69ZZqxJgjiWz2GT07GGjAQRGElEdxx9HESS/exec';
+
   const inputEl = document.getElementById('codice-input');
   const topResultsEl = document.getElementById('top-results');
   const suggestionsEl = document.getElementById('suggestions');
@@ -42,24 +45,6 @@
 
   function isShelfQuery(q){
     return normalizeShelfToken(q) !== null;
-  }
-
-  function parseCSV(text){
-    const lines = text.split(/\r?\n/);
-    const out = [];
-    for (let i=0;i<lines.length;i++){
-      let line = lines[i].trim();
-      if (!line) continue;
-      if (i===0 && /^codice/i.test(line)) continue; // salta intestazione
-      const raw = line.split(',');
-      if (raw.length < 3) continue;                  // usa solo prime 3 colonne
-      const codice = normalize(raw[0]);
-      const descrizione = normalize(raw[1]);
-      const scaffale = normalize(raw[2]);
-      if (!codice || !descrizione || !scaffale) continue; // salta righe incomplete/virgole extra
-      out.push({ codice, descrizione, scaffale });
-    }
-    return out;
   }
 
   // ---- Scaffali: costruzione elenco e util ----
@@ -110,18 +95,33 @@
     updateResults();
   }
 
-  async function loadCSV(){
-    try{
-      const res = await fetch(`/magazzino.csv?t=${Date.now()}`, { cache:'no-store' });
-      const text = await res.text();
-      DATA = parseCSV(text);
+  // Carica dati da API Google Apps Script
+  async function loadFromAPI(){
+    try {
+      const res = await fetch(`${API_URL}?action=getRicambi`, {
+        redirect: 'follow',
+        cache: 'no-store'
+      });
+      const data = await res.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      // Converti formato API in formato interno (lowercase keys)
+      DATA = (data.ricambi || []).map(r => ({
+        codice: r.Codice || '',
+        descrizione: r.Descrizione || '',
+        scaffale: r.Scaffale || ''
+      }));
+
       buildShelves();
-    }catch(e){
-      console.error("Errore caricamento CSV:", e);
+    } catch(e) {
+      console.error("Errore caricamento da API:", e);
       DATA = [];
     }
 
-    // Salva in cache centralizzata (separato dal try/catch principale)
+    // Salva in cache centralizzata
     try {
       if (typeof window.cacheManager !== 'undefined' && DATA.length > 0) {
         window.cacheManager.set('magazzino', DATA);
@@ -173,7 +173,7 @@
 
     // Mostra messaggio iniziale quando l'input è vuoto
     if (!q) {
-      topResultsEl.innerHTML = '<div style="padding:6px 8px; font-size:18px;">Digita per iniziare la ricerca del codice. Visualizza il contenuto degli scaffali con il formato A01. Visualizzando uno scaffale, scorri a destra o a sinistra per passare agli altri scaffali. Nel caso i dati non fossero ancora aggiornati a seguito di modifiche o inserimenti, scorri dall\'alto verso il basso per forzare l\'aggiornamento.</div>';
+      topResultsEl.innerHTML = '<div style="padding:6px 8px; font-size:18px;">Digita per iniziare la ricerca del codice. Visualizza il contenuto degli scaffali con il formato A01. Visualizzando uno scaffale, scorri a destra o a sinistra per passare agli altri scaffali. Scorri dall\'alto verso il basso per aggiornare i dati.</div>';
       return;
     }
 
@@ -306,7 +306,6 @@
       const t = e.changedTouches && e.changedTouches[0];
       if (!t) return;
       sx = t.clientX; sy = t.clientY;
-      console.debug('[swipe] start', sx, sy);
     }, { passive: true });
 
     swipeRoot.addEventListener('touchend', (e) => {
@@ -314,7 +313,6 @@
       if (!t) return;
       const dx = t.clientX - sx;
       const dy = t.clientY - sy;
-      console.debug('[swipe] end', t.clientX, t.clientY, 'dx=', dx, 'dy=', dy);
 
       // CONDIZIONE PIÙ PERMISSIVA: anche diagonali leggere vengono accettate
       if (Math.abs(dx) >= SWIPE_MIN_X && Math.abs(dy) <= SWIPE_MAX_Y){
@@ -344,42 +342,13 @@
     }, { passive: true });
   }
 
-  // Carica CSV in background (non bloccante)
-  async function loadCSVBackground() {
+  // Carica dati da API in background (non bloccante)
+  async function loadFromAPIBackground() {
     try {
-      await loadCSV();
+      await loadFromAPI();
       updateResults();  // Re-render con dati freschi
     } catch (e) {
-      console.warn('Background CSV update fallito (non critico):', e);
-    }
-  }
-
-  // Aggiorna database GitHub in background (con throttle)
-  async function triggerDatabaseUpdate() {
-    const THROTTLE_DURATION = 10 * 60 * 1000; // 10 minuti (ridotto spam GitHub)
-    const LAST_TRIGGER_KEY = 'magazzino_last_update_trigger';
-
-    try {
-      const lastTrigger = localStorage.getItem(LAST_TRIGGER_KEY);
-      const now = Date.now();
-
-      // Controlla se è passato abbastanza tempo dall'ultimo trigger
-      if (lastTrigger) {
-        const elapsed = now - parseInt(lastTrigger);
-        if (elapsed < THROTTLE_DURATION) {
-          console.log(`Database update skipped (ultimo trigger: ${Math.round(elapsed / 1000)}s fa)`);
-          return;
-        }
-      }
-
-      // Triggera il workflow
-      await fetch("https://aggiorna.marcellomaranzan.workers.dev/");
-
-      // Salva timestamp del trigger
-      localStorage.setItem(LAST_TRIGGER_KEY, now.toString());
-      console.log('Database update triggered');
-    } catch (err) {
-      // Fallback silenzioso: continua con il CSV in cache
+      console.warn('Background API update fallito (non critico):', e);
     }
   }
 
@@ -420,12 +389,10 @@
   resultsArea.addEventListener('touchstart', (e) => {
     // Attiva pull-to-refresh solo se siamo in cima alla pagina
     const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-    console.log('[PTR] touchstart scrollTop:', scrollTop, 'refreshing:', refreshing);
 
     if (scrollTop === 0 && !refreshing) {
       pullStartY = e.touches[0].clientY;
       isPulling = true;
-      console.log('[PTR] Pull started at Y:', pullStartY);
     }
   }, { passive: true });
 
@@ -436,96 +403,24 @@
     const pullDistance = pullCurrentY - pullStartY;
     const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
 
-    console.log('[PTR] touchmove pullDistance:', pullDistance, 'scrollTop:', scrollTop);
-
     // Mostra indicatore solo se swipe verso il basso (accetta scrollTop negativo per rubber band iOS)
     if (pullDistance > 0 && scrollTop <= 0) {
       const progress = Math.min(pullDistance / PULL_THRESHOLD, 1);
       const translateY = -100 + (progress * 100);
       refreshIndicator.style.transform = `translateY(${translateY}%)`;
 
-      console.log('[PTR] Showing indicator, progress:', progress, 'translateY:', translateY);
-
       // Aggiorna testo in base alla distanza trascinata
       if (pullDistance >= PULL_THRESHOLD) {
         if (refreshIndicator.innerHTML !== '↑ Rilascia per aggiornare') {
           refreshIndicator.innerHTML = '↑ Rilascia per aggiornare';
-          console.log('[PTR] Changed to RELEASE');
         }
       } else {
         if (refreshIndicator.innerHTML !== '↓ Trascina per aggiornare') {
           refreshIndicator.innerHTML = '↓ Trascina per aggiornare';
-          console.log('[PTR] Changed to DRAG');
         }
       }
     }
   }, { passive: true });
-
-  // Forza trigger workflow (bypassa throttle come batch insert)
-  async function forceTriggerWorkflow() {
-    const LAST_TRIGGER_KEY = 'magazzino_last_update_trigger';
-    try {
-      // Reset throttle per trigger immediato
-      localStorage.removeItem(LAST_TRIGGER_KEY);
-
-      // Triggera workflow
-      await fetch("https://aggiorna.marcellomaranzan.workers.dev/");
-
-      // Salva timestamp
-      localStorage.setItem(LAST_TRIGGER_KEY, Date.now().toString());
-      console.log('[PTR] Workflow triggered (throttle bypassed)');
-    } catch (err) {
-      console.error('[PTR] Errore trigger workflow:', err);
-    }
-  }
-
-  // Polling per verificare se CSV è stato aggiornato
-  async function waitForCSVUpdate(maxWaitMs = 180000) { // 3 minuti max
-    const startTime = Date.now();
-    const pollInterval = 10000; // 10 secondi
-    let lastETag = null;
-
-    // Ottieni ETag corrente
-    try {
-      const resp = await fetch('/magazzino.csv', { method: 'HEAD', cache: 'no-store' });
-      lastETag = resp.headers.get('ETag') || resp.headers.get('Last-Modified');
-    } catch (e) {
-      console.warn('[PTR] Non posso ottenere ETag iniziale');
-    }
-
-    return new Promise((resolve) => {
-      const checkInterval = setInterval(async () => {
-        const elapsed = Date.now() - startTime;
-
-        // Timeout dopo maxWaitMs
-        if (elapsed > maxWaitMs) {
-          clearInterval(checkInterval);
-          console.log('[PTR] Timeout polling (3 min)');
-          resolve(false);
-          return;
-        }
-
-        // Controlla se CSV è cambiato
-        try {
-          const resp = await fetch('/magazzino.csv', { method: 'HEAD', cache: 'no-store' });
-          const currentETag = resp.headers.get('ETag') || resp.headers.get('Last-Modified');
-
-          if (currentETag && lastETag && currentETag !== lastETag) {
-            clearInterval(checkInterval);
-            console.log('[PTR] CSV aggiornato! (ETag changed)');
-            resolve(true);
-            return;
-          }
-
-          // Aggiorna indicatore con tempo trascorso
-          const seconds = Math.floor(elapsed / 1000);
-          refreshIndicator.innerHTML = `⟳ Aggiornamento in corso... (${seconds}s)`;
-        } catch (e) {
-          console.warn('[PTR] Errore controllo CSV:', e);
-        }
-      }, pollInterval);
-    });
-  }
 
   resultsArea.addEventListener('touchend', async (e) => {
     if (!isPulling || refreshing) return;
@@ -533,36 +428,24 @@
     const pullDistance = pullCurrentY - pullStartY;
     const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
 
-    console.log('[PTR] touchend pullDistance:', pullDistance, 'threshold:', PULL_THRESHOLD, 'scrollTop:', scrollTop);
     isPulling = false;
 
     // Se trascinato abbastanza, attiva refresh (accetta scrollTop negativo per rubber band iOS)
     if (pullDistance >= PULL_THRESHOLD && scrollTop <= 0) {
-      console.log('[PTR] REFRESH TRIGGERED!');
       refreshing = true;
-      refreshIndicator.innerHTML = '⟳ Aggiornamento in corso...';
+      refreshIndicator.innerHTML = '⟳ Aggiornamento...';
       refreshIndicator.style.transform = 'translateY(0)';
 
       try {
         // 1. Invalida cache locale
         window.cacheManager?.invalidate('magazzino');
 
-        // 2. Forza trigger workflow (bypassa throttle)
-        await forceTriggerWorkflow();
-
-        // 3. Aspetta che CSV venga aggiornato (polling intelligente)
-        const updated = await waitForCSVUpdate();
-
-        // 4. Ricarica CSV (nuovo o timeout)
-        await loadCSV();
+        // 2. Ricarica da API (ora immediato, niente workflow GitHub!)
+        await loadFromAPI();
         updateResults();
 
-        if (updated) {
-          refreshIndicator.innerHTML = '✓ Aggiornato!';
-        } else {
-          refreshIndicator.innerHTML = '⚠ Timeout. Riprova tra 1 min.';
-        }
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        refreshIndicator.innerHTML = '✓ Aggiornato!';
+        await new Promise(resolve => setTimeout(resolve, 1000));
       } catch (e) {
         console.error('[PTR] Errore durante refresh:', e);
         refreshIndicator.innerHTML = '✗ Errore';
@@ -598,16 +481,14 @@
 
       updateResults();
 
-      // 2. Triggera aggiornamenti in background (non bloccanti)
-      triggerDatabaseUpdate();  // GitHub workflow (throttled 10 min)
-      loadCSVBackground();      // CSV refresh silenzioso
+      // 2. Aggiorna in background da API (non bloccante)
+      loadFromAPIBackground();
 
       return;
     }
 
-    // 3. Fallback: nessuna cache, carica da rete
-    triggerDatabaseUpdate();
-    await loadCSV();
+    // 3. Fallback: nessuna cache, carica da API
+    await loadFromAPI();
 
     const savedTheme = getSavedTheme();
     if (savedTheme === 'dark' || savedTheme === 'light') {

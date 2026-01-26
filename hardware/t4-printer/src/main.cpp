@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.5.4"
+#define FIRMWARE_VERSION "1.5.5"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -96,6 +96,7 @@ struct Scheda {
   Attrezzo attrezzi[5]; // max 5 attrezzi per scheda
   int numAttrezzi;
   bool completato;
+  bool ddt;             // DDT presente (colonna F)
 };
 
 // Array schede (ultime 50)
@@ -1013,7 +1014,10 @@ void parseCSV(const String& csv) {
           strncpy(s.cliente, getCSVField(line, 2).c_str(), sizeof(s.cliente) - 1);
           strncpy(s.indirizzo, getCSVField(line, 3).c_str(), sizeof(s.indirizzo) - 1);
           strncpy(s.telefono, getCSVField(line, 4).c_str(), sizeof(s.telefono) - 1);
-          // Campo 5 = DDT (boolean), skippiamo
+
+          // Campo 5 = DDT (boolean)
+          String ddtField = getCSVField(line, 5);
+          s.ddt = (ddtField.equalsIgnoreCase("true") || ddtField == "1");
 
           // Campo 6 = Attrezzi (JSON array)
           String attrezziJson = getCSVField(line, 6);
@@ -1266,6 +1270,7 @@ int pollAndPrint() {
   strncpy(s.cliente, obj["Cliente"] | "", sizeof(s.cliente) - 1);
   strncpy(s.indirizzo, obj["Indirizzo"] | "", sizeof(s.indirizzo) - 1);
   strncpy(s.telefono, obj["Telefono"] | "", sizeof(s.telefono) - 1);
+  s.ddt = obj["DDT"] | false;
 
   // Parse attrezzi
   JsonArray attrezzi = obj["Attrezzi"].as<JsonArray>();
@@ -1422,6 +1427,7 @@ bool fetchAndPrintLastScheda() {
 
   const char* telefono = obj["Telefono"] | "";
   strncpy(s.telefono, telefono, sizeof(s.telefono) - 1);
+  s.ddt = obj["DDT"] | false;
 
   // Parse attrezzi
   JsonArray attrezzi = obj["Attrezzi"].as<JsonArray>();
@@ -2435,10 +2441,20 @@ void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi) {
   // Spazio 1mm (ESC J 7)
   printerSerial.write(0x1B); printerSerial.write('J'); printerSerial.write(7);
 
-  // === Cliente (normale, max 32 char) ===
+  // === Cliente (normale, max 32 char) + eventuale " - DDT" ===
   String clienteStr = String(s.cliente);
-  if (clienteStr.length() > 32) {
-    clienteStr = clienteStr.substring(0, 31) + ".";
+  if (s.ddt) {
+    // Se DDT presente, aggiungi " - DDT" (6 caratteri)
+    // Max 32 char totali: cliente max 32-6=26, poi " - DDT"
+    if (clienteStr.length() > 26) {
+      clienteStr = clienteStr.substring(0, 25) + ".";
+    }
+    clienteStr += " - DDT";
+  } else {
+    // Senza DDT: max 32 char
+    if (clienteStr.length() > 32) {
+      clienteStr = clienteStr.substring(0, 31) + ".";
+    }
   }
   printerSerial.println(clienteStr);
 

@@ -944,6 +944,24 @@ body.touch-app {
   margin-bottom: 0.5rem;
 }
 
+/* Riga Marca + Dotazione: affiancati su desktop, colonna su mobile */
+.attrezzo-row-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 600px) {
+  .attrezzo-row-top {
+    flex-direction: row;
+  }
+
+  .attrezzo-row-top input {
+    flex: 1;
+    margin-bottom: 0;
+  }
+}
+
 /* Buttons */
 button {
   font-family: inherit;

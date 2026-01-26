@@ -276,8 +276,10 @@ function addAttrezzo() {
       <span class="attrezzo-label">Attrezzo ${attrezziCount}</span>
       <button type="button" class="btn-remove" onclick="removeAttrezzo(${attrezziCount})">×</button>
     </div>
-    <input type="text" placeholder="Marca/Modello" data-field="marca" required />
-    <input type="text" placeholder="Dotazione (es: batteria, caricabatterie)" data-field="dotazione" />
+    <div class="attrezzo-row-top">
+      <input type="text" placeholder="Marca/Modello" data-field="marca" required />
+      <input type="text" placeholder="Dotazione (es: batteria, caricabatterie)" data-field="dotazione" />
+    </div>
     <input type="text" placeholder="Note (difetto/problema)" data-field="note" />
   `;
   attrezziContainer.appendChild(div);

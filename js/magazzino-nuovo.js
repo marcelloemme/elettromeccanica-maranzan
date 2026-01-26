@@ -227,9 +227,6 @@ async function salvaTutto() {
       cacheManager.set('magazzino', cacheAggiornata);
       console.log(`[Magazzino] Cache aggiornata: +${nuoviRicambi.length} ricambi (totale: ${cacheAggiornata.length})`);
 
-      // Triggera aggiornamento database GitHub (bypassa throttle)
-      triggerDatabaseUpdateNow();
-
       // Toast success
       showToast('✓ ' + result.count + ' ricambi salvati con successo!', 'success');
 
@@ -277,29 +274,6 @@ function showToast(message, type = 'success') {
   setTimeout(() => {
     toast.classList.add('hidden');
   }, 3000);
-}
-
-// Triggera aggiornamento database (bypassa throttle)
-function triggerDatabaseUpdateNow() {
-  const LAST_TRIGGER_KEY = 'magazzino_last_update_trigger';
-
-  try {
-    // Reset throttle per permettere trigger immediato
-    localStorage.removeItem(LAST_TRIGGER_KEY);
-
-    // Triggera workflow
-    fetch("https://aggiorna.marcellomaranzan.workers.dev/")
-      .then(() => {
-        // Salva nuovo timestamp
-        localStorage.setItem(LAST_TRIGGER_KEY, Date.now().toString());
-        console.log('Database update triggered (dopo inserimento batch)');
-      })
-      .catch(err => {
-        console.warn('Database update failed:', err);
-      });
-  } catch (err) {
-    console.warn('Errore trigger database update:', err);
-  }
 }
 
 // Esponi funzione globale per rimuoviDaCoda
