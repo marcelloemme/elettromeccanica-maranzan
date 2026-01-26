@@ -1,38 +1,38 @@
 {
-  "generatedAt": "2026-01-25T18:53:32.891Z",
+  "generatedAt": "2026-01-26T19:01:09.547Z",
   "recapAttuale": {
-    "totaleInCorso": 98,
+    "totaleInCorso": 105,
     "oltre90gg": null,
     "top3Vecchie": [
       {
         "numero": "25/0015",
         "cliente": "PANIGHEL LUDOVICO",
         "dataConsegna": "2025-11-03T00:00:00.000Z",
-        "giorniAperti": 83
+        "giorniAperti": 84
       },
       {
         "numero": "25/0017",
         "cliente": "BOLZAN",
         "dataConsegna": "2025-11-05T00:00:00.000Z",
-        "giorniAperti": 81
+        "giorniAperti": 82
       },
       {
         "numero": "25/0020",
         "cliente": "SORIN",
         "dataConsegna": "2025-11-06T00:00:00.000Z",
-        "giorniAperti": 80
+        "giorniAperti": 81
       }
     ],
-    "testoNotifica": "Al momento hai 98 riparazioni attive. Le tre più vecchie sono:\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025;\n- 25/0020 - SORIN del 06/11/2025."
+    "testoNotifica": "Al momento hai 105 riparazioni attive. Le tre più vecchie sono:\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025;\n- 25/0020 - SORIN del 06/11/2025."
   },
   "recapSettimanale": {
-    "settimana": "Questa settimana (19.01-25.01)",
+    "settimana": "Settimana scorsa (19.01-25.01)",
     "inserite": 26,
     "completate": 23,
-    "percInserite": 59.2,
-    "percCompletate": 25.6,
-    "mediaInserite": "16.3",
-    "mediaCompletate": "18.3"
+    "percInserite": 55.8,
+    "percCompletate": 35.3,
+    "mediaInserite": "16.7",
+    "mediaCompletate": "17.0"
   },
   "tempiRiparazione": [
     {
@@ -249,395 +249,423 @@
   "riparazioniAttive": [
     {
       "numero": "25/0015",
-      "giorniAperti": 83
+      "giorniAperti": 84
     },
     {
       "numero": "25/0017",
-      "giorniAperti": 81
+      "giorniAperti": 82
     },
     {
       "numero": "25/0020",
-      "giorniAperti": 80
+      "giorniAperti": 81
     },
     {
       "numero": "25/0022",
-      "giorniAperti": 79
+      "giorniAperti": 80
     },
     {
       "numero": "25/0023",
-      "giorniAperti": 78
+      "giorniAperti": 79
     },
     {
       "numero": "25/0024",
-      "giorniAperti": 76
+      "giorniAperti": 77
     },
     {
       "numero": "25/0025",
-      "giorniAperti": 76
+      "giorniAperti": 77
     },
     {
       "numero": "25/0026",
-      "giorniAperti": 76
+      "giorniAperti": 77
     },
     {
       "numero": "25/0032",
-      "giorniAperti": 75
+      "giorniAperti": 76
     },
     {
       "numero": "25/0033",
-      "giorniAperti": 75
+      "giorniAperti": 76
     },
     {
       "numero": "25/0036",
-      "giorniAperti": 73
+      "giorniAperti": 74
     },
     {
       "numero": "25/0040",
-      "giorniAperti": 72
+      "giorniAperti": 73
     },
     {
       "numero": "25/0042",
-      "giorniAperti": 69
+      "giorniAperti": 70
     },
     {
       "numero": "25/0046",
-      "giorniAperti": 69
+      "giorniAperti": 70
     },
     {
       "numero": "25/0057",
-      "giorniAperti": 65
+      "giorniAperti": 66
     },
     {
       "numero": "25/0059",
-      "giorniAperti": 65
+      "giorniAperti": 66
     },
     {
       "numero": "25/0066",
-      "giorniAperti": 61
+      "giorniAperti": 62
     },
     {
       "numero": "25/0067",
-      "giorniAperti": 61
+      "giorniAperti": 62
     },
     {
       "numero": "25/0073",
-      "giorniAperti": 59
+      "giorniAperti": 60
     },
     {
       "numero": "25/0078",
-      "giorniAperti": 58
+      "giorniAperti": 59
     },
     {
       "numero": "25/0079",
-      "giorniAperti": 58
+      "giorniAperti": 59
     },
     {
       "numero": "25/0080",
-      "giorniAperti": 58
+      "giorniAperti": 59
     },
     {
       "numero": "25/0083",
-      "giorniAperti": 57
+      "giorniAperti": 58
     },
     {
       "numero": "25/0090",
-      "giorniAperti": 54
+      "giorniAperti": 55
     },
     {
       "numero": "25/0091",
-      "giorniAperti": 54
+      "giorniAperti": 55
     },
     {
       "numero": "25/0100",
-      "giorniAperti": 51
+      "giorniAperti": 52
     },
     {
       "numero": "25/0103",
-      "giorniAperti": 47
+      "giorniAperti": 48
     },
     {
       "numero": "25/0105",
-      "giorniAperti": 47
+      "giorniAperti": 48
     },
     {
       "numero": "25/0109",
-      "giorniAperti": 44
+      "giorniAperti": 45
     },
     {
       "numero": "25/0110",
-      "giorniAperti": 44
+      "giorniAperti": 45
     },
     {
       "numero": "25/0112",
-      "giorniAperti": 43
+      "giorniAperti": 44
     },
     {
       "numero": "25/0113",
-      "giorniAperti": 43
+      "giorniAperti": 44
     },
     {
       "numero": "25/0114",
-      "giorniAperti": 43
+      "giorniAperti": 44
     },
     {
       "numero": "25/0117",
-      "giorniAperti": 40
+      "giorniAperti": 41
     },
     {
       "numero": "25/0121",
-      "giorniAperti": 39
+      "giorniAperti": 40
     },
     {
       "numero": "25/0122",
-      "giorniAperti": 39
+      "giorniAperti": 40
     },
     {
       "numero": "25/0123",
-      "giorniAperti": 38
+      "giorniAperti": 39
     },
     {
       "numero": "25/0124",
-      "giorniAperti": 37
+      "giorniAperti": 38
     },
     {
       "numero": "25/0126",
-      "giorniAperti": 36
+      "giorniAperti": 37
     },
     {
       "numero": "25/0127",
-      "giorniAperti": 34
+      "giorniAperti": 35
     },
     {
       "numero": "25/0128",
-      "giorniAperti": 34
+      "giorniAperti": 35
     },
     {
       "numero": "25/0129",
-      "giorniAperti": 34
+      "giorniAperti": 35
     },
     {
       "numero": "25/0132",
-      "giorniAperti": 33
+      "giorniAperti": 34
     },
     {
       "numero": "25/0133",
-      "giorniAperti": 25
+      "giorniAperti": 26
     },
     {
       "numero": "26/0005",
-      "giorniAperti": 18
+      "giorniAperti": 19
     },
     {
       "numero": "26/0007",
-      "giorniAperti": 18
+      "giorniAperti": 19
     },
     {
       "numero": "26/0010",
-      "giorniAperti": 17
+      "giorniAperti": 18
     },
     {
       "numero": "26/0011",
-      "giorniAperti": 17
+      "giorniAperti": 18
     },
     {
       "numero": "26/0013",
-      "giorniAperti": 17
+      "giorniAperti": 18
     },
     {
       "numero": "26/0014",
-      "giorniAperti": 17
+      "giorniAperti": 18
     },
     {
       "numero": "26/0015",
-      "giorniAperti": 17
+      "giorniAperti": 18
     },
     {
       "numero": "26/0016",
-      "giorniAperti": 16
+      "giorniAperti": 17
     },
     {
       "numero": "26/0017",
-      "giorniAperti": 16
+      "giorniAperti": 17
     },
     {
       "numero": "26/0018",
-      "giorniAperti": 16
+      "giorniAperti": 17
     },
     {
       "numero": "26/0019",
-      "giorniAperti": 16
+      "giorniAperti": 17
     },
     {
       "numero": "26/0020",
-      "giorniAperti": 15
+      "giorniAperti": 16
     },
     {
       "numero": "26/0022",
-      "giorniAperti": 13
+      "giorniAperti": 14
     },
     {
       "numero": "26/0026",
-      "giorniAperti": 13
+      "giorniAperti": 14
     },
     {
       "numero": "26/0027",
-      "giorniAperti": 13
+      "giorniAperti": 14
     },
     {
       "numero": "26/0028",
-      "giorniAperti": 13
+      "giorniAperti": 14
     },
     {
       "numero": "26/0031",
-      "giorniAperti": 12
+      "giorniAperti": 13
     },
     {
       "numero": "26/0033",
-      "giorniAperti": 12
+      "giorniAperti": 13
     },
     {
       "numero": "26/0034",
-      "giorniAperti": 11
+      "giorniAperti": 12
     },
     {
       "numero": "26/0035",
-      "giorniAperti": 11
+      "giorniAperti": 12
     },
     {
       "numero": "26/0039",
-      "giorniAperti": 10
+      "giorniAperti": 11
     },
     {
       "numero": "26/0041",
-      "giorniAperti": 10
+      "giorniAperti": 11
     },
     {
       "numero": "26/0042",
-      "giorniAperti": 10
+      "giorniAperti": 11
     },
     {
       "numero": "26/0043",
-      "giorniAperti": 10
+      "giorniAperti": 11
     },
     {
       "numero": "26/0044",
-      "giorniAperti": 9
+      "giorniAperti": 10
     },
     {
       "numero": "26/0046",
-      "giorniAperti": 9
+      "giorniAperti": 10
     },
     {
       "numero": "26/0048",
-      "giorniAperti": 9
+      "giorniAperti": 10
     },
     {
       "numero": "26/0049",
-      "giorniAperti": 9
+      "giorniAperti": 10
     },
     {
       "numero": "26/0050",
-      "giorniAperti": 9
+      "giorniAperti": 10
     },
     {
       "numero": "26/0051",
-      "giorniAperti": 9
+      "giorniAperti": 10
     },
     {
       "numero": "26/0052",
-      "giorniAperti": 8
+      "giorniAperti": 9
     },
     {
       "numero": "26/0053",
-      "giorniAperti": 6
+      "giorniAperti": 7
     },
     {
       "numero": "26/0056",
-      "giorniAperti": 6
+      "giorniAperti": 7
     },
     {
       "numero": "26/0057",
-      "giorniAperti": 6
+      "giorniAperti": 7
     },
     {
       "numero": "26/0058",
-      "giorniAperti": 5
+      "giorniAperti": 6
     },
     {
       "numero": "26/0060",
-      "giorniAperti": 5
+      "giorniAperti": 6
     },
     {
       "numero": "26/0061",
-      "giorniAperti": 5
+      "giorniAperti": 6
     },
     {
       "numero": "26/0062",
-      "giorniAperti": 5
+      "giorniAperti": 6
     },
     {
       "numero": "26/0063",
-      "giorniAperti": 5
+      "giorniAperti": 6
     },
     {
       "numero": "26/0064",
-      "giorniAperti": 4
+      "giorniAperti": 5
     },
     {
       "numero": "26/0065",
-      "giorniAperti": 4
+      "giorniAperti": 5
     },
     {
       "numero": "26/0066",
-      "giorniAperti": 4
+      "giorniAperti": 5
     },
     {
       "numero": "26/0067",
-      "giorniAperti": 4
+      "giorniAperti": 5
     },
     {
       "numero": "26/0068",
-      "giorniAperti": 4
+      "giorniAperti": 5
     },
     {
       "numero": "26/0069",
-      "giorniAperti": 3
+      "giorniAperti": 4
     },
     {
       "numero": "26/0070",
-      "giorniAperti": 3
+      "giorniAperti": 4
     },
     {
       "numero": "26/0071",
-      "giorniAperti": 3
+      "giorniAperti": 4
     },
     {
       "numero": "26/0072",
-      "giorniAperti": 3
+      "giorniAperti": 4
     },
     {
       "numero": "26/0073",
-      "giorniAperti": 2
+      "giorniAperti": 3
     },
     {
       "numero": "26/0074",
-      "giorniAperti": 2
+      "giorniAperti": 3
     },
     {
       "numero": "26/0075",
-      "giorniAperti": 2
+      "giorniAperti": 3
     },
     {
       "numero": "26/0076",
-      "giorniAperti": 1
+      "giorniAperti": 2
     },
     {
       "numero": "26/0077",
-      "giorniAperti": 1
+      "giorniAperti": 2
     },
     {
       "numero": "26/0078",
-      "giorniAperti": 1
+      "giorniAperti": 2
+    },
+    {
+      "numero": "26/0079",
+      "giorniAperti": 0
+    },
+    {
+      "numero": "26/0080",
+      "giorniAperti": 0
+    },
+    {
+      "numero": "26/0081",
+      "giorniAperti": 0
+    },
+    {
+      "numero": "26/0082",
+      "giorniAperti": 0
+    },
+    {
+      "numero": "26/0083",
+      "giorniAperti": 0
+    },
+    {
+      "numero": "26/0084",
+      "giorniAperti": 0
+    },
+    {
+      "numero": "26/0085",
+      "giorniAperti": 0
     }
   ],
   "grafici": {
@@ -673,7 +701,7 @@
     },
     "2026": {
       "create": {
-        "1": 78,
+        "1": 85,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -802,6 +830,12 @@
       "aggiunte": 3,
       "completate": 0,
       "delta": -3
+    },
+    {
+      "data": "2026-01-26",
+      "aggiunte": 7,
+      "completate": 0,
+      "delta": -7
     }
   ]
 }
