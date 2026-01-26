@@ -149,17 +149,21 @@
 
     for (const letter of sortedLetters) {
       const shelves = letterMap.get(letter);
+      const totalShelves = shelves.length;
 
       // Split into rows of 7
       let rowIndex = 0;
       let shelvesInRow = [];
+      let processedCount = 0;
 
       for (let i = 0; i < shelves.length; i++) {
         shelvesInRow.push(shelves[i]);
+        processedCount++;
 
         // Create row when we have 7 shelves or at the end
         if (shelvesInRow.length === 7 || i === shelves.length - 1) {
-          const row = createShelfRow(letter, shelvesInRow, rowIndex);
+          const isLastRowForLetter = (processedCount === totalShelves);
+          const row = createShelfRow(letter, shelvesInRow, rowIndex, isLastRowForLetter);
           shelvesContainer.appendChild(row);
           rowIndex++;
           shelvesInRow = [];
@@ -170,7 +174,7 @@
     updateSaveButton();
   }
 
-  function createShelfRow(letter, shelves, rowIndex) {
+  function createShelfRow(letter, shelves, rowIndex, isLastRowForLetter) {
     const row = document.createElement('div');
     row.className = 'shelf-row';
     row.dataset.letter = letter;
@@ -185,19 +189,21 @@
       maxItems = Math.max(maxItems, shelf.items.length);
     }
 
-    // Add "new shelf" placeholder
-    const lastShelf = shelves[shelves.length - 1];
-    const nextNum = lastShelf.num + 1;
+    // Add "new shelf" placeholder ONLY on the last row for this letter
+    if (isLastRowForLetter) {
+      const lastShelf = shelves[shelves.length - 1];
+      const nextNum = lastShelf.num + 1;
 
-    const newShelf = document.createElement('div');
-    newShelf.className = 'shelf-new';
-    newShelf.dataset.letter = letter;
-    newShelf.dataset.nextNum = nextNum;
-    newShelf.style.minHeight = `${Math.max(80, maxItems * 28 + 50)}px`;
-    newShelf.innerHTML = '+';
-    newShelf.title = `Aggiungi scaffale ${formatShelf(letter, nextNum)}`;
-    newShelf.addEventListener('click', () => handleAddShelf(letter, nextNum));
-    row.appendChild(newShelf);
+      const newShelf = document.createElement('div');
+      newShelf.className = 'shelf-new';
+      newShelf.dataset.letter = letter;
+      newShelf.dataset.nextNum = nextNum;
+      newShelf.style.minHeight = `${Math.max(80, maxItems * 28 + 50)}px`;
+      newShelf.innerHTML = '+';
+      newShelf.title = `Aggiungi scaffale ${formatShelf(letter, nextNum)}`;
+      newShelf.addEventListener('click', () => handleAddShelf(letter, nextNum));
+      row.appendChild(newShelf);
+    }
 
     return row;
   }
@@ -429,11 +435,23 @@
   function handleAddItem(scaffale) {
     if (currentMode !== 'edit') return;
 
-    const shelfBox = shelvesContainer.querySelector(`[data-shelf="${normalizeShelf(scaffale).raw}"]`);
-    if (!shelfBox) return;
+    // Normalize scaffale per trovare il data-shelf corretto
+    const shelfNorm = normalizeShelf(scaffale);
+    if (!shelfNorm) return;
+
+    const shelfBox = shelvesContainer.querySelector(`[data-shelf="${shelfNorm.raw}"]`);
+    if (!shelfBox) {
+      console.error('Shelf box not found for:', shelfNorm.raw);
+      return;
+    }
 
     const itemsContainer = shelfBox.querySelector('.shelf-items');
     const addBtn = itemsContainer.querySelector('.shelf-add');
+
+    // Se c'è già un input aperto, non fare niente
+    if (itemsContainer.querySelector('.edit-input')) {
+      return;
+    }
 
     // Create new item row
     const newItem = document.createElement('div');
@@ -456,7 +474,11 @@
     itemsContainer.insertBefore(newItem, addBtn);
     codiceInput.focus();
 
-    const finishAdding = () => {
+    let isFinishing = false;
+
+    const finishAdding = (fromBlur = false) => {
+      if (isFinishing) return;
+
       const codice = codiceInput.value.trim();
       const descrizione = descInput.value.trim();
 
@@ -476,11 +498,13 @@
         return;
       }
 
+      isFinishing = true;
+
       // Add to changes
       changes.added.push({
         codice,
         descrizione,
-        scaffale
+        scaffale: shelfNorm.formatted
       });
 
       // Update UI
@@ -511,13 +535,12 @@
     });
 
     descInput.addEventListener('blur', (e) => {
-      // Don't finish if moving to codice input
-      if (e.relatedTarget === codiceInput) return;
+      // Don't finish if focus is moving within the same newItem
       setTimeout(() => {
-        if (document.activeElement !== codiceInput) {
-          finishAdding();
+        if (!newItem.contains(document.activeElement)) {
+          finishAdding(true);
         }
-      }, 100);
+      }, 150);
     });
 
     codiceInput.addEventListener('keydown', (e) => {
@@ -527,6 +550,15 @@
       } else if (e.key === 'Escape') {
         newItem.remove();
       }
+    });
+
+    codiceInput.addEventListener('blur', (e) => {
+      // Don't finish if focus is moving within the same newItem
+      setTimeout(() => {
+        if (!newItem.contains(document.activeElement)) {
+          finishAdding(true);
+        }
+      }, 150);
     });
   }
 
