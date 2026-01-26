@@ -231,7 +231,10 @@
     addBtn.className = 'shelf-add';
     addBtn.innerHTML = '+';
     addBtn.title = 'Aggiungi pezzo';
-    addBtn.addEventListener('click', () => handleAddItem(shelf.formatted));
+    addBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handleAddItem(shelf.formatted);
+    });
     itemsContainer.appendChild(addBtn);
 
     box.appendChild(itemsContainer);
@@ -433,17 +436,27 @@
   }
 
   function handleAddItem(scaffale) {
-    if (currentMode !== 'edit') return;
+    console.log('handleAddItem called with:', scaffale, 'currentMode:', currentMode);
+
+    if (currentMode !== 'edit') {
+      console.log('Not in edit mode, returning');
+      return;
+    }
 
     // Normalize scaffale per trovare il data-shelf corretto
     const shelfNorm = normalizeShelf(scaffale);
-    if (!shelfNorm) return;
+    if (!shelfNorm) {
+      console.error('Could not normalize shelf:', scaffale);
+      return;
+    }
 
+    console.log('Looking for shelf with data-shelf:', shelfNorm.raw);
     const shelfBox = shelvesContainer.querySelector(`[data-shelf="${shelfNorm.raw}"]`);
     if (!shelfBox) {
       console.error('Shelf box not found for:', shelfNorm.raw);
       return;
     }
+    console.log('Found shelf box:', shelfBox);
 
     const itemsContainer = shelfBox.querySelector('.shelf-items');
     const addBtn = itemsContainer.querySelector('.shelf-add');
@@ -567,12 +580,20 @@
 
     // Create a temporary shelf box
     const formatted = formatShelf(letter, num);
+    const shelfRaw = `${letter}${num}`;
+
+    // Check if this shelf already exists
+    if (shelvesContainer.querySelector(`[data-shelf="${shelfRaw}"]`)) {
+      // Shelf already exists, just add item to it
+      handleAddItem(formatted);
+      return;
+    }
 
     // Find the row and insert new shelf
-    const rows = shelvesContainer.querySelectorAll(`[data-letter="${letter}"]`);
+    const rows = shelvesContainer.querySelectorAll(`.shelf-row[data-letter="${letter}"]`);
     let targetRow = rows[rows.length - 1];
 
-    // Count shelves in last row (excluding the + button)
+    // Count shelves in last row (excluding the + placeholder)
     const shelvesInRow = targetRow.querySelectorAll('.shelf-box').length;
 
     if (shelvesInRow >= 7) {
@@ -580,13 +601,16 @@
       targetRow = document.createElement('div');
       targetRow.className = 'shelf-row';
       targetRow.dataset.letter = letter;
-      shelvesContainer.appendChild(targetRow);
+
+      // Insert after the last row for this letter
+      const lastRowForLetter = rows[rows.length - 1];
+      lastRowForLetter.after(targetRow);
     }
 
     // Create new shelf box
     const box = document.createElement('div');
     box.className = 'shelf-box';
-    box.dataset.shelf = `${letter}${num}`;
+    box.dataset.shelf = shelfRaw;
 
     const header = document.createElement('div');
     header.className = 'shelf-header';
@@ -601,20 +625,44 @@
     addBtn.innerHTML = '+';
     addBtn.title = 'Aggiungi pezzo';
     addBtn.style.display = 'flex'; // Show immediately since we're in edit mode
-    addBtn.addEventListener('click', () => handleAddItem(formatted));
+    addBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handleAddItem(formatted);
+    });
     itemsContainer.appendChild(addBtn);
 
     box.appendChild(itemsContainer);
 
-    // Find the new shelf placeholder and insert before it
-    const newShelfPlaceholder = targetRow.querySelector('.shelf-new');
-    if (newShelfPlaceholder) {
-      targetRow.insertBefore(box, newShelfPlaceholder);
+    // Find the new shelf placeholder and insert before it, or move it
+    const oldPlaceholder = targetRow.querySelector('.shelf-new');
+    if (oldPlaceholder) {
+      targetRow.insertBefore(box, oldPlaceholder);
       // Update placeholder for next number
-      newShelfPlaceholder.dataset.nextNum = num + 1;
-      newShelfPlaceholder.title = `Aggiungi scaffale ${formatShelf(letter, num + 1)}`;
+      oldPlaceholder.dataset.nextNum = num + 1;
+      oldPlaceholder.title = `Aggiungi scaffale ${formatShelf(letter, num + 1)}`;
     } else {
+      // No placeholder in this row, need to create one or move from previous row
       targetRow.appendChild(box);
+
+      // Create new placeholder
+      const newPlaceholder = document.createElement('div');
+      newPlaceholder.className = 'shelf-new';
+      newPlaceholder.dataset.letter = letter;
+      newPlaceholder.dataset.nextNum = num + 1;
+      newPlaceholder.style.minHeight = '80px';
+      newPlaceholder.style.display = 'flex';
+      newPlaceholder.innerHTML = '+';
+      newPlaceholder.title = `Aggiungi scaffale ${formatShelf(letter, num + 1)}`;
+      newPlaceholder.addEventListener('click', () => handleAddShelf(letter, num + 1));
+      targetRow.appendChild(newPlaceholder);
+
+      // Remove old placeholder from previous row if exists
+      if (rows.length > 0) {
+        const prevRowPlaceholder = rows[rows.length - 1].querySelector('.shelf-new');
+        if (prevRowPlaceholder && rows[rows.length - 1] !== targetRow) {
+          prevRowPlaceholder.remove();
+        }
+      }
     }
 
     // Trigger add item
