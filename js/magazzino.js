@@ -173,7 +173,7 @@
 
     // Mostra messaggio iniziale quando l'input è vuoto
     if (!q) {
-      topResultsEl.innerHTML = '<div style="padding:6px 8px; font-size:18px;">Digita per iniziare la ricerca del codice. Visualizza il contenuto degli scaffali con il formato A01. Visualizzando uno scaffale, scorri a destra o a sinistra per passare agli altri scaffali. Scorri dall\'alto verso il basso per aggiornare i dati.</div>';
+      topResultsEl.innerHTML = '<div style="padding:6px 8px; font-size:18px;">Digita per iniziare la ricerca del codice. Visualizza il contenuto degli scaffali con il formato A01. Visualizzando uno scaffale, scorri a destra o a sinistra per passare agli altri scaffali.</div>';
       return;
     }
 
@@ -351,114 +351,6 @@
       console.warn('Background API update fallito (non critico):', e);
     }
   }
-
-  // ---- Pull-to-refresh: swipe down dalla cima per forzare aggiornamento ----
-  let refreshing = false;
-  const PULL_THRESHOLD = 90; // pixel da trascinare per attivare refresh
-  let pullStartY = 0;
-  let pullCurrentY = 0;
-  let isPulling = false;
-
-  // Crea indicatore visivo per pull-to-refresh
-  const refreshIndicator = document.createElement('div');
-  refreshIndicator.id = 'refresh-indicator';
-  refreshIndicator.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    padding-top: env(safe-area-inset-top, 0px);
-    background: linear-gradient(180deg, rgba(0,123,255,0.9) 0%, rgba(0,123,255,0) 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 14px;
-    font-weight: 600;
-    transform: translateY(-100%);
-    transition: transform 0.2s ease-out;
-    z-index: 9999;
-    pointer-events: none;
-  `;
-  refreshIndicator.innerHTML = '↓ Trascina per aggiornare';
-  document.body.appendChild(refreshIndicator);
-
-  const resultsArea = document.querySelector('.app') || document.body;
-
-  resultsArea.addEventListener('touchstart', (e) => {
-    // Attiva pull-to-refresh solo se siamo in cima alla pagina
-    const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-
-    if (scrollTop === 0 && !refreshing) {
-      pullStartY = e.touches[0].clientY;
-      isPulling = true;
-    }
-  }, { passive: true });
-
-  resultsArea.addEventListener('touchmove', (e) => {
-    if (!isPulling || refreshing) return;
-
-    pullCurrentY = e.touches[0].clientY;
-    const pullDistance = pullCurrentY - pullStartY;
-    const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-
-    // Mostra indicatore solo se swipe verso il basso (accetta scrollTop negativo per rubber band iOS)
-    if (pullDistance > 0 && scrollTop <= 0) {
-      const progress = Math.min(pullDistance / PULL_THRESHOLD, 1);
-      const translateY = -100 + (progress * 100);
-      refreshIndicator.style.transform = `translateY(${translateY}%)`;
-
-      // Aggiorna testo in base alla distanza trascinata
-      if (pullDistance >= PULL_THRESHOLD) {
-        if (refreshIndicator.innerHTML !== '↑ Rilascia per aggiornare') {
-          refreshIndicator.innerHTML = '↑ Rilascia per aggiornare';
-        }
-      } else {
-        if (refreshIndicator.innerHTML !== '↓ Trascina per aggiornare') {
-          refreshIndicator.innerHTML = '↓ Trascina per aggiornare';
-        }
-      }
-    }
-  }, { passive: true });
-
-  resultsArea.addEventListener('touchend', async (e) => {
-    if (!isPulling || refreshing) return;
-
-    const pullDistance = pullCurrentY - pullStartY;
-    const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-
-    isPulling = false;
-
-    // Se trascinato abbastanza, attiva refresh (accetta scrollTop negativo per rubber band iOS)
-    if (pullDistance >= PULL_THRESHOLD && scrollTop <= 0) {
-      refreshing = true;
-      refreshIndicator.innerHTML = '⟳ Aggiornamento...';
-      refreshIndicator.style.transform = 'translateY(0)';
-
-      try {
-        // 1. Invalida cache locale
-        window.cacheManager?.invalidate('magazzino');
-
-        // 2. Ricarica da API (ora immediato, niente workflow GitHub!)
-        await loadFromAPI();
-        updateResults();
-
-        refreshIndicator.innerHTML = '✓ Aggiornato!';
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      } catch (e) {
-        console.error('[PTR] Errore durante refresh:', e);
-        refreshIndicator.innerHTML = '✗ Errore';
-        await new Promise(resolve => setTimeout(resolve, 1500));
-      }
-
-      refreshing = false;
-    }
-
-    // Nascondi indicatore
-    refreshIndicator.style.transform = 'translateY(-100%)';
-    pullCurrentY = 0;
-  }, { passive: true });
 
   // Nota: iOS PWA non calcola env(safe-area-inset-bottom) all'avvio.
   // Il tastierino parte leggermente troppo in alto ma si sistema al primo
