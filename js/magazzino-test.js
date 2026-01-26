@@ -211,7 +211,7 @@
   function createShelfBox(shelf) {
     const box = document.createElement('div');
     box.className = 'shelf-box';
-    box.dataset.shelf = shelf.raw;
+    box.dataset.shelf = shelf.formatted;
 
     const header = document.createElement('div');
     header.className = 'shelf-header';
@@ -436,27 +436,18 @@
   }
 
   function handleAddItem(scaffale) {
-    console.log('handleAddItem called with:', scaffale, 'currentMode:', currentMode);
-
-    if (currentMode !== 'edit') {
-      console.log('Not in edit mode, returning');
-      return;
-    }
+    if (currentMode !== 'edit') return;
 
     // Normalize scaffale per trovare il data-shelf corretto
     const shelfNorm = normalizeShelf(scaffale);
-    if (!shelfNorm) {
-      console.error('Could not normalize shelf:', scaffale);
-      return;
-    }
+    if (!shelfNorm) return;
 
-    console.log('Looking for shelf with data-shelf:', shelfNorm.raw);
-    const shelfBox = shelvesContainer.querySelector(`[data-shelf="${shelfNorm.raw}"]`);
+    // Usa sempre formato formatted (A01)
+    const shelfBox = shelvesContainer.querySelector(`[data-shelf="${shelfNorm.formatted}"]`);
     if (!shelfBox) {
-      console.error('Shelf box not found for:', shelfNorm.raw);
+      console.error('Shelf box not found for:', shelfNorm.formatted);
       return;
     }
-    console.log('Found shelf box:', shelfBox);
 
     const itemsContainer = shelfBox.querySelector('.shelf-items');
     const addBtn = itemsContainer.querySelector('.shelf-add');
@@ -580,10 +571,9 @@
 
     // Create a temporary shelf box
     const formatted = formatShelf(letter, num);
-    const shelfRaw = `${letter}${num}`;
 
     // Check if this shelf already exists
-    if (shelvesContainer.querySelector(`[data-shelf="${shelfRaw}"]`)) {
+    if (shelvesContainer.querySelector(`[data-shelf="${formatted}"]`)) {
       // Shelf already exists, just add item to it
       handleAddItem(formatted);
       return;
@@ -610,7 +600,7 @@
     // Create new shelf box
     const box = document.createElement('div');
     box.className = 'shelf-box';
-    box.dataset.shelf = shelfRaw;
+    box.dataset.shelf = formatted;
 
     const header = document.createElement('div');
     header.className = 'shelf-header';
