@@ -304,6 +304,16 @@
     if (currentMode === 'delete') {
       toggleDelete(item);
     } else if (currentMode === 'edit') {
+      // Se l'item era marcato per eliminazione, rimuovi la marcatura prima di editare
+      const wasDeleted = changes.deleted.findIndex(d => d.codice === item.codice);
+      if (wasDeleted >= 0) {
+        changes.deleted.splice(wasDeleted, 1);
+        const itemEl = shelvesContainer.querySelector(`[data-codice="${item.codice}"]`);
+        if (itemEl) {
+          itemEl.classList.remove('item-deleted');
+        }
+        updateSaveButton();
+      }
       startEditing(e.target, item, field);
     }
   }
@@ -698,48 +708,27 @@
     loadingOverlay.classList.remove('hidden');
 
     try {
-      // For now, make individual API calls
-      // TODO: Create batchOperations endpoint
+      // Usa il nuovo endpoint batchOperations per fare tutto in una chiamata
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        redirect: 'follow',
+        body: JSON.stringify({
+          action: 'batchOperations',
+          adds: changes.added,
+          updates: changes.modified,
+          deletes: changes.deleted
+        })
+      });
 
-      // Process deletes
-      for (const item of changes.deleted) {
-        await fetch(API_URL, {
-          method: 'POST',
-          redirect: 'follow',
-          body: JSON.stringify({
-            action: 'deleteRicambio',
-            codice: item.codice
-          })
-        });
+      const result = await response.json();
+
+      if (result.error && !result.success) {
+        throw new Error(result.error);
       }
 
-      // Process adds
-      if (changes.added.length > 0) {
-        await fetch(API_URL, {
-          method: 'POST',
-          redirect: 'follow',
-          body: JSON.stringify({
-            action: 'batchAddRicambi',
-            ricambi: changes.added
-          })
-        });
-      }
-
-      // Process modifications
-      for (const mod of changes.modified) {
-        const original = DATA.find(d => d.codice === mod.codice);
-        if (!original) continue;
-
-        await fetch(API_URL, {
-          method: 'POST',
-          redirect: 'follow',
-          body: JSON.stringify({
-            action: 'updateRicambio',
-            codice: mod.newCodice || mod.codice,
-            descrizione: mod.newDescrizione !== undefined ? mod.newDescrizione : original.descrizione,
-            scaffale: original.scaffale
-          })
-        });
+      // Mostra eventuali errori parziali
+      if (result.results && result.results.errors && result.results.errors.length > 0) {
+        console.warn('Errori parziali:', result.results.errors);
       }
 
       // Clear changes and reload
@@ -758,7 +747,7 @@
       showToast('Modifiche salvate con successo!', 'success');
     } catch (e) {
       console.error('Errore salvataggio:', e);
-      showToast('Errore durante il salvataggio', 'error');
+      showToast('Errore durante il salvataggio: ' + e.message, 'error');
     } finally {
       loadingOverlay.classList.add('hidden');
     }
