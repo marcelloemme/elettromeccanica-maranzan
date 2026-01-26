@@ -482,6 +482,8 @@
 
     const finishAdding = (fromBlur = false) => {
       if (isFinishing) return;
+      // Non processare se il popup duplicato è aperto
+      if (popupDuplicate.classList.contains('visible')) return;
 
       const codice = codiceInput.value.trim();
       const descrizione = descInput.value.trim();
@@ -497,8 +499,6 @@
       if (exists) {
         popupDuplicateMsg.textContent = `Il codice "${codice}" esiste già nel magazzino.`;
         popupDuplicate.classList.add('visible');
-        codiceInput.focus();
-        codiceInput.select();
         return;
       }
 
@@ -868,6 +868,12 @@
 
   document.getElementById('popup-duplicate-ok').addEventListener('click', () => {
     popupDuplicate.classList.remove('visible');
+    // Trova l'input codice attivo e permettigli di essere modificato
+    const activeInput = shelvesContainer.querySelector('.edit-input.codice');
+    if (activeInput) {
+      activeInput.focus();
+      activeInput.select();
+    }
   });
 
   // Search
