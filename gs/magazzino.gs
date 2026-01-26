@@ -6,6 +6,13 @@ function doGet(e) {
   try {
     if (action === 'getRicambi') return getRicambi();
     if (action === 'getRicambio') return getRicambio(e.parameter.codice);
+    // Le azioni POST (batchAddRicambi, updateRicambio, deleteRicambio, addRicambio)
+    // arrivano qui come redirect dopo il POST.
+    // Il POST è già stato elaborato, quindi rispondiamo con success generico.
+    if (action === 'batchAddRicambi' || action === 'addRicambio' ||
+        action === 'updateRicambio' || action === 'deleteRicambio') {
+      return createResponse({ success: true, message: 'Operazione completata' });
+    }
     return createResponse({ error: 'Azione non valida' });
   } catch (err) {
     return createResponse({ error: err.toString() });

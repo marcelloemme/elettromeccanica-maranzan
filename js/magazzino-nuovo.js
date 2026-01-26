@@ -187,8 +187,12 @@ async function salvaTutto() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
+    // Google Apps Script fa redirect 302 dopo POST.
+    // Usiamo redirect: 'follow' per ottenere la risposta JSON finale.
+    // L'action nella query string serve per il redirect GET che segue.
     const res = await fetch(`${API_URL}?action=batchAddRicambi`, {
       method: 'POST',
+      redirect: 'follow',
       body: JSON.stringify({
         action: 'batchAddRicambi',
         ricambi: coda
