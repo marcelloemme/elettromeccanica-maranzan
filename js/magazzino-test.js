@@ -150,15 +150,15 @@
     for (const letter of sortedLetters) {
       const shelves = letterMap.get(letter);
 
-      // Split into rows of 9
+      // Split into rows of 7
       let rowIndex = 0;
       let shelvesInRow = [];
 
       for (let i = 0; i < shelves.length; i++) {
         shelvesInRow.push(shelves[i]);
 
-        // Create row when we have 9 shelves or at the end
-        if (shelvesInRow.length === 9 || i === shelves.length - 1) {
+        // Create row when we have 7 shelves or at the end
+        if (shelvesInRow.length === 7 || i === shelves.length - 1) {
           const row = createShelfRow(letter, shelvesInRow, rowIndex);
           shelvesContainer.appendChild(row);
           rowIndex++;
@@ -533,7 +533,7 @@
     // Count shelves in last row (excluding the + button)
     const shelvesInRow = targetRow.querySelectorAll('.shelf-box').length;
 
-    if (shelvesInRow >= 9) {
+    if (shelvesInRow >= 7) {
       // Need new row
       targetRow = document.createElement('div');
       targetRow.className = 'shelf-row';
