@@ -475,81 +475,81 @@ Codice,descrizione,scaffale
 232147-4,molla pias. x 6821,R05
 232154-7,molla fascia x 6822,U03
 232159-7,molla a piastra,S07
-232162-8,molla a piastra,S06
-232180-6,anello,Q02
-232182-2,molla a piastra,S04
-232192-9,molla,O08
-232207-2,molla piatta,I05
-232220-0,molla,X02
-232222-6,molla piatta,Y09
-232239-9,molla,X05
-232245-4,molla,K07
-232334-5,anello ritegno,D08
-233002-3,molla,L11
-233005-7,molla,N07
-233089-5,molla,R01
-233109-5,molla,Y02
-233188-3,molla,O09
-233193-0,molla,P08
-233203-3,molla,R09
-233207-5,molla,P15
-233208-3,molla,X08
-233360-7,molla,H06
-233376-2,molla,Q10
-233387-7,molla,X06
-233430-2,molla,K10
-233917-4,anello,V03
-233940-9,anello,Y02
-233974-2,anello,V13
-233979-2,anello ritegno,H07
-234147-0,molla,H06
-234251-5,molla,K09
-234264-6,molla,H05
-240067-8,ventola,N12
-241654-6,ventola,N08
-241658-8,ventola,X07
-241659-6,ventola x BO5000,M01
-241660-1,puleggia,V05
-241663-5,ventola,Y10
-241673-2,ventola x BO5030,K10
-241881-5,ventola,G11
-242042-0,tappo,M01
-242502-2,tappo olio,L07
-251246-3,vite,C05
-251287-9,vite,L02
-251322-3,vite,R01
-251387-5,vite,M08
-251448-1,vite mandrino,G04
-251464-3,vite mandrino,D03
-251609-3,bullone con bordino,I03
+232162-8,molla pias. x 6019DW,S06
+232180-6,anello x HR5001C,Q02
+232182-2,molla pias. x 6096DDW,S04
+232192-9,molla bales. x HK0500,O08
+232207-2,molla piat. x 4341FCT,I05
+232220-0,molla piat. x 6319D,X02
+232222-6,molla piat. x JR3050T,Y09
+232239-9,molla a piastra,X05
+232245-4,molla x BFS440,K07
+232334-5,anello ritegno 16,D08
+233002-3,molla x T221DW,L11
+233005-7,molla 13,N07
+233089-5,molla 12,R01
+233109-5,molla 29 x HR2410,Y02
+233188-3,"molla 2,4 x HR4000C",O09
+233193-0,molla 24 x 6908D,P08
+233203-3,molla di compr. 38,R09
+233207-5,molla 46 x HM1130,P15
+233208-3,molla 47 x HM1130,X08
+233360-7,molla 4 x MT952,H06
+233376-2,molla 8 x MT952,Q10
+233387-7,molla 52 x HM0860C,X06
+233430-2,molla 24 x BTD130F,K10
+233917-4,anello 28 x HR2020,V03
+233940-9,anello 19 x HR2432,Y02
+233974-2,anello 33 x FS2500K,V13
+233979-2,anello ritegno x HR2601,H07
+234147-0,molla 5 x HR2601,H06
+234251-5,molla x BTD147,K09
+234264-6,molla 3,H05
+240067-8,ventola 55 x HP1620,N12
+241654-6,ventola 68 x M/9036,N08
+241658-8,ventola 63 x BO4553,X07
+241659-6,ventola 90 x BO5000,M01
+241660-1,ventola puleg. 9910/11,V05
+241663-5,ventola x 9920,Y10
+241673-2,ventola 88 x BO5030,K10
+241881-5,ventola 52 x 6408,G11
+242042-0,tappo x 5014/16NB,M01
+242502-2,tappo olio x 8035NB,L07
+251246-3,vite testa cilin. M4x5,C05
+251287-9,vite M4x10,L02
+251322-3,vite M5x12,R01
+251387-5,vite M4x12,M08
+251448-1,vite mandr. M5x18,G04
+251464-3,vite mandr. M6x22,D03
+251609-3,bullone bord. M6x17,I03
 251812-6,volantino x 1923B,C05
-251919-8,vite,P09
-252043-0,dado x 5012,C05
-252046-4,bullone,L05
+251919-8,vite M6x20,P09
+252043-0,dado M8/13 x 5014B/6/2,C05
+252046-4,dado M8 x HM1300,L05
 252134-7,dado M8,K08
 252624,leva,V04
-252640-2,manopola,O06
+252640-2,manopola M8,O06
 252640-8,manopola M8,E06
-253052-2,rondella,R01
-253186-1,rondella,H06
-253215-0,rondella,R15
-253314-8,rondella,R01
-253338-4,anello,V05
-253748-5,rondella,L01
-253807-5,rondella,C01
-253937-2,rondella,G10
-253939-8,rondella,Q09
-254001-2,chiavetta mezzaluna,A02
-254031-3,chiavetta,G09
-254231-5,chiavetta,G08
-255058-6,rivetto,L11
-256036-9,spina,P05
+253052-2,rondella 12,R01
+253186-1,rondella 7 x 420S,H06
+253215-0,rondella 8 x 6510PBL,R15
+253314-8,rondella 15,R01
+253338-4,rondella 7 x JS1650,V05
+253748-5,rondella 12,L01
+253807-5,rondella 5,C01
+253937-2,rondella 18 x 6905B,G10
+253939-8,rondella 25 x 6906,Q09
+254001-2,chiavetta mezzaluna 4,A02
+254031-3,chiavetta mezzaluna 3,G09
+254231-5,chiavetta 4,G08
+255058-6,rivetto 2 x 9227CB,L11
+256036-9,spinotto 4 x 6911HDW,P05
 256047-4,spinotto x 9609HB,C05
-256085-6,spinotto,V13
-256101-4,xno,E05
-256219-1,spinotto,Q08
-256252-3,spinotto,P07
-256439-7,spinotto,A06
+256085-6,spinotto x UM102DDW,V13
+256101-4,spinotto 3,E05
+256219-1,spinotto 4 x HM1500,Q08
+256252-3,spinotto 3 x ML901/2,P07
+256439-7,spinotto 4,A06
 256452-5,spinotto,R01
 256459-1,spinotto,F10
 256486-8,spinotto,F13
