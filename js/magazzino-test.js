@@ -917,8 +917,8 @@
     const rows = 3;
     const labelsPerPage = cols * rows;
 
-    // Cross mark size
-    const crossSize = 4;
+    // Cross mark size (75% of original 4mm)
+    const crossSize = 3;
 
     // Collect shelf data and sort alphabetically
     const shelfDataList = shelfNames
@@ -1009,9 +1009,9 @@
         const contentX = labelX + paddingNormal;
         const contentY = labelY + paddingNormal;
 
-        // Last row gets reduced bottom padding -> more usable height
-        const isLastRow = (row === 2);
-        const bottomPadding = isLastRow ? paddingBottomReduced : paddingNormal;
+        // Scaffali con >7 pezzi hanno padding inferiore ridotto per più spazio verticale
+        const isLongShelf = shelfData.items.length > 7;
+        const bottomPadding = isLongShelf ? paddingBottomReduced : paddingNormal;
         const usableHeight = labelHeight - paddingNormal - bottomPadding;
 
         drawLabel(doc, shelfData, contentX, contentY, usableWidth, usableHeight);
