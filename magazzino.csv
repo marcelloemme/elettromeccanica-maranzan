@@ -349,7 +349,7 @@ Codice,descrizione,scaffale
 222018-3,puleggia 30-65 x 9030,N05
 222019-1,puleggia 30-25 x 9030,I06
 222129-4,puleggia 33-64 x 9031,P02
-222144-8,"pul. 8,5-45,1 x 9910/11",V05
+222144-8,puleggia x 9910/11,V05
 222148-0,puleggia x 9403,I05
 222156-1,puleggia x 9920,Y10
 223029-1,camma a x 8419B-2,H09
@@ -700,7 +700,7 @@ Codice,descrizione,scaffale
 323892-3,incudine,V11
 323910-7,battente,P14
 323921-2,albero,V12
-323973-3,xno x HR5001C,X04
+323973-3,perno x HR5001C,X04
 323988-0,camma frizione,S04
 324013-0,incudine,P02
 324014-8,porta punte,Y01
