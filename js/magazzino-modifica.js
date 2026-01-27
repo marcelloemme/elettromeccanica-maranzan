@@ -11,6 +11,7 @@
   const btnSave = document.getElementById('btn-save');
   const btnCancel = document.getElementById('btn-cancel');
   const btnEdit = document.getElementById('btn-edit');
+  const btnMove = document.getElementById('btn-move');
   const btnDelete = document.getElementById('btn-delete');
   const btnMenu = document.getElementById('btn-menu');
   const btnPrint = document.getElementById('btn-print');
@@ -29,12 +30,13 @@
 
   // State
   let DATA = [];                    // Original data from API
-  let currentMode = null;           // 'edit' | 'delete' | null
+  let currentMode = null;           // 'edit' | 'delete' | 'move' | null
   let changes = {
     added: [],                      // { codice, descrizione, scaffale }
     modified: [],                   // { codice, oldDescrizione?, newDescrizione?, oldScaffale?, newScaffale? }
     deleted: []                     // { codice, descrizione, scaffale }
   };
+  let pendingMoves = [];            // { codice, descrizione, fromScaffale, toScaffale }
   let searchResults = [];
   let currentSearchIndex = 0;
 
@@ -60,7 +62,8 @@
   }
 
   function hasChanges() {
-    return changes.added.length > 0 || changes.modified.length > 0 || changes.deleted.length > 0;
+    const validMoves = pendingMoves.filter(m => m.toScaffale);
+    return changes.added.length > 0 || changes.modified.length > 0 || changes.deleted.length > 0 || validMoves.length > 0;
   }
 
   function updateSaveButton() {
@@ -286,16 +289,19 @@
     if (currentMode === mode) {
       currentMode = null;
       btnEdit.classList.remove('active');
+      btnMove.classList.remove('active');
       btnDelete.classList.remove('active');
-      app.classList.remove('mode-edit', 'mode-delete');
+      app.classList.remove('mode-edit', 'mode-move', 'mode-delete');
       document.body.style.cursor = '';
       return;
     }
 
     currentMode = mode;
     btnEdit.classList.toggle('active', mode === 'edit');
+    btnMove.classList.toggle('active', mode === 'move');
     btnDelete.classList.toggle('active', mode === 'delete');
     app.classList.toggle('mode-edit', mode === 'edit');
+    app.classList.toggle('mode-move', mode === 'move');
     app.classList.toggle('mode-delete', mode === 'delete');
 
     // Change cursor based on mode
@@ -303,6 +309,8 @@
       document.body.style.cursor = 'crosshair';
     } else if (mode === 'edit') {
       document.body.style.cursor = 'text';
+    } else if (mode === 'move') {
+      document.body.style.cursor = 'pointer';
     } else {
       document.body.style.cursor = '';
     }
@@ -315,6 +323,8 @@
 
     if (currentMode === 'delete') {
       toggleDelete(item);
+    } else if (currentMode === 'move') {
+      toggleMove(item);
     } else if (currentMode === 'edit') {
       // Se l'item era marcato per eliminazione, rimuovi la marcatura prima di editare
       const wasDeleted = changes.deleted.findIndex(d => d.codice === item.codice);
@@ -325,6 +335,11 @@
           itemEl.classList.remove('item-deleted');
         }
         updateSaveButton();
+      }
+      // Se l'item era marcato per spostamento, rimuovi la marcatura
+      const wasMoving = pendingMoves.findIndex(m => m.codice === item.codice);
+      if (wasMoving >= 0) {
+        cancelMove(item.codice);
       }
       startEditing(e.target, item, field);
     }
@@ -348,6 +363,181 @@
     }
 
     updateSaveButton();
+  }
+
+  function toggleMove(item) {
+    const idx = pendingMoves.findIndex(m => m.codice === item.codice);
+
+    if (idx >= 0) {
+      // Cancel move - rimuovi input e stato
+      cancelMove(item.codice);
+    } else {
+      // Start move - aggiungi input sotto l'item
+      startMove(item);
+    }
+  }
+
+  function startMove(item) {
+    const itemEl = shelvesContainer.querySelector(`[data-codice="${item.codice}"]`);
+    if (!itemEl) return;
+
+    // Aggiungi classe moving
+    itemEl.classList.add('item-moving');
+
+    // Crea container per input
+    const moveContainer = document.createElement('div');
+    moveContainer.className = 'move-input-container';
+    moveContainer.dataset.moveCodice = item.codice;
+
+    const label = document.createElement('span');
+    label.textContent = '→';
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'move-input';
+    input.placeholder = 'A01';
+    input.maxLength = 3;
+
+    moveContainer.appendChild(label);
+    moveContainer.appendChild(input);
+    itemEl.appendChild(moveContainer);
+
+    input.focus();
+
+    // Aggiungi a pendingMoves (senza destinazione per ora)
+    pendingMoves.push({
+      codice: item.codice,
+      descrizione: item.descrizione,
+      fromScaffale: item.scaffale,
+      toScaffale: null
+    });
+
+    input.addEventListener('input', () => {
+      const val = input.value.toUpperCase();
+      input.value = val;
+
+      const move = pendingMoves.find(m => m.codice === item.codice);
+      if (!move) return;
+
+      // Rimuovi vecchio target se esisteva
+      if (move.toScaffale) {
+        removeMoveTarget(item.codice);
+      }
+
+      const normalized = normalizeShelf(val);
+      if (normalized && normalized.formatted !== normalizeShelf(item.scaffale)?.formatted) {
+        move.toScaffale = normalized.formatted;
+        showMoveTarget(item, normalized.formatted);
+        updateSaveButton();
+      } else {
+        move.toScaffale = null;
+        updateSaveButton();
+      }
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const move = pendingMoves.find(m => m.codice === item.codice);
+        if (!move || !move.toScaffale) {
+          // Nessuna destinazione valida - annulla
+          cancelMove(item.codice);
+        } else {
+          // Conferma spostamento - rimuovi input ma mantieni stato
+          moveContainer.remove();
+        }
+        input.blur();
+      } else if (e.key === 'Escape') {
+        cancelMove(item.codice);
+      }
+    });
+
+    input.addEventListener('blur', () => {
+      // Solo se clicco fuori e c'è una destinazione valida, mantieni
+      setTimeout(() => {
+        const move = pendingMoves.find(m => m.codice === item.codice);
+        if (move && !move.toScaffale && document.body.contains(moveContainer)) {
+          cancelMove(item.codice);
+        }
+      }, 100);
+    });
+  }
+
+  function cancelMove(codice) {
+    const idx = pendingMoves.findIndex(m => m.codice === codice);
+    if (idx >= 0) {
+      const move = pendingMoves[idx];
+      // Rimuovi target dallo scaffale destinazione
+      if (move.toScaffale) {
+        removeMoveTarget(codice);
+      }
+      pendingMoves.splice(idx, 1);
+    }
+
+    // Rimuovi classe e input dall'item originale
+    const itemEl = shelvesContainer.querySelector(`[data-codice="${codice}"]`);
+    if (itemEl) {
+      itemEl.classList.remove('item-moving');
+      const moveContainer = itemEl.querySelector('.move-input-container');
+      if (moveContainer) moveContainer.remove();
+    }
+
+    updateSaveButton();
+  }
+
+  function showMoveTarget(item, toScaffale) {
+    // Trova lo scaffale di destinazione
+    const shelfBox = shelvesContainer.querySelector(`[data-shelf="${toScaffale}"]`);
+    if (!shelfBox) {
+      // Lo scaffale non esiste ancora - potrebbe essere creato
+      showToast(`Scaffale ${toScaffale} non esiste`, 'error');
+      return;
+    }
+
+    const itemsContainer = shelfBox.querySelector('.shelf-items');
+    if (!itemsContainer) return;
+
+    // Crea elemento ghost per mostrare dove andrà il pezzo
+    const ghost = document.createElement('div');
+    ghost.className = 'shelf-item item-move-target';
+    ghost.dataset.moveTargetFor = item.codice;
+
+    const codiceSpan = document.createElement('span');
+    codiceSpan.className = 'item-codice';
+    codiceSpan.textContent = item.codice;
+
+    const descSpan = document.createElement('span');
+    descSpan.className = 'item-desc';
+    descSpan.textContent = item.descrizione;
+
+    ghost.appendChild(codiceSpan);
+    ghost.appendChild(descSpan);
+
+    // Inserisci in ordine alfabetico
+    const existingItems = itemsContainer.querySelectorAll('.shelf-item:not(.add-item-btn):not(.item-move-target)');
+    let inserted = false;
+    for (const existing of existingItems) {
+      const existingCodice = existing.dataset.codice || '';
+      if (item.codice.localeCompare(existingCodice) < 0) {
+        itemsContainer.insertBefore(ghost, existing);
+        inserted = true;
+        break;
+      }
+    }
+    if (!inserted) {
+      // Inserisci prima del pulsante +
+      const addBtn = itemsContainer.querySelector('.add-item-btn');
+      if (addBtn) {
+        itemsContainer.insertBefore(ghost, addBtn);
+      } else {
+        itemsContainer.appendChild(ghost);
+      }
+    }
+  }
+
+  function removeMoveTarget(codice) {
+    const target = shelvesContainer.querySelector(`[data-move-target-for="${codice}"]`);
+    if (target) target.remove();
   }
 
   function startEditing(element, item, field) {
@@ -764,6 +954,15 @@
       html += '</ul>';
     }
 
+    const validMoves = pendingMoves.filter(m => m.toScaffale);
+    if (validMoves.length > 0) {
+      html += '<h3>Spostati (' + validMoves.length + ')</h3><ul>';
+      for (const move of validMoves) {
+        html += `<li><strong>${move.codice}</strong> - ${move.fromScaffale} → ${move.toScaffale}</li>`;
+      }
+      html += '</ul>';
+    }
+
     if (changes.deleted.length > 0) {
       html += '<h3>Eliminati (' + changes.deleted.length + ')</h3><ul>';
       for (const item of changes.deleted) {
@@ -781,6 +980,16 @@
     loadingOverlay.classList.remove('hidden');
 
     try {
+      // Converti pendingMoves in modifiche (cambio scaffale)
+      const validMoves = pendingMoves.filter(m => m.toScaffale);
+      const moveUpdates = validMoves.map(m => ({
+        codice: m.codice,
+        newScaffale: m.toScaffale
+      }));
+
+      // Combina modifiche normali con spostamenti
+      const allUpdates = [...changes.modified, ...moveUpdates];
+
       // Usa il nuovo endpoint batchOperations per fare tutto in una chiamata
       const response = await fetch(API_URL, {
         method: 'POST',
@@ -788,7 +997,7 @@
         body: JSON.stringify({
           action: 'batchOperations',
           adds: changes.added,
-          updates: changes.modified,
+          updates: allUpdates,
           deletes: changes.deleted
         })
       });
@@ -806,6 +1015,7 @@
 
       // Clear changes and reload
       changes = { added: [], modified: [], deleted: [] };
+      pendingMoves = [];
 
       // Invalidate cache
       if (typeof window.cacheManager !== 'undefined') {
@@ -829,6 +1039,7 @@
   function cancelChanges() {
     popupCancel.classList.remove('visible');
     changes = { added: [], modified: [], deleted: [] };
+    pendingMoves = [];
     renderShelves();
     setMode(null);
     showToast('Modifiche annullate', '');
@@ -1140,6 +1351,7 @@
   // ---------- Event Listeners ----------
 
   btnEdit.addEventListener('click', () => setMode('edit'));
+  btnMove.addEventListener('click', () => setMode('move'));
   btnDelete.addEventListener('click', () => setMode('delete'));
 
   btnPrint.addEventListener('click', () => {

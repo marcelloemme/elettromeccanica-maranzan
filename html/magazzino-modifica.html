@@ -282,6 +282,46 @@
       background: #ffcdd2;
     }
 
+    /* Move mode styles */
+    .mode-move .shelf-item {
+      cursor: pointer;
+    }
+    .mode-move .shelf-item:hover {
+      background: #e3f2fd;
+    }
+    .item-moving {
+      text-decoration: line-through;
+      background: #ffcdd2 !important;
+    }
+    .item-move-target {
+      background: #c8e6c9 !important;
+    }
+    .move-input-container {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin-top: 0.25rem;
+      padding: 0.25rem;
+      background: #fff3e0;
+      border-radius: 4px;
+    }
+    .move-input-container span {
+      font-size: 0.75rem;
+      color: #666;
+    }
+    .move-input {
+      width: 50px;
+      padding: 0.2rem 0.4rem;
+      font-size: 0.85rem;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .move-input:focus {
+      outline: none;
+      border-color: #1976d2;
+    }
+
     /* Modified/deleted states */
     .item-deleted {
       text-decoration: line-through;
@@ -486,6 +526,8 @@
         <button class="mag-btn" id="btn-print" title="Stampa cartellini">&#x1F5A8;</button>
         <!-- Edit mode -->
         <button class="mag-btn" id="btn-edit" title="Modalita modifica">&#x270F;&#xFE0F;</button>
+        <!-- Move mode -->
+        <button class="mag-btn" id="btn-move" title="Sposta pezzo">&#x27A1;&#xFE0F;</button>
         <!-- Delete mode -->
         <button class="mag-btn" id="btn-delete" title="Modalita elimina">&#x1F5D1;</button>
         <!-- Burger menu -->
@@ -566,6 +608,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="/js/cache-manager.js?v=24"></script>
-  <script src="/js/magazzino-modifica.js?v=1"></script>
+  <script src="/js/magazzino-modifica.js?v=2"></script>
 </body>
 </html>
