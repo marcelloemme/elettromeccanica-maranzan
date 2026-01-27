@@ -521,9 +521,7 @@
         <!-- Cancel -->
         <button class="mag-btn" id="btn-cancel" title="Annulla modifiche">&#x274C;</button>
         <!-- Save -->
-        <button class="mag-btn save-btn" id="btn-save" title="Salva modifiche" disabled>&#x1F4BE;</button>
-        <!-- Print modified labels (visible only when there are changes) -->
-        <button class="mag-btn print-modified-btn" id="btn-print-modified" title="Stampa cartellini modificati" style="display:none;">&#x1F5A8;&#x2728;</button>
+        <button class="mag-btn save-btn" id="btn-save" title="Salva modifiche" disabled>&#x2705;</button>
         <!-- Print labels -->
         <button class="mag-btn" id="btn-print" title="Stampa cartellini">&#x1F5A8;</button>
         <!-- Edit mode -->
@@ -584,9 +582,10 @@
   <div class="popup-overlay" id="popup-no-print">
     <div class="popup-content">
       <h2>Salvare senza stampare?</h2>
-      <p>Hai modificato degli scaffali ma non hai stampato i cartellini aggiornati. Vuoi procedere comunque?</p>
-      <div class="popup-actions">
+      <p>Hai modificato degli scaffali ma non hai stampato i cartellini aggiornati.</p>
+      <div class="popup-actions" style="flex-wrap: wrap; gap: 0.5rem;">
         <button class="popup-btn popup-btn-cancel" id="popup-no-print-back">Torna indietro</button>
+        <button class="popup-btn popup-btn-print" id="popup-no-print-print" style="background: #1976d2; color: white;">Stampa cartellini modificati</button>
         <button class="popup-btn popup-btn-confirm" id="popup-no-print-save">Salva comunque</button>
       </div>
     </div>
@@ -622,6 +621,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="/js/cache-manager.js?v=24"></script>
-  <script src="/js/magazzino-modifica.js?v=3"></script>
+  <script src="/js/magazzino-modifica.js?v=4"></script>
 </body>
 </html>

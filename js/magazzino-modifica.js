@@ -15,7 +15,6 @@
   const btnDelete = document.getElementById('btn-delete');
   const btnMenu = document.getElementById('btn-menu');
   const btnPrint = document.getElementById('btn-print');
-  const btnPrintModified = document.getElementById('btn-print-modified');
   const app = document.getElementById('app');
   const toast = document.getElementById('toast');
 
@@ -71,11 +70,7 @@
   }
 
   function updateSaveButton() {
-    const hasAnyChanges = hasChanges();
-    btnSave.disabled = !hasAnyChanges;
-
-    // Mostra/nascondi pulsante stampa modificati
-    btnPrintModified.style.display = hasAnyChanges ? '' : 'none';
+    btnSave.disabled = !hasChanges();
   }
 
   function getModifiedShelves() {
@@ -1531,14 +1526,6 @@
     printShelvesInput.focus();
   });
 
-  btnPrintModified.addEventListener('click', () => {
-    // Auto-compila con gli scaffali modificati
-    const modifiedShelves = getModifiedShelves();
-    printShelvesInput.value = modifiedShelves.join(', ');
-    popupPrint.classList.add('visible');
-    printShelvesInput.focus();
-  });
-
   btnSave.addEventListener('click', () => {
     // Se ci sono modifiche e non ha stampato, mostra warning
     const modifiedShelves = getModifiedShelves();
@@ -1551,6 +1538,15 @@
 
   document.getElementById('popup-no-print-back').addEventListener('click', () => {
     popupNoPrint.classList.remove('visible');
+  });
+
+  document.getElementById('popup-no-print-print').addEventListener('click', () => {
+    // Chiudi popup e apri stampa con scaffali modificati precompilati
+    popupNoPrint.classList.remove('visible');
+    const modifiedShelves = getModifiedShelves();
+    printShelvesInput.value = modifiedShelves.join(', ');
+    popupPrint.classList.add('visible');
+    printShelvesInput.focus();
   });
 
   document.getElementById('popup-no-print-save').addEventListener('click', () => {
