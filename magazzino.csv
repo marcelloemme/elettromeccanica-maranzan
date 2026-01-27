@@ -4,7 +4,7 @@ Codice,descrizione,scaffale
 021245040,vite senza fine,V16
 028245272,pompa olio x des,A04
 050833,molla x tazza,Z03
-122211-8,coperchio guida lama,F03
+122211-8,copri guida lama x vite,F03
 122331-8,porta mandrino,C08
 122428-3,impugnatura,P04
 122450-0,coperchio guida lama,H09
@@ -12,18 +12,18 @@ Codice,descrizione,scaffale
 122C95-2,gruppo ingranaggi,A06
 122H10-6,gruppo ingranaggi,D07
 123442-2,leva inversione,E02
-123443-0,gruppo ingranaggi,B01
-123502-0,gruppo ingranaggi,A04
-123503-8,gruppo ingranaggi,Z09
-123504-6,gruppo ingranaggi,F04
+123443-0,gruppo ingranaggi DHP482,B01
+123502-0,ing. CPL HP330DWE,A04
+123503-8,gruppo ing. x DF330D,Z09
+123504-6,gruppo ing. x DF030D,F04
 123868-9,ingranaggio,E06
-123886-6,frizione UC4030,F12
-125049-0,gruppo ingranaggi,B01
-125050-5,gruppo ingranaggi,A03
-125067-8,gruppo ingranaggi,P06
-125101-4,gruppo ingranaggi,V05
-125102-2,leva cambio,G11
-125105-6,gruppo ingranaggi x 6343D,P08
+123886-6,"frizione 3/8"" UC3530A",F12
+125049-0,gr. ing. 6016/6017/6018DW,B01
+125050-5,gruppo ing. x 6019DW,A03
+125067-8,gr. ing./frizione x 6333,P06
+125101-4,gruppo ing. x BDF460,V05
+125102-2,leva cambio x BHP460,G11
+125105-6,gruppo ing. x 6343DW,P08
 125176-3,gruppo ingranaggi,U01
 125182-8,gruppo ingranaggi,N11
 125237-9,gruppo ingranaggi,S04
