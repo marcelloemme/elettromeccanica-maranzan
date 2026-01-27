@@ -1,5 +1,5 @@
 /* Elettromeccanica Maranzan - PWA Service Worker */
-const CACHE_NAME = 'em-maranzan-v112';
+const CACHE_NAME = 'em-maranzan-v113';
 const PRECACHE_URLS = [
   '/private.html',
   '/html/magazzino.html',
@@ -11,7 +11,7 @@ const PRECACHE_URLS = [
   '/html/statistiche.html',
   '/css/app.css?v=70',
   '/js/magazzino.js?v=26',
-  '/js/magazzino-modifica.js?v=6',
+  '/js/magazzino-modifica.js?v=7',
   '/js/magazzino-dettaglio.js?v=28',
   '/js/riparazioni-archivio.js?v=11',
   '/js/riparazioni-dettaglio.js?v=7',

@@ -1449,18 +1449,18 @@
 
     // Colonna 1: ELIMINATI
     drawColumn('ELIMINATI', changes.deleted, item =>
-      `${item.codice} (${item.scaffale})`, 0
+      `${item.codice} - ${item.descrizione} (${item.scaffale})`, 0
     );
 
     // Colonna 2: AGGIUNTI
     drawColumn('AGGIUNTI', changes.added, item =>
-      `${item.codice} (${item.scaffale})`, 1
+      `${item.codice} - ${item.descrizione} (${item.scaffale})`, 1
     );
 
     // Colonna 3: SPOSTATI
     const validMoves = pendingMoves.filter(m => m.toScaffale);
     drawColumn('SPOSTATI', validMoves, move =>
-      `${move.codice} - ${move.fromScaffale} -> ${move.toScaffale}`, 2
+      `${move.codice} - ${move.descrizione} - ${move.fromScaffale} -> ${move.toScaffale}`, 2
     );
 
     // Footer con timestamp
