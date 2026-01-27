@@ -13,6 +13,7 @@
   const btnEdit = document.getElementById('btn-edit');
   const btnDelete = document.getElementById('btn-delete');
   const btnMenu = document.getElementById('btn-menu');
+  const btnPrint = document.getElementById('btn-print');
   const app = document.getElementById('app');
   const toast = document.getElementById('toast');
 
@@ -21,8 +22,10 @@
   const popupCancel = document.getElementById('popup-cancel');
   const popupExit = document.getElementById('popup-exit');
   const popupDuplicate = document.getElementById('popup-duplicate');
+  const popupPrint = document.getElementById('popup-print');
   const popupChanges = document.getElementById('popup-changes');
   const popupDuplicateMsg = document.getElementById('popup-duplicate-msg');
+  const printShelvesInput = document.getElementById('print-shelves-input');
 
   // State
   let DATA = [];                    // Original data from API
@@ -831,10 +834,235 @@
     showToast('Modifiche annullate', '');
   }
 
+  // ---------- PDF Generation ----------
+
+  function parseShelfRange(input) {
+    // Parse input like "A01-A09, B05, C01-C03" into array of shelf names
+    if (!input || !input.trim()) {
+      // Return all shelves
+      const { letterMap, sortedLetters } = organizeByShelf(DATA);
+      const allShelves = [];
+      for (const letter of sortedLetters) {
+        for (const shelf of letterMap.get(letter)) {
+          allShelves.push(shelf.formatted);
+        }
+      }
+      return allShelves;
+    }
+
+    const shelves = [];
+    const parts = input.split(/[,;]+/).map(p => p.trim()).filter(p => p);
+
+    for (const part of parts) {
+      if (part.includes('-')) {
+        // Range like A01-A09
+        const [start, end] = part.split('-').map(s => s.trim());
+        const startNorm = normalizeShelf(start);
+        const endNorm = normalizeShelf(end);
+
+        if (startNorm && endNorm && startNorm.letter === endNorm.letter) {
+          const letter = startNorm.letter;
+          const from = Math.min(startNorm.num, endNorm.num);
+          const to = Math.max(startNorm.num, endNorm.num);
+          for (let i = from; i <= to; i++) {
+            shelves.push(formatShelf(letter, i));
+          }
+        }
+      } else {
+        // Single shelf
+        const norm = normalizeShelf(part);
+        if (norm) {
+          shelves.push(norm.formatted);
+        }
+      }
+    }
+
+    return shelves;
+  }
+
+  function getShelfData(shelfName) {
+    const norm = normalizeShelf(shelfName);
+    if (!norm) return null;
+
+    const items = DATA.filter(item => {
+      const itemShelf = normalizeShelf(item.scaffale);
+      return itemShelf && itemShelf.formatted === norm.formatted;
+    }).sort((a, b) => a.codice.localeCompare(b.codice));
+
+    return {
+      name: norm.formatted,
+      items: items
+    };
+  }
+
+  function generatePDF(shelfNames) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    // A4: 210 x 297 mm
+    // Grid: 3 columns x 3 rows = 9 labels per page
+    // Each label: 70mm x 99mm
+    // Padding: 9mm on each side -> usable area: 52mm x 81mm
+
+    const labelWidth = 70;
+    const labelHeight = 99;
+    const padding = 9;
+    const usableWidth = 52;
+    const usableHeight = 81;
+    const cols = 3;
+    const rows = 3;
+    const labelsPerPage = cols * rows;
+
+    // Cross mark size
+    const crossSize = 4;
+
+    // Collect shelf data
+    const shelfDataList = shelfNames
+      .map(name => getShelfData(name))
+      .filter(data => data !== null);
+
+    if (shelfDataList.length === 0) {
+      showToast('Nessuno scaffale trovato', 'error');
+      return;
+    }
+
+    // Generate pages
+    const totalPages = Math.ceil(shelfDataList.length / labelsPerPage);
+
+    for (let page = 0; page < totalPages; page++) {
+      if (page > 0) {
+        doc.addPage();
+      }
+
+      // Draw cross marks at internal vertices (6 marks)
+      doc.setDrawColor(0);
+      doc.setLineWidth(0.2);
+
+      // Internal vertices are at:
+      // (70, 99), (140, 99) - row 1/2 boundary
+      // (70, 198), (140, 198) - row 2/3 boundary
+      const crossPositions = [
+        { x: labelWidth, y: labelHeight },
+        { x: labelWidth * 2, y: labelHeight },
+        { x: labelWidth, y: labelHeight * 2 },
+        { x: labelWidth * 2, y: labelHeight * 2 }
+      ];
+
+      for (const pos of crossPositions) {
+        // Horizontal line
+        doc.line(pos.x - crossSize, pos.y, pos.x + crossSize, pos.y);
+        // Vertical line
+        doc.line(pos.x, pos.y - crossSize, pos.x, pos.y + crossSize);
+      }
+
+      // Draw labels for this page
+      const startIdx = page * labelsPerPage;
+      const endIdx = Math.min(startIdx + labelsPerPage, shelfDataList.length);
+
+      for (let i = startIdx; i < endIdx; i++) {
+        const shelfData = shelfDataList[i];
+        const localIdx = i - startIdx;
+        const col = localIdx % cols;
+        const row = Math.floor(localIdx / cols);
+
+        const labelX = col * labelWidth;
+        const labelY = row * labelHeight;
+        const contentX = labelX + padding;
+        const contentY = labelY + padding;
+
+        drawLabel(doc, shelfData, contentX, contentY, usableWidth, usableHeight);
+      }
+    }
+
+    // Download PDF
+    doc.save('cartellini-scaffali.pdf');
+    showToast(`PDF generato con ${shelfDataList.length} cartellini`, 'success');
+  }
+
+  function drawLabel(doc, shelfData, x, y, width, height) {
+    // Header bar (gray background, white text)
+    const headerHeight = 8;
+    doc.setFillColor(85, 85, 85); // #555
+    doc.rect(x, y, width, headerHeight, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text(shelfData.name, x + width / 2, y + headerHeight - 2, { align: 'center' });
+
+    // Content area
+    const contentY = y + headerHeight + 2;
+    const contentHeight = height - headerHeight - 2;
+
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+
+    const items = shelfData.items;
+    const itemCount = items.length;
+
+    // Calculate font size and spacing based on item count
+    let fontSize, lineHeight;
+    if (itemCount <= 5) {
+      fontSize = 9;
+      lineHeight = 7;
+    } else if (itemCount <= 7) {
+      fontSize = 8;
+      lineHeight = 5.5;
+    } else if (itemCount <= 9) {
+      fontSize = 7;
+      lineHeight = 4.5;
+    } else {
+      fontSize = 6;
+      lineHeight = 4;
+    }
+
+    doc.setFontSize(fontSize);
+
+    let currentY = contentY + 3;
+
+    for (const item of items) {
+      // Codice (bold)
+      doc.setFont('helvetica', 'bold');
+      doc.text(item.codice, x + 1, currentY);
+      currentY += lineHeight;
+
+      // Descrizione (normal, truncate if needed)
+      doc.setFont('helvetica', 'normal');
+      let desc = item.descrizione;
+      const maxWidth = width - 2;
+
+      // Truncate description if too long
+      while (doc.getTextWidth(desc) > maxWidth && desc.length > 3) {
+        desc = desc.slice(0, -1);
+      }
+      if (desc !== item.descrizione) {
+        desc = desc.slice(0, -1) + '…';
+      }
+
+      doc.text(desc, x + 1, currentY);
+      currentY += lineHeight + 1; // Extra space between items
+
+      // Stop if we're running out of space
+      if (currentY > y + height - 2) {
+        break;
+      }
+    }
+  }
+
   // ---------- Event Listeners ----------
 
   btnEdit.addEventListener('click', () => setMode('edit'));
   btnDelete.addEventListener('click', () => setMode('delete'));
+
+  btnPrint.addEventListener('click', () => {
+    printShelvesInput.value = '';
+    popupPrint.classList.add('visible');
+    printShelvesInput.focus();
+  });
 
   btnSave.addEventListener('click', showSavePopup);
   document.getElementById('popup-save-cancel').addEventListener('click', () => {
@@ -876,6 +1104,27 @@
     }
   });
 
+  document.getElementById('popup-print-cancel').addEventListener('click', () => {
+    popupPrint.classList.remove('visible');
+  });
+
+  document.getElementById('popup-print-ok').addEventListener('click', () => {
+    popupPrint.classList.remove('visible');
+    const shelfNames = parseShelfRange(printShelvesInput.value);
+    generatePDF(shelfNames);
+  });
+
+  printShelvesInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      popupPrint.classList.remove('visible');
+      const shelfNames = parseShelfRange(printShelvesInput.value);
+      generatePDF(shelfNames);
+    } else if (e.key === 'Escape') {
+      popupPrint.classList.remove('visible');
+    }
+  });
+
   // Search
   let searchDebounce;
   searchInput.addEventListener('input', () => {
@@ -893,7 +1142,7 @@
   });
 
   // Close popups on overlay click
-  [popupSave, popupCancel, popupExit, popupDuplicate].forEach(popup => {
+  [popupSave, popupCancel, popupExit, popupDuplicate, popupPrint].forEach(popup => {
     popup.addEventListener('click', (e) => {
       if (e.target === popup) {
         popup.classList.remove('visible');

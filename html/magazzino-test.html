@@ -482,6 +482,8 @@
         <button class="mag-btn" id="btn-cancel" title="Annulla modifiche">&#x274C;</button>
         <!-- Save -->
         <button class="mag-btn save-btn" id="btn-save" title="Salva modifiche" disabled>&#x1F4BE;</button>
+        <!-- Print labels -->
+        <button class="mag-btn" id="btn-print" title="Stampa cartellini">&#x1F5A8;</button>
         <!-- Edit mode -->
         <button class="mag-btn" id="btn-edit" title="Modalita modifica">&#x270F;&#xFE0F;</button>
         <!-- Delete mode -->
@@ -545,10 +547,25 @@
     </div>
   </div>
 
+  <!-- Print labels popup -->
+  <div class="popup-overlay" id="popup-print">
+    <div class="popup-content">
+      <h2>Stampa Cartellini Scaffali</h2>
+      <p style="margin-bottom: 0.75rem; color: #555;">Inserisci gli scaffali separati da virgola. Usa il trattino per intervalli (es. A01-A09, B05, C01-C03).</p>
+      <p style="margin-bottom: 1rem; color: #888; font-size: 0.85rem;">Lascia vuoto per stampare tutti gli scaffali.</p>
+      <input type="text" id="print-shelves-input" placeholder="es. A01-A09, B05, C01-C03" style="width: 100%; padding: 0.6rem; font-size: 1rem; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 1rem;" />
+      <div class="popup-actions">
+        <button class="popup-btn popup-btn-cancel" id="popup-print-cancel">Annulla</button>
+        <button class="popup-btn popup-btn-confirm" id="popup-print-ok">Genera PDF</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast notification -->
   <div class="toast" id="toast"></div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="/js/cache-manager.js?v=24"></script>
-  <script src="/js/magazzino-test.js?v=1"></script>
+  <script src="/js/magazzino-test.js?v=2"></script>
 </body>
 </html>
