@@ -15,6 +15,7 @@
   const btnDelete = document.getElementById('btn-delete');
   const btnMenu = document.getElementById('btn-menu');
   const btnPrint = document.getElementById('btn-print');
+  const btnPrintModified = document.getElementById('btn-print-modified');
   const app = document.getElementById('app');
   const toast = document.getElementById('toast');
 
@@ -24,6 +25,7 @@
   const popupExit = document.getElementById('popup-exit');
   const popupDuplicate = document.getElementById('popup-duplicate');
   const popupPrint = document.getElementById('popup-print');
+  const popupNoPrint = document.getElementById('popup-no-print');
   const popupChanges = document.getElementById('popup-changes');
   const popupDuplicateMsg = document.getElementById('popup-duplicate-msg');
   const printShelvesInput = document.getElementById('print-shelves-input');
@@ -37,6 +39,8 @@
     deleted: []                     // { codice, descrizione, scaffale }
   };
   let pendingMoves = [];            // { codice, descrizione, fromScaffale, toScaffale }
+  let modifiedShelvesSet = new Set(); // Traccia scaffali modificati per stampa
+  let hasPrintedModified = false;   // Traccia se utente ha stampato dopo modifiche
   let searchResults = [];
   let currentSearchIndex = 0;
 
@@ -67,7 +71,55 @@
   }
 
   function updateSaveButton() {
-    btnSave.disabled = !hasChanges();
+    const hasAnyChanges = hasChanges();
+    btnSave.disabled = !hasAnyChanges;
+
+    // Mostra/nascondi pulsante stampa modificati
+    btnPrintModified.style.display = hasAnyChanges ? '' : 'none';
+  }
+
+  function getModifiedShelves() {
+    // Raccoglie tutti gli scaffali che sono stati modificati
+    const shelves = new Set();
+
+    // Aggiunti
+    for (const item of changes.added) {
+      const norm = normalizeShelf(item.scaffale);
+      if (norm) shelves.add(norm.formatted);
+    }
+
+    // Modificati (scaffale originale)
+    for (const mod of changes.modified) {
+      // Trova l'item originale per sapere lo scaffale
+      const original = DATA.find(d => d.codice === mod.codice);
+      if (original) {
+        const norm = normalizeShelf(original.scaffale);
+        if (norm) shelves.add(norm.formatted);
+      }
+      // Se lo scaffale è cambiato, aggiungi anche il nuovo
+      if (mod.newScaffale) {
+        const normNew = normalizeShelf(mod.newScaffale);
+        if (normNew) shelves.add(normNew.formatted);
+      }
+    }
+
+    // Eliminati
+    for (const item of changes.deleted) {
+      const norm = normalizeShelf(item.scaffale);
+      if (norm) shelves.add(norm.formatted);
+    }
+
+    // Spostati
+    for (const move of pendingMoves) {
+      if (move.toScaffale) {
+        const normFrom = normalizeShelf(move.fromScaffale);
+        const normTo = normalizeShelf(move.toScaffale);
+        if (normFrom) shelves.add(normFrom.formatted);
+        if (normTo) shelves.add(normTo.formatted);
+      }
+    }
+
+    return Array.from(shelves).sort();
   }
 
   // ---------- Data Loading ----------
@@ -1016,6 +1068,7 @@
       // Clear changes and reload
       changes = { added: [], modified: [], deleted: [] };
       pendingMoves = [];
+      hasPrintedModified = false;
 
       // Invalidate cache
       if (typeof window.cacheManager !== 'undefined') {
@@ -1040,8 +1093,10 @@
     popupCancel.classList.remove('visible');
     changes = { added: [], modified: [], deleted: [] };
     pendingMoves = [];
+    hasPrintedModified = false;
     renderShelves();
     setMode(null);
+    updateSaveButton();
     showToast('Modifiche annullate', '');
   }
 
@@ -1233,9 +1288,125 @@
       }
     }
 
-    // Download PDF
-    doc.save('cartellini-scaffali.pdf');
+    // Aggiungi rapportino finale se ci sono modifiche
+    if (hasChanges()) {
+      drawReportLabel(doc, now, timestamp);
+    }
+
+    // Download PDF con nome AAAAMMGG_HHMM_cartellini-scaffali.pdf
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const filename = `${year}${month}${day}_${hours}${minutes}_cartellini-scaffali.pdf`;
+
+    doc.save(filename);
+
+    // Segna che l'utente ha stampato
+    hasPrintedModified = true;
+
     showToast(`PDF generato con ${orderedShelves.length} cartellini`, 'success');
+  }
+
+  function drawReportLabel(doc, now, timestamp) {
+    // Rapportino occupa 2 cartellini (140x99mm) con padding 9mm
+    const reportWidth = 140;
+    const reportHeight = 99;
+    const padding = 9;
+    const usableWidth = reportWidth - padding * 2; // 122mm
+    const usableHeight = reportHeight - padding * 2; // 81mm
+
+    // Aggiungi nuova pagina
+    doc.addPage();
+
+    const x = padding;
+    const y = padding;
+
+    // Header
+    doc.setFillColor(85, 85, 85);
+    doc.rect(x, y, usableWidth, 8, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.text('RAPPORTINO MODIFICHE MAGAZZINO', x + usableWidth / 2, y + 5.5, { align: 'center' });
+
+    // Data e ora
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    const dateStr = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    doc.text(`Data: ${dateStr} - Ore: ${timeStr}`, x, y + 14);
+
+    let currentY = y + 20;
+    const lineHeight = 4;
+    const sectionGap = 3;
+
+    // Funzione helper per aggiungere sezioni
+    const addSection = (title, items, formatFn) => {
+      if (items.length === 0) return;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.text(`${title} (${items.length}):`, x, currentY);
+      currentY += lineHeight;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+
+      for (const item of items) {
+        const text = formatFn(item);
+        // Tronca se troppo lungo
+        let displayText = text;
+        while (doc.getTextWidth(displayText) > usableWidth - 4 && displayText.length > 10) {
+          displayText = displayText.slice(0, -1);
+        }
+        if (displayText !== text) displayText += '…';
+
+        doc.text('• ' + displayText, x + 2, currentY);
+        currentY += lineHeight;
+
+        // Se sfora, interrompi con "..."
+        if (currentY > y + usableHeight - 10) {
+          doc.text('... e altri', x + 2, currentY);
+          currentY += lineHeight;
+          break;
+        }
+      }
+      currentY += sectionGap;
+    };
+
+    // Aggiunti
+    addSection('AGGIUNTI', changes.added, item =>
+      `${item.codice} - ${item.descrizione} (${item.scaffale})`
+    );
+
+    // Modificati
+    addSection('MODIFICATI', changes.modified, mod => {
+      let desc = mod.codice;
+      if (mod.newCodice) desc += ` → ${mod.newCodice}`;
+      if (mod.newDescrizione) desc += ` (desc. modificata)`;
+      if (mod.newScaffale) desc += ` → scaffale ${mod.newScaffale}`;
+      return desc;
+    });
+
+    // Spostati
+    const validMoves = pendingMoves.filter(m => m.toScaffale);
+    addSection('SPOSTATI', validMoves, move =>
+      `${move.codice} - ${move.fromScaffale} → ${move.toScaffale}`
+    );
+
+    // Eliminati
+    addSection('ELIMINATI', changes.deleted, item =>
+      `${item.codice} - ${item.descrizione} (${item.scaffale})`
+    );
+
+    // Footer con timestamp
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6);
+    doc.setTextColor(128, 128, 128);
+    doc.text(timestamp, x + usableWidth, y + usableHeight, { align: 'right' });
   }
 
   function drawLabel(doc, shelfData, x, y, width, height, timestamp) {
@@ -1360,7 +1531,32 @@
     printShelvesInput.focus();
   });
 
-  btnSave.addEventListener('click', showSavePopup);
+  btnPrintModified.addEventListener('click', () => {
+    // Auto-compila con gli scaffali modificati
+    const modifiedShelves = getModifiedShelves();
+    printShelvesInput.value = modifiedShelves.join(', ');
+    popupPrint.classList.add('visible');
+    printShelvesInput.focus();
+  });
+
+  btnSave.addEventListener('click', () => {
+    // Se ci sono modifiche e non ha stampato, mostra warning
+    const modifiedShelves = getModifiedShelves();
+    if (modifiedShelves.length > 0 && !hasPrintedModified) {
+      popupNoPrint.classList.add('visible');
+    } else {
+      showSavePopup();
+    }
+  });
+
+  document.getElementById('popup-no-print-back').addEventListener('click', () => {
+    popupNoPrint.classList.remove('visible');
+  });
+
+  document.getElementById('popup-no-print-save').addEventListener('click', () => {
+    popupNoPrint.classList.remove('visible');
+    showSavePopup();
+  });
   document.getElementById('popup-save-cancel').addEventListener('click', () => {
     popupSave.classList.remove('visible');
   });
