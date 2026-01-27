@@ -1351,12 +1351,14 @@
     doc.text(`${dateStr} - ${timeStr}`, x + usableWidth - 2, y + 5.5, { align: 'right' });
 
     const lineHeight = 3.5;
-    const sectionGap = 2;
+    const sectionGap = 6; // 6mm tra sezioni
 
     // === SEZIONE MODIFICATI (sotto header, tutta larghezza) ===
-    let modifiedY = y + headerHeight + 3;
+    let modifiedY = y + headerHeight + sectionGap; // 6mm dopo header
+    let hasModified = false;
 
     if (changes.modified.length > 0) {
+      hasModified = true;
       doc.setTextColor(0, 0, 0);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(8);
@@ -1396,11 +1398,11 @@
           break;
         }
       }
-      modifiedY += sectionGap;
     }
 
     // === SEZIONE INFERIORE TRIPARTITA: ELIMINATI | AGGIUNTI | SPOSTATI ===
-    const bottomSectionY = Math.max(modifiedY, y + headerHeight + 25); // Almeno 25mm sotto header
+    // 6mm dopo MODIFICATI se presente, altrimenti 6mm dopo header
+    const bottomSectionY = hasModified ? modifiedY + sectionGap : y + headerHeight + sectionGap;
     const columnWidth = usableWidth / 3; // ~64mm per colonna
 
     // Helper per disegnare una colonna
