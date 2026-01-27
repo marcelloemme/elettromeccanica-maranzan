@@ -1,5 +1,5 @@
 (() => {
-  // API Endpoint (stesso di magazzino-dettaglio e magazzino-nuovo)
+  // API Endpoint (stesso di magazzino-dettaglio e magazzino-modifica)
   const API_URL = 'https://script.google.com/macros/s/AKfycbzgXCGMef3UX9GEaS8inOXE7TKz00fbj69ZZqxJgjiWz2GT07GGjAQRGElEdxx9HESS/exec';
 
   const inputEl = document.getElementById('codice-input');
