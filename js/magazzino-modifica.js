@@ -1285,7 +1285,25 @@
 
     // Aggiungi rapportino finale se ci sono modifiche
     if (hasChanges()) {
-      drawReportLabel(doc, now, timestamp);
+      // Calcola quanti slot sono rimasti nell'ultima pagina
+      const totalLabels = orderedShelves.length;
+      const usedSlotsOnLastPage = totalLabels % labelsPerPage;
+      const freeSlotsOnLastPage = usedSlotsOnLastPage === 0 ? 0 : labelsPerPage - usedSlotsOnLastPage;
+
+      // Il rapportino occupa 3 slot (una riga intera, 210x99mm)
+      // Se ci sono almeno 3 slot liberi, usa quelli; altrimenti nuova pagina
+      let reportY;
+      if (freeSlotsOnLastPage >= 3) {
+        // Calcola la riga dove mettere il rapportino (slot successivo, inizio riga)
+        const nextRow = Math.ceil(usedSlotsOnLastPage / cols);
+        reportY = nextRow * labelHeight;
+      } else {
+        // Nuova pagina
+        doc.addPage();
+        reportY = 0;
+      }
+
+      drawReportLabel(doc, now, timestamp, reportY);
     }
 
     // Download PDF con nome AAAAMMGG_HHMM_cartellini-scaffali.pdf
@@ -1304,104 +1322,150 @@
     showToast(`PDF generato con ${orderedShelves.length} cartellini`, 'success');
   }
 
-  function drawReportLabel(doc, now, timestamp) {
-    // Rapportino occupa 2 cartellini (140x99mm) con padding 9mm
-    const reportWidth = 140;
+  function drawReportLabel(doc, now, timestamp, startY) {
+    // Rapportino occupa tutta la larghezza A4 (210x99mm) con padding 9mm
+    const reportWidth = 210;
     const reportHeight = 99;
     const padding = 9;
-    const usableWidth = reportWidth - padding * 2; // 122mm
+    const usableWidth = reportWidth - padding * 2; // 192mm
     const usableHeight = reportHeight - padding * 2; // 81mm
 
-    // Aggiungi nuova pagina
-    doc.addPage();
-
     const x = padding;
-    const y = padding;
+    const y = startY + padding;
 
-    // Header
+    // Header con titolo e data/ora sulla stessa barra
+    const headerHeight = 8;
     doc.setFillColor(85, 85, 85);
-    doc.rect(x, y, usableWidth, 8, 'F');
+    doc.rect(x, y, usableWidth, headerHeight, 'F');
+
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.text('RAPPORTINO MODIFICHE MAGAZZINO', x + usableWidth / 2, y + 5.5, { align: 'center' });
+    doc.setFontSize(11);
+    doc.text('RAPPORTINO MODIFICHE MAGAZZINO', x + 2, y + 5.5);
 
-    // Data e ora
-    doc.setTextColor(0, 0, 0);
+    // Data/ora a destra, font più piccolo
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
-    const dateStr = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const dateStr = now.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
     const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-    doc.text(`Data: ${dateStr} - Ore: ${timeStr}`, x, y + 14);
+    doc.text(`${dateStr} - ${timeStr}`, x + usableWidth - 2, y + 5.5, { align: 'right' });
 
-    let currentY = y + 20;
-    const lineHeight = 4;
-    const sectionGap = 3;
+    const lineHeight = 3.5;
+    const sectionGap = 2;
 
-    // Funzione helper per aggiungere sezioni
-    const addSection = (title, items, formatFn) => {
-      if (items.length === 0) return;
+    // === SEZIONE MODIFICATI (sotto header, tutta larghezza) ===
+    let modifiedY = y + headerHeight + 3;
 
+    if (changes.modified.length > 0) {
+      doc.setTextColor(0, 0, 0);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
-      doc.text(`${title} (${items.length}):`, x, currentY);
-      currentY += lineHeight;
+      doc.setFontSize(8);
+      doc.text(`MODIFICATI (${changes.modified.length}):`, x, modifiedY);
+      modifiedY += lineHeight + 1;
 
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
+      doc.setFontSize(7);
 
-      for (const item of items) {
-        const text = formatFn(item);
-        // Tronca se troppo lungo
+      for (const mod of changes.modified) {
+        // Trova dati originali
+        const original = DATA.find(d => d.codice === mod.codice);
+        const oldCodice = mod.codice;
+        const oldDesc = original ? original.descrizione : '';
+        const newCodice = mod.newCodice || oldCodice;
+        const newDesc = mod.newDescrizione !== undefined ? mod.newDescrizione : oldDesc;
+
+        let text = `${oldCodice}`;
+        if (oldDesc) text += ` - ${oldDesc}`;
+        text += ' -> ';
+        text += `${newCodice}`;
+        if (newDesc) text += ` - ${newDesc}`;
+
+        // Tronca se necessario
         let displayText = text;
-        while (doc.getTextWidth(displayText) > usableWidth - 4 && displayText.length > 10) {
+        while (doc.getTextWidth('- ' + displayText) > usableWidth && displayText.length > 20) {
           displayText = displayText.slice(0, -1);
         }
-        if (displayText !== text) displayText += '…';
+        if (displayText !== text) displayText += '...';
 
-        doc.text('• ' + displayText, x + 2, currentY);
-        currentY += lineHeight;
+        doc.text('- ' + displayText, x, modifiedY);
+        modifiedY += lineHeight;
 
-        // Se sfora, interrompi con "..."
-        if (currentY > y + usableHeight - 10) {
-          doc.text('... e altri', x + 2, currentY);
-          currentY += lineHeight;
+        if (modifiedY > y + 40) {
+          doc.text('- ... e altri', x, modifiedY);
+          modifiedY += lineHeight;
           break;
         }
       }
-      currentY += sectionGap;
+      modifiedY += sectionGap;
+    }
+
+    // === SEZIONE INFERIORE TRIPARTITA: ELIMINATI | AGGIUNTI | SPOSTATI ===
+    const bottomSectionY = Math.max(modifiedY, y + headerHeight + 25); // Almeno 25mm sotto header
+    const columnWidth = usableWidth / 3; // ~64mm per colonna
+
+    // Helper per disegnare una colonna
+    const drawColumn = (title, items, formatFn, colIndex) => {
+      const colX = x + colIndex * columnWidth;
+      let colY = bottomSectionY;
+      const maxColWidth = columnWidth - 4;
+
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.text(`${title} (${items.length}):`, colX, colY);
+      colY += lineHeight + 1;
+
+      if (items.length === 0) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.text('- nessuno', colX, colY);
+        return;
+      }
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7);
+
+      for (const item of items) {
+        const text = formatFn(item);
+
+        // Tronca se necessario
+        let displayText = text;
+        while (doc.getTextWidth('- ' + displayText) > maxColWidth && displayText.length > 10) {
+          displayText = displayText.slice(0, -1);
+        }
+        if (displayText !== text) displayText += '...';
+
+        doc.text('- ' + displayText, colX, colY);
+        colY += lineHeight;
+
+        if (colY > y + usableHeight - 5) {
+          doc.text('- ...', colX, colY);
+          break;
+        }
+      }
     };
 
-    // Aggiunti
-    addSection('AGGIUNTI', changes.added, item =>
-      `${item.codice} - ${item.descrizione} (${item.scaffale})`
+    // Colonna 1: ELIMINATI
+    drawColumn('ELIMINATI', changes.deleted, item =>
+      `${item.codice} (${item.scaffale})`, 0
     );
 
-    // Modificati
-    addSection('MODIFICATI', changes.modified, mod => {
-      let desc = mod.codice;
-      if (mod.newCodice) desc += ` → ${mod.newCodice}`;
-      if (mod.newDescrizione) desc += ` (desc. modificata)`;
-      if (mod.newScaffale) desc += ` → scaffale ${mod.newScaffale}`;
-      return desc;
-    });
+    // Colonna 2: AGGIUNTI
+    drawColumn('AGGIUNTI', changes.added, item =>
+      `${item.codice} (${item.scaffale})`, 1
+    );
 
-    // Spostati
+    // Colonna 3: SPOSTATI
     const validMoves = pendingMoves.filter(m => m.toScaffale);
-    addSection('SPOSTATI', validMoves, move =>
-      `${move.codice} - ${move.fromScaffale} → ${move.toScaffale}`
-    );
-
-    // Eliminati
-    addSection('ELIMINATI', changes.deleted, item =>
-      `${item.codice} - ${item.descrizione} (${item.scaffale})`
+    drawColumn('SPOSTATI', validMoves, move =>
+      `${move.codice} - ${move.fromScaffale} -> ${move.toScaffale}`, 2
     );
 
     // Footer con timestamp
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(6);
+    doc.setFontSize(5);
     doc.setTextColor(128, 128, 128);
-    doc.text(timestamp, x + usableWidth, y + usableHeight, { align: 'right' });
+    doc.text(timestamp, x + usableWidth, startY + reportHeight - padding, { align: 'right' });
   }
 
   function drawLabel(doc, shelfData, x, y, width, height, timestamp) {
