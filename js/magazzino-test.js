@@ -1024,76 +1024,105 @@
   }
 
   function drawLabel(doc, shelfData, x, y, width, height) {
-    // Header bar (gray background, white text) - reduced height
+    // Header bar (gray background, white text)
     const headerHeight = 6;
     doc.setFillColor(85, 85, 85); // #555
     doc.rect(x, y, width, headerHeight, 'F');
 
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11); // Reduced from 14
+    doc.setFontSize(11);
     doc.text(shelfData.name, x + width / 2, y + headerHeight - 1.5, { align: 'center' });
 
     // Content area
-    const contentY = y + headerHeight + 1;
-    const contentHeight = height - headerHeight - 1;
+    const gapAfterHeader = 3;    // 3mm tra header e primo codice
+    const gapBetweenItems = 2.5; // 2.5mm tra descrizione e codice successivo
+    const contentStartY = y + headerHeight + gapAfterHeader;
+    const availableHeight = height - headerHeight - gapAfterHeader;
 
     doc.setTextColor(0, 0, 0);
 
     const items = shelfData.items;
     const itemCount = items.length;
 
-    // Calculate font size and line heights based on item count
-    // codiceLineHeight: space after codice (minimal, like shift+enter)
-    // itemGap: space between items (the "real" line break)
-    let fontSize, codiceLineHeight, itemGap;
-    if (itemCount <= 5) {
+    // Calcola font size e gap codice→descrizione per riempire lo spazio
+    // Spazio totale = n righe codice + n righe descrizione + (n-1) gap tra items
+    // availableHeight = n * lineHeight * 2 + (n-1) * gapBetweenItems
+    // availableHeight = 2n * lineHeight + (n-1) * 2.5
+    // lineHeight = (availableHeight - (n-1) * 2.5) / (2n)
+
+    let fontSize, lineHeight;
+
+    if (itemCount <= 7) {
+      // Per ≤7 pezzi, usa 81mm di altezza (padding normale)
+      // Calcolato per 7 pezzi che riempiano 81mm
+      // availableHeight per 7 pezzi = 81 - 6 - 3 = 72mm
+      // lineHeight = (72 - 6*2.5) / 14 = (72 - 15) / 14 = 57/14 ≈ 4.07mm
+      fontSize = 10;
+      lineHeight = 4.07;
+    } else if (itemCount === 8) {
+      // Per 8 pezzi, usa 86mm di altezza (padding ridotto)
+      // availableHeight = 86 - 6 - 3 = 77mm
+      // lineHeight = (77 - 7*2.5) / 16 = (77 - 17.5) / 16 = 59.5/16 ≈ 3.72mm
       fontSize = 9;
-      codiceLineHeight = 3.2; // Minimal gap between codice and descrizione
-      itemGap = 4.5;          // Gap between items
-    } else if (itemCount <= 7) {
-      fontSize = 8;
-      codiceLineHeight = 2.8;
-      itemGap = 3.8;
-    } else if (itemCount <= 9) {
-      fontSize = 7;
-      codiceLineHeight = 2.5;
-      itemGap = 3.2;
+      lineHeight = 3.72;
     } else {
-      fontSize = 6;
-      codiceLineHeight = 2.2;
-      itemGap = 2.8;
+      // Per 9+ pezzi, usa 86mm di altezza
+      // availableHeight = 86 - 6 - 3 = 77mm
+      // lineHeight = (77 - 8*2.5) / 18 = (77 - 20) / 18 = 57/18 ≈ 3.17mm
+      fontSize = 8;
+      lineHeight = 3.17;
     }
 
     doc.setFontSize(fontSize);
 
-    let currentY = contentY + 3;
+    // Calcola la larghezza massima del testo per centrare il blocco
+    let maxTextWidth = 0;
+    const truncatedDescs = [];
 
     for (const item of items) {
-      // Codice (bold)
       doc.setFont('helvetica', 'bold');
-      doc.text(item.codice, x + 1, currentY);
-      currentY += codiceLineHeight; // Minimal gap (shift+enter effect)
+      const codiceWidth = doc.getTextWidth(item.codice);
 
-      // Descrizione (normal, truncate if needed)
       doc.setFont('helvetica', 'normal');
       let desc = item.descrizione;
-      const maxWidth = width - 2;
+      const maxAllowedWidth = width - 4; // Margine di sicurezza
 
       // Truncate description if too long
-      while (doc.getTextWidth(desc) > maxWidth && desc.length > 3) {
+      while (doc.getTextWidth(desc) > maxAllowedWidth && desc.length > 3) {
         desc = desc.slice(0, -1);
       }
       if (desc !== item.descrizione) {
         desc = desc.slice(0, -1) + '…';
       }
+      truncatedDescs.push(desc);
 
-      doc.text(desc, x + 1, currentY);
-      currentY += itemGap; // Normal gap between items
+      const descWidth = doc.getTextWidth(desc);
+      maxTextWidth = Math.max(maxTextWidth, codiceWidth, descWidth);
+    }
 
-      // Stop if we're running out of space
-      if (currentY > y + height - 2) {
-        break;
+    // Calcola offset X per centrare il blocco
+    const blockOffsetX = (width - maxTextWidth) / 2;
+    const textX = x + blockOffsetX;
+
+    // Disegna i pezzi
+    let currentY = contentStartY + lineHeight; // Prima riga di testo
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+
+      // Codice (bold)
+      doc.setFont('helvetica', 'bold');
+      doc.text(item.codice, textX, currentY);
+      currentY += lineHeight;
+
+      // Descrizione (normal)
+      doc.setFont('helvetica', 'normal');
+      doc.text(truncatedDescs[i], textX, currentY);
+
+      // Gap tra items (tranne dopo l'ultimo)
+      if (i < items.length - 1) {
+        currentY += gapBetweenItems + lineHeight;
       }
     }
   }
