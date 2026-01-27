@@ -903,6 +903,10 @@
       format: 'a4'
     });
 
+    // Timestamp per footer cartellini
+    const now = new Date();
+    const timestamp = now.toLocaleDateString('it-IT') + ' ' + now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
     // A4: 210 x 297 mm
     // Grid: 3 columns x 3 rows = 9 labels per page
     // Each label: 70mm x 99mm
@@ -1014,7 +1018,7 @@
         const bottomPadding = isLongShelf ? paddingBottomReduced : paddingNormal;
         const usableHeight = labelHeight - paddingNormal - bottomPadding;
 
-        drawLabel(doc, shelfData, contentX, contentY, usableWidth, usableHeight);
+        drawLabel(doc, shelfData, contentX, contentY, usableWidth, usableHeight, timestamp);
       }
     }
 
@@ -1023,7 +1027,7 @@
     showToast(`PDF generato con ${orderedShelves.length} cartellini`, 'success');
   }
 
-  function drawLabel(doc, shelfData, x, y, width, height) {
+  function drawLabel(doc, shelfData, x, y, width, height, timestamp) {
     // Header bar (gray background, white text)
     const headerHeight = 6;
     doc.setFillColor(85, 85, 85); // #555
@@ -1035,7 +1039,7 @@
     doc.text(shelfData.name, x + width / 2, y + headerHeight - 1.5, { align: 'center' });
 
     // Content area
-    const gapAfterHeader = 3;    // 3mm tra header e primo codice
+    const gapAfterHeader = 2;    // 2mm tra header e primo codice (ridotto da 3)
     const gapBetweenItems = 2.5; // 2.5mm tra descrizione e codice successivo
     const contentStartY = y + headerHeight + gapAfterHeader;
     const availableHeight = height - headerHeight - gapAfterHeader;
@@ -1045,33 +1049,33 @@
     const items = shelfData.items;
     const itemCount = items.length;
 
-    // Calcola font size e gap codice→descrizione per riempire lo spazio
-    // Spazio totale = n righe codice + n righe descrizione + (n-1) gap tra items
-    // availableHeight = n * lineHeight * 2 + (n-1) * gapBetweenItems
-    // availableHeight = 2n * lineHeight + (n-1) * 2.5
-    // lineHeight = (availableHeight - (n-1) * 2.5) / (2n)
-
+    // Calcola font size e lineHeight in base al numero di pezzi
     let fontSize, lineHeight;
 
-    if (itemCount <= 7) {
-      // Per ≤7 pezzi, usa 81mm di altezza (padding normale)
-      // Calcolato per 7 pezzi che riempiano 81mm
-      // availableHeight per 7 pezzi = 81 - 6 - 3 = 72mm
-      // lineHeight = (72 - 6*2.5) / 14 = (72 - 15) / 14 = 57/14 ≈ 4.07mm
+    if (itemCount <= 6) {
+      // Per ≤6 pezzi: font 11.2pt
+      // availableHeight = 81 - 6 - 2 = 73mm
+      // lineHeight = (73 - 5*2.5) / 12 = (73 - 12.5) / 12 = 60.5/12 ≈ 5.04mm
+      fontSize = 11.2;
+      lineHeight = 5.04;
+    } else if (itemCount === 7) {
+      // Per 7 pezzi: font 10pt
+      // availableHeight = 81 - 6 - 2 = 73mm
+      // lineHeight = (73 - 6*2.5) / 14 = (73 - 15) / 14 = 58/14 ≈ 4.14mm
       fontSize = 10;
-      lineHeight = 4.07;
+      lineHeight = 4.14;
     } else if (itemCount === 8) {
       // Per 8 pezzi, usa 86mm di altezza (padding ridotto)
-      // availableHeight = 86 - 6 - 3 = 77mm
-      // lineHeight = (77 - 7*2.5) / 16 = (77 - 17.5) / 16 = 59.5/16 ≈ 3.72mm
+      // availableHeight = 86 - 6 - 2 = 78mm
+      // lineHeight = (78 - 7*2.5) / 16 = (78 - 17.5) / 16 = 60.5/16 ≈ 3.78mm
       fontSize = 9;
-      lineHeight = 3.72;
+      lineHeight = 3.78;
     } else {
       // Per 9+ pezzi, usa 86mm di altezza
-      // availableHeight = 86 - 6 - 3 = 77mm
-      // lineHeight = (77 - 8*2.5) / 18 = (77 - 20) / 18 = 57/18 ≈ 3.17mm
+      // availableHeight = 86 - 6 - 2 = 78mm
+      // lineHeight = (78 - 8*2.5) / 18 = (78 - 20) / 18 = 58/18 ≈ 3.22mm
       fontSize = 8;
-      lineHeight = 3.17;
+      lineHeight = 3.22;
     }
 
     doc.setFontSize(fontSize);
@@ -1125,6 +1129,12 @@
         currentY += gapBetweenItems + lineHeight;
       }
     }
+
+    // Timestamp in basso a destra
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(4.5);
+    doc.setTextColor(128, 128, 128);
+    doc.text(timestamp, x + width, y + height, { align: 'right' });
   }
 
   // ---------- Event Listeners ----------
