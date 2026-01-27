@@ -906,13 +906,13 @@
     // A4: 210 x 297 mm
     // Grid: 3 columns x 3 rows = 9 labels per page
     // Each label: 70mm x 99mm
-    // Padding: 9mm on each side -> usable area: 52mm x 81mm
+    // Padding: 9mm top/left/right, but 4mm bottom for last row (scaffali lunghi potrebbero sforare)
 
     const labelWidth = 70;
     const labelHeight = 99;
-    const padding = 9;
-    const usableWidth = 52;
-    const usableHeight = 81;
+    const paddingNormal = 9;
+    const paddingBottomReduced = 4; // Per ultima riga
+    const usableWidth = 52; // 70 - 9 - 9
     const cols = 3;
     const rows = 3;
     const labelsPerPage = cols * rows;
@@ -920,31 +920,68 @@
     // Cross mark size
     const crossSize = 4;
 
-    // Collect shelf data
+    // Collect shelf data and sort alphabetically
     const shelfDataList = shelfNames
       .map(name => getShelfData(name))
-      .filter(data => data !== null);
+      .filter(data => data !== null)
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     if (shelfDataList.length === 0) {
       showToast('Nessuno scaffale trovato', 'error');
       return;
     }
 
-    // Generate pages
-    const totalPages = Math.ceil(shelfDataList.length / labelsPerPage);
+    // Separate long shelves (>7 items) from normal ones
+    const longShelves = shelfDataList.filter(s => s.items.length > 7);
+    const normalShelves = shelfDataList.filter(s => s.items.length <= 7);
+
+    // Reorder: long shelves go to positions 0-5 (first two rows), normal shelves fill the rest
+    const orderedShelves = [];
+    let longIdx = 0;
+    let normalIdx = 0;
+
+    // For each page, fill positions 0-5 with long shelves first, then normal
+    // Position 6-8 (last row) only gets normal shelves
+    const totalShelves = shelfDataList.length;
+    const totalPages = Math.ceil(totalShelves / labelsPerPage);
 
     for (let page = 0; page < totalPages; page++) {
+      const pageStart = page * labelsPerPage;
+      const pageEnd = Math.min(pageStart + labelsPerPage, totalShelves);
+      const shelvesThisPage = pageEnd - pageStart;
+
+      // Positions 0-5: prefer long shelves
+      for (let pos = 0; pos < Math.min(6, shelvesThisPage); pos++) {
+        if (longIdx < longShelves.length) {
+          orderedShelves.push(longShelves[longIdx++]);
+        } else if (normalIdx < normalShelves.length) {
+          orderedShelves.push(normalShelves[normalIdx++]);
+        }
+      }
+
+      // Positions 6-8: only normal shelves
+      for (let pos = 6; pos < shelvesThisPage; pos++) {
+        if (normalIdx < normalShelves.length) {
+          orderedShelves.push(normalShelves[normalIdx++]);
+        } else if (longIdx < longShelves.length) {
+          // Fallback: if no normal shelves left, use long (shouldn't happen often)
+          orderedShelves.push(longShelves[longIdx++]);
+        }
+      }
+    }
+
+    // Generate pages
+    const finalTotalPages = Math.ceil(orderedShelves.length / labelsPerPage);
+
+    for (let page = 0; page < finalTotalPages; page++) {
       if (page > 0) {
         doc.addPage();
       }
 
-      // Draw cross marks at internal vertices (6 marks)
+      // Draw cross marks at internal vertices (4 marks)
       doc.setDrawColor(0);
       doc.setLineWidth(0.2);
 
-      // Internal vertices are at:
-      // (70, 99), (140, 99) - row 1/2 boundary
-      // (70, 198), (140, 198) - row 2/3 boundary
       const crossPositions = [
         { x: labelWidth, y: labelHeight },
         { x: labelWidth * 2, y: labelHeight },
@@ -953,26 +990,29 @@
       ];
 
       for (const pos of crossPositions) {
-        // Horizontal line
         doc.line(pos.x - crossSize, pos.y, pos.x + crossSize, pos.y);
-        // Vertical line
         doc.line(pos.x, pos.y - crossSize, pos.x, pos.y + crossSize);
       }
 
       // Draw labels for this page
       const startIdx = page * labelsPerPage;
-      const endIdx = Math.min(startIdx + labelsPerPage, shelfDataList.length);
+      const endIdx = Math.min(startIdx + labelsPerPage, orderedShelves.length);
 
       for (let i = startIdx; i < endIdx; i++) {
-        const shelfData = shelfDataList[i];
+        const shelfData = orderedShelves[i];
         const localIdx = i - startIdx;
         const col = localIdx % cols;
         const row = Math.floor(localIdx / cols);
 
         const labelX = col * labelWidth;
         const labelY = row * labelHeight;
-        const contentX = labelX + padding;
-        const contentY = labelY + padding;
+        const contentX = labelX + paddingNormal;
+        const contentY = labelY + paddingNormal;
+
+        // Last row gets reduced bottom padding -> more usable height
+        const isLastRow = (row === 2);
+        const bottomPadding = isLastRow ? paddingBottomReduced : paddingNormal;
+        const usableHeight = labelHeight - paddingNormal - bottomPadding;
 
         drawLabel(doc, shelfData, contentX, contentY, usableWidth, usableHeight);
       }
@@ -980,44 +1020,49 @@
 
     // Download PDF
     doc.save('cartellini-scaffali.pdf');
-    showToast(`PDF generato con ${shelfDataList.length} cartellini`, 'success');
+    showToast(`PDF generato con ${orderedShelves.length} cartellini`, 'success');
   }
 
   function drawLabel(doc, shelfData, x, y, width, height) {
-    // Header bar (gray background, white text)
-    const headerHeight = 8;
+    // Header bar (gray background, white text) - reduced height
+    const headerHeight = 6;
     doc.setFillColor(85, 85, 85); // #555
     doc.rect(x, y, width, headerHeight, 'F');
 
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.text(shelfData.name, x + width / 2, y + headerHeight - 2, { align: 'center' });
+    doc.setFontSize(11); // Reduced from 14
+    doc.text(shelfData.name, x + width / 2, y + headerHeight - 1.5, { align: 'center' });
 
     // Content area
-    const contentY = y + headerHeight + 2;
-    const contentHeight = height - headerHeight - 2;
+    const contentY = y + headerHeight + 1;
+    const contentHeight = height - headerHeight - 1;
 
     doc.setTextColor(0, 0, 0);
-    doc.setFont('helvetica', 'normal');
 
     const items = shelfData.items;
     const itemCount = items.length;
 
-    // Calculate font size and spacing based on item count
-    let fontSize, lineHeight;
+    // Calculate font size and line heights based on item count
+    // codiceLineHeight: space after codice (minimal, like shift+enter)
+    // itemGap: space between items (the "real" line break)
+    let fontSize, codiceLineHeight, itemGap;
     if (itemCount <= 5) {
       fontSize = 9;
-      lineHeight = 7;
+      codiceLineHeight = 3.2; // Minimal gap between codice and descrizione
+      itemGap = 4.5;          // Gap between items
     } else if (itemCount <= 7) {
       fontSize = 8;
-      lineHeight = 5.5;
+      codiceLineHeight = 2.8;
+      itemGap = 3.8;
     } else if (itemCount <= 9) {
       fontSize = 7;
-      lineHeight = 4.5;
+      codiceLineHeight = 2.5;
+      itemGap = 3.2;
     } else {
       fontSize = 6;
-      lineHeight = 4;
+      codiceLineHeight = 2.2;
+      itemGap = 2.8;
     }
 
     doc.setFontSize(fontSize);
@@ -1028,7 +1073,7 @@
       // Codice (bold)
       doc.setFont('helvetica', 'bold');
       doc.text(item.codice, x + 1, currentY);
-      currentY += lineHeight;
+      currentY += codiceLineHeight; // Minimal gap (shift+enter effect)
 
       // Descrizione (normal, truncate if needed)
       doc.setFont('helvetica', 'normal');
@@ -1044,7 +1089,7 @@
       }
 
       doc.text(desc, x + 1, currentY);
-      currentY += lineHeight + 1; // Extra space between items
+      currentY += itemGap; // Normal gap between items
 
       // Stop if we're running out of space
       if (currentY > y + height - 2) {
