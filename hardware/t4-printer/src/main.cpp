@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.6.4"
+#define FIRMWARE_VERSION "1.6.5"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -108,7 +108,7 @@ int numSchede = 0;
 int selectedIndex = 0;
 int scrollOffset = 0;
 #define VISIBLE_ROWS 10
-#define ROW_HEIGHT 21
+#define ROW_HEIGHT 20
 #define BUTTON_PANEL_WIDTH 50   // Larghezza pannello pulsanti a destra
 #define HEADER_HEIGHT 30        // Altezza header in alto
 #define SCROLLBAR_WIDTH 5       // Larghezza scrollbar a sinistra
@@ -2130,6 +2130,11 @@ void drawHeader() {
 }
 
 void showMessage(const char* msg, uint16_t color) {
+  // Se messaggio vuoto, ridisegna la lista per ripristinare l'area
+  if (msg[0] == '\0') {
+    drawList();
+    return;
+  }
   // Mostra messaggio temporaneo in basso (dopo scrollbar, prima dei pulsanti)
   int msgX = SCROLLBAR_WIDTH + 2;  // Dopo scrollbar + gap
   int msgY = 240 - 20;
