@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.6.0"
+#define FIRMWARE_VERSION "1.6.1"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -2592,7 +2592,7 @@ void setup() {
   pinMode(TFT_BL, OUTPUT);
   digitalWrite(TFT_BL, HIGH);
   tft.init();
-  tft.setRotation(3);  // Landscape con pulsanti a destra
+  tft.setRotation(1);  // Landscape con pulsanti a destra (ruotato 180° rispetto a rot 3)
   tft.fillScreen(TFT_BLACK);
 
   // Messaggio avvio con versione (landscape 320x240)
