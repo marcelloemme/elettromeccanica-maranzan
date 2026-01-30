@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.6.5"
+#define FIRMWARE_VERSION "1.6.6"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -2068,11 +2068,13 @@ void drawList() {
     int idx = scrollOffset + i;
     Scheda& s = schede[idx];
 
-    int y = listTop + 4 + i * ROW_HEIGHT;
+    // Altezza alternata 20/21px (media 20.5px)
+    int y = listTop + 4 + (i * 41) / 2;  // 41/2 = 20.5 in media
+    int rowH = (i % 2 == 0) ? 20 : 21;
 
     // Riga selezionata = sfondo bianco, testo nero
     if (idx == selectedIndex) {
-      tft.fillRect(listX, y - 2, listWidth - 2, ROW_HEIGHT, TFT_WHITE);
+      tft.fillRect(listX, y - 2, listWidth - 2, rowH, TFT_WHITE);
       tft.setTextColor(TFT_BLACK, TFT_WHITE);
     } else {
       tft.setTextColor(s.completato ? TFT_DARKGREY : TFT_WHITE, TFT_BLACK);
