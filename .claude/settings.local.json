@@ -36,7 +36,8 @@
       "Bash(grep:*)",
       "Bash(git -C /Users/marcello/Documents/elettromeccanica-maranzan.com add hardware/t4-printer/src/main.cpp hardware/EM_Maranzan_printer.bin)",
       "Bash(git -C /Users/marcello/Documents/elettromeccanica-maranzan.com push)",
-      "Bash(pio run:*)"
+      "Bash(pio run:*)",
+      "Bash(md5:*)"
     ],
     "deny": [],
     "ask": []

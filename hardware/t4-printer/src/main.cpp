@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.6.1"
+#define FIRMWARE_VERSION "1.6.2"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -291,19 +291,19 @@ bool performOTAUpdate() {
   tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_CYAN, TFT_BLACK);
   tft.setTextSize(2);
-  tft.setCursor(20, 30);
+  tft.setCursor(10, 30);
   tft.println("Aggiornamento firmware...");
 
   tft.setTextSize(1);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.setCursor(20, 70);
+  tft.setCursor(10, 70);
   tft.println("Download in corso...");
-  tft.setCursor(20, 85);
+  tft.setCursor(10, 85);
   tft.print("Versione attuale: ");
   tft.println(FIRMWARE_VERSION);
 
   // Progress bar (landscape: più larga)
-  int barX = 20, barY = 120, barW = 280, barH = 20;
+  int barX = 10, barY = 120, barW = 300, barH = 20;
   tft.drawRect(barX, barY, barW, barH, TFT_WHITE);
 
   // Usa WiFiClientSecure per HTTPS (senza verifica certificato)
@@ -326,9 +326,9 @@ bool performOTAUpdate() {
   if (httpCode != HTTP_CODE_OK) {
     debugPrintln("[OTA] Download fallito");
     tft.setTextColor(TFT_RED, TFT_BLACK);
-    tft.setCursor(20, 170);
+    tft.setCursor(10, 170);
     tft.println("Download fallito!");
-    tft.setCursor(20, 185);
+    tft.setCursor(10, 185);
     tft.print("HTTP: ");
     tft.println(httpCode);
     http.end();
@@ -339,7 +339,7 @@ bool performOTAUpdate() {
   if (contentLength <= 0) {
     debugPrintln("[OTA] File non trovato o vuoto");
     tft.setTextColor(TFT_ORANGE, TFT_BLACK);
-    tft.setCursor(20, 170);
+    tft.setCursor(10, 170);
     tft.println("File non trovato");
     http.end();
     delay(3000);
@@ -350,7 +350,7 @@ bool performOTAUpdate() {
   if (!Update.begin(contentLength)) {
     debugPrintln("[OTA] Spazio insufficiente");
     tft.setTextColor(TFT_RED, TFT_BLACK);
-    tft.setCursor(20, 170);
+    tft.setCursor(10, 170);
     tft.println("Spazio insufficiente!");
     http.end();
     delay(3000);
@@ -362,7 +362,7 @@ bool performOTAUpdate() {
   uint8_t buff[1024];
   int lastPercent = 0;
 
-  tft.setCursor(20, 105);
+  tft.setCursor(10, 105);
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
   tft.print("0%");
 
@@ -394,8 +394,8 @@ bool performOTAUpdate() {
         tft.fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_GREEN);
 
         // Percentuale
-        tft.fillRect(20, 105, 50, 15, TFT_BLACK);
-        tft.setCursor(20, 105);
+        tft.fillRect(10, 105, 50, 15, TFT_BLACK);
+        tft.setCursor(10, 105);
         tft.setTextColor(TFT_YELLOW, TFT_BLACK);
         tft.print(percent);
         tft.print("%");
@@ -410,14 +410,14 @@ bool performOTAUpdate() {
     if (Update.isFinished()) {
       debugPrintln("[OTA] Aggiornamento completato!");
 
-      tft.fillRect(20, 160, 280, 60, TFT_BLACK);
+      tft.fillRect(10, 160, 300, 60, TFT_BLACK);
       tft.setTextColor(TFT_GREEN, TFT_BLACK);
       tft.setTextSize(2);
-      tft.setCursor(20, 165);
+      tft.setCursor(10, 165);
       tft.println("Completato!");
 
       tft.setTextSize(1);
-      tft.setCursor(20, 195);
+      tft.setCursor(10, 195);
       tft.println("Riavvio in 3 secondi...");
 
       delay(3000);
@@ -429,7 +429,7 @@ bool performOTAUpdate() {
   debugPrint("[OTA] Errore finale: ");
   debugPrintln(Update.getError());
   tft.setTextColor(TFT_RED, TFT_BLACK);
-  tft.setCursor(20, 170);
+  tft.setCursor(10, 170);
   tft.println("Errore aggiornamento!");
   delay(3000);
   return false;
@@ -807,27 +807,27 @@ void startConfigMode() {
   tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_CYAN, TFT_BLACK);
   tft.setTextSize(2);
-  tft.setCursor(90, 30);
+  tft.setCursor(80, 30);
   tft.println("Config WiFi");
 
   tft.setTextSize(1);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.setCursor(100, 70);
+  tft.setCursor(90, 70);
   tft.println("Connettiti a:");
 
   tft.setTextSize(2);
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  tft.setCursor(75, 95);
+  tft.setCursor(65, 95);
   tft.println("EM Maranzan");
 
   tft.setTextSize(1);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.setCursor(95, 130);
+  tft.setCursor(85, 130);
   tft.println("(nessuna password)");
 
-  tft.setCursor(60, 170);
+  tft.setCursor(50, 170);
   tft.println("Si aprira' una pagina");
-  tft.setCursor(60, 190);
+  tft.setCursor(50, 190);
   tft.println("per configurare il WiFi");
 
   // Avvia AP
@@ -2050,10 +2050,15 @@ void drawButtons() {
 
 void drawList() {
   // Area lista (landscape: sotto header, a sinistra dei pulsanti)
+  // Scrollbar a sinistra (5px), poi lista, poi pulsanti a destra
   int listTop = HEADER_HEIGHT;
-  int listWidth = 320 - BUTTON_PANEL_WIDTH - 6;  // -6 per scrollbar
+  int scrollBarWidth = 5;
+  int listX = scrollBarWidth + 2;  // Dopo scrollbar + gap
+  int listWidth = 320 - BUTTON_PANEL_WIDTH - listX;
   int listHeight = 240 - HEADER_HEIGHT;
-  tft.fillRect(0, listTop, listWidth, listHeight, TFT_BLACK);
+
+  // Pulisci area scrollbar + lista
+  tft.fillRect(0, listTop, 320 - BUTTON_PANEL_WIDTH, listHeight, TFT_BLACK);
 
   // Usa font built-in numero 2 (piccolo, proporzionale)
   tft.setTextFont(2);
@@ -2067,28 +2072,29 @@ void drawList() {
 
     // Riga selezionata = sfondo bianco, testo nero
     if (idx == selectedIndex) {
-      tft.fillRect(0, y - 2, listWidth - 2, ROW_HEIGHT, TFT_WHITE);
+      tft.fillRect(listX, y - 2, listWidth - 2, ROW_HEIGHT, TFT_WHITE);
       tft.setTextColor(TFT_BLACK, TFT_WHITE);
     } else {
       tft.setTextColor(s.completato ? TFT_DARKGREY : TFT_WHITE, TFT_BLACK);
     }
 
     // Numero + Cliente
-    tft.setCursor(4, y);
+    tft.setCursor(listX + 2, y);
     tft.print(s.numero);
     tft.print(" ");
 
     String cliente = String(s.cliente);
-    // Più spazio orizzontale in landscape
-    if (cliente.length() > 28) {
-      cliente = cliente.substring(0, 27) + ".";
+    // Troncamento: "COSTRUZIONI TAGLIAMENTO SRL" -> "COSTRUZIONI TAGLIAMENTO S."
+    // 26 caratteri max per cliente (dopo numero 7 char + spazio)
+    if (cliente.length() > 26) {
+      cliente = cliente.substring(0, 25) + ".";
     }
     tft.print(cliente);
 
     // Indicatore stato completato
     if (s.completato) {
       tft.setTextColor(TFT_GREEN, idx == selectedIndex ? TFT_WHITE : TFT_BLACK);
-      tft.setCursor(listWidth - 14, y);
+      tft.setCursor(listX + listWidth - 16, y);
       tft.print("V");
     }
   }
@@ -2096,17 +2102,16 @@ void drawList() {
   // Torna al font di default
   tft.setTextFont(1);
 
-  // Scrollbar (a destra della lista, prima dei pulsanti)
-  int scrollX = listWidth;
+  // Scrollbar a sinistra (margine libero)
   if (numSchede > VISIBLE_ROWS) {
     int barHeight = (listHeight * VISIBLE_ROWS) / numSchede;
     if (barHeight < 10) barHeight = 10;
     int scrollRange = listHeight - barHeight;
     int barY = listTop + (scrollOffset * scrollRange) / max(1, numSchede - VISIBLE_ROWS);
-    tft.fillRect(scrollX, listTop, 5, listHeight, TFT_DARKGREY);
-    tft.fillRect(scrollX, barY, 5, barHeight, TFT_WHITE);
+    tft.fillRect(0, listTop, scrollBarWidth, listHeight, TFT_DARKGREY);
+    tft.fillRect(0, barY, scrollBarWidth, barHeight, TFT_WHITE);
   } else {
-    tft.fillRect(scrollX, listTop, 5, listHeight, TFT_DARKGREY);
+    tft.fillRect(0, listTop, scrollBarWidth, listHeight, TFT_DARKGREY);
   }
 }
 
@@ -2598,7 +2603,7 @@ void setup() {
   // Messaggio avvio con versione (landscape 320x240)
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.setTextSize(2);
-  tft.setCursor(20, 100);
+  tft.setCursor(10, 100);
   tft.print("Avvio v");
   tft.print(FIRMWARE_VERSION);
   tft.println("...");
@@ -2704,7 +2709,7 @@ void setup() {
     debugPrintln("[INIT] OTA selezionato - modalità OTA Update");
 
     // Prima connetti WiFi
-    tft.setCursor(20, 130);
+    tft.setCursor(10, 130);
     tft.setTextSize(1);
     tft.print("WiFi per OTA...");
 
@@ -2717,12 +2722,12 @@ void setup() {
       tft.fillScreen(TFT_BLACK);
       tft.setTextColor(TFT_RED, TFT_BLACK);
       tft.setTextSize(2);
-      tft.setCursor(80, 80);
+      tft.setCursor(10, 80);
       tft.println("WiFi non disponibile!");
       tft.setTextSize(1);
-      tft.setCursor(100, 130);
+      tft.setCursor(10, 130);
       tft.println("OTA annullato.");
-      tft.setCursor(80, 150);
+      tft.setCursor(10, 150);
       tft.println("Avvio normale in 3s...");
       delay(3000);
     }
@@ -2730,7 +2735,7 @@ void setup() {
 
   // WiFi - tenta connessione a rotazione
   debugPrintln("[INIT] WiFi...");
-  tft.setCursor(20, 130);
+  tft.setCursor(10, 130);
   tft.setTextSize(1);
   tft.print("WiFi...");
 
@@ -2757,7 +2762,7 @@ void setup() {
 
   // Download CSV
   if (wifiOK) {
-    tft.setCursor(20, 150);
+    tft.setCursor(10, 150);
     tft.print("Download CSV...");
     debugPrintln("[INIT] Download CSV...");
 
