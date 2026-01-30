@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.5.5"
+#define FIRMWARE_VERSION "1.6.0"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -67,10 +67,10 @@ TFT_eSPI tft = TFT_eSPI();
 #define SD_MISO 2
 #define SD_SCK  14
 
-// Pulsanti
-#define BTN_LEFT   38   // Su (nella UI lista)
-#define BTN_CENTER 37   // Stampa
-#define BTN_RIGHT  39   // Giu
+// Pulsanti (dopo rotazione -90°: IO39=su, IO38=giù, IO37=OK)
+#define BTN_UP     39   // Su (era giù in portrait)
+#define BTN_CENTER 37   // OK/Stampa
+#define BTN_DOWN   38   // Giù (era su in portrait)
 
 // Stampante termica
 #define PRINTER_TX 33
@@ -104,16 +104,17 @@ struct Scheda {
 Scheda schede[MAX_SCHEDE];
 int numSchede = 0;
 
-// UI state
+// UI state (landscape 320x240, pulsanti a destra)
 int selectedIndex = 0;
 int scrollOffset = 0;
-#define VISIBLE_ROWS 10
-#define ROW_HEIGHT 20
-#define BUTTON_HEIGHT 40
+#define VISIBLE_ROWS 9
+#define ROW_HEIGHT 22
+#define BUTTON_PANEL_WIDTH 50   // Larghezza pannello pulsanti a destra
+#define HEADER_HEIGHT 30        // Altezza header in alto
 
 // Long press timing
-unsigned long btnLeftPressed = 0;
-unsigned long btnRightPressed = 0;
+unsigned long btnUpPressed = 0;
+unsigned long btnDownPressed = 0;
 unsigned long lastPageSkip = 0;
 #define LONG_PRESS_MS 1500
 
@@ -286,25 +287,23 @@ bool performOTAUpdate() {
   debugPrint("[OTA] URL: ");
   debugPrintln(OTA_URL);
 
-  // Mostra su display
+  // Mostra su display (landscape 320x240)
   tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_CYAN, TFT_BLACK);
   tft.setTextSize(2);
-  tft.setCursor(20, 40);
-  tft.println("Aggiornamento");
-  tft.setCursor(20, 65);
-  tft.println("firmware...");
+  tft.setCursor(20, 30);
+  tft.println("Aggiornamento firmware...");
 
   tft.setTextSize(1);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.setCursor(20, 100);
+  tft.setCursor(20, 70);
   tft.println("Download in corso...");
-  tft.setCursor(20, 115);
+  tft.setCursor(20, 85);
   tft.print("Versione attuale: ");
   tft.println(FIRMWARE_VERSION);
 
-  // Progress bar
-  int barX = 20, barY = 150, barW = 200, barH = 20;
+  // Progress bar (landscape: più larga)
+  int barX = 20, barY = 120, barW = 280, barH = 20;
   tft.drawRect(barX, barY, barW, barH, TFT_WHITE);
 
   // Usa WiFiClientSecure per HTTPS (senza verifica certificato)
@@ -327,9 +326,9 @@ bool performOTAUpdate() {
   if (httpCode != HTTP_CODE_OK) {
     debugPrintln("[OTA] Download fallito");
     tft.setTextColor(TFT_RED, TFT_BLACK);
-    tft.setCursor(20, 200);
+    tft.setCursor(20, 170);
     tft.println("Download fallito!");
-    tft.setCursor(20, 215);
+    tft.setCursor(20, 185);
     tft.print("HTTP: ");
     tft.println(httpCode);
     http.end();
@@ -340,7 +339,7 @@ bool performOTAUpdate() {
   if (contentLength <= 0) {
     debugPrintln("[OTA] File non trovato o vuoto");
     tft.setTextColor(TFT_ORANGE, TFT_BLACK);
-    tft.setCursor(20, 200);
+    tft.setCursor(20, 170);
     tft.println("File non trovato");
     http.end();
     delay(3000);
@@ -351,7 +350,7 @@ bool performOTAUpdate() {
   if (!Update.begin(contentLength)) {
     debugPrintln("[OTA] Spazio insufficiente");
     tft.setTextColor(TFT_RED, TFT_BLACK);
-    tft.setCursor(20, 200);
+    tft.setCursor(20, 170);
     tft.println("Spazio insufficiente!");
     http.end();
     delay(3000);
@@ -363,7 +362,7 @@ bool performOTAUpdate() {
   uint8_t buff[1024];
   int lastPercent = 0;
 
-  tft.setCursor(20, 130);
+  tft.setCursor(20, 105);
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
   tft.print("0%");
 
@@ -395,8 +394,8 @@ bool performOTAUpdate() {
         tft.fillRect(barX + 2, barY + 2, fillW, barH - 4, TFT_GREEN);
 
         // Percentuale
-        tft.fillRect(20, 130, 50, 15, TFT_BLACK);
-        tft.setCursor(20, 130);
+        tft.fillRect(20, 105, 50, 15, TFT_BLACK);
+        tft.setCursor(20, 105);
         tft.setTextColor(TFT_YELLOW, TFT_BLACK);
         tft.print(percent);
         tft.print("%");
@@ -411,14 +410,14 @@ bool performOTAUpdate() {
     if (Update.isFinished()) {
       debugPrintln("[OTA] Aggiornamento completato!");
 
-      tft.fillRect(20, 200, 220, 40, TFT_BLACK);
+      tft.fillRect(20, 160, 280, 60, TFT_BLACK);
       tft.setTextColor(TFT_GREEN, TFT_BLACK);
       tft.setTextSize(2);
-      tft.setCursor(20, 200);
+      tft.setCursor(20, 165);
       tft.println("Completato!");
 
       tft.setTextSize(1);
-      tft.setCursor(20, 230);
+      tft.setCursor(20, 195);
       tft.println("Riavvio in 3 secondi...");
 
       delay(3000);
@@ -430,7 +429,7 @@ bool performOTAUpdate() {
   debugPrint("[OTA] Errore finale: ");
   debugPrintln(Update.getError());
   tft.setTextColor(TFT_RED, TFT_BLACK);
-  tft.setCursor(20, 200);
+  tft.setCursor(20, 170);
   tft.println("Errore aggiornamento!");
   delay(3000);
   return false;
@@ -804,31 +803,31 @@ void startConfigMode() {
 
   debugPrintln("\n[AP] Avvio modalità configurazione...");
 
-  // Mostra su display
+  // Mostra su display (landscape 320x240)
   tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_CYAN, TFT_BLACK);
   tft.setTextSize(2);
-  tft.setCursor(20, 60);
+  tft.setCursor(90, 30);
   tft.println("Config WiFi");
 
   tft.setTextSize(1);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.setCursor(20, 100);
+  tft.setCursor(100, 70);
   tft.println("Connettiti a:");
 
   tft.setTextSize(2);
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  tft.setCursor(20, 120);
+  tft.setCursor(75, 95);
   tft.println("EM Maranzan");
 
   tft.setTextSize(1);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.setCursor(20, 160);
+  tft.setCursor(95, 130);
   tft.println("(nessuna password)");
 
-  tft.setCursor(20, 200);
+  tft.setCursor(60, 170);
   tft.println("Si aprira' una pagina");
-  tft.setCursor(20, 215);
+  tft.setCursor(60, 190);
   tft.println("per configurare il WiFi");
 
   // Avvia AP
@@ -2013,82 +2012,83 @@ void pollTask(void* parameter) {
 
 // ===== UI DISPLAY =====
 void drawButtons() {
-  int btnY = 320 - BUTTON_HEIGHT;
-  int btnWidth = 80;
+  // Pannello pulsanti a destra (landscape 320x240)
+  int panelX = 320 - BUTTON_PANEL_WIDTH;
+  int btnHeight = 80;  // Altezza di ogni pulsante (240 / 3)
 
-  // Sfondo pulsanti (bordo grigio)
-  tft.fillRect(0, btnY, 240, BUTTON_HEIGHT, TFT_DARKGREY);
+  // Sfondo pannello (bordo grigio)
+  tft.fillRect(panelX, 0, BUTTON_PANEL_WIDTH, 240, TFT_DARKGREY);
 
-  // Pulsante SU (sinistra) - sfondo nero, triangolo bianco
-  tft.fillRect(1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_BLACK);
-  int leftCenter = btnWidth / 2;
+  // Pulsante SU (in alto) - sfondo nero, triangolo bianco
+  tft.fillRect(panelX + 1, 1, BUTTON_PANEL_WIDTH - 2, btnHeight - 2, TFT_BLACK);
+  int centerX = panelX + BUTTON_PANEL_WIDTH / 2;
+  int centerY1 = btnHeight / 2;
   tft.fillTriangle(
-    leftCenter - 15, btnY + 28,   // punta basso sx
-    leftCenter, btnY + 10,        // punta alto centro
-    leftCenter + 15, btnY + 28,   // punta basso dx
+    centerX - 15, centerY1 + 10,   // punta basso sx
+    centerX, centerY1 - 12,        // punta alto centro
+    centerX + 15, centerY1 + 10,   // punta basso dx
     TFT_WHITE
   );
 
   // Pulsante OK (centro) - sfondo nero, testo bianco
-  tft.fillRect(btnWidth + 1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_BLACK);
+  tft.fillRect(panelX + 1, btnHeight + 1, BUTTON_PANEL_WIDTH - 2, btnHeight - 2, TFT_BLACK);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.setTextSize(2);
-  tft.setCursor(btnWidth + 28, btnY + 12);
+  tft.setCursor(panelX + 10, btnHeight + btnHeight / 2 - 8);
   tft.print("OK");
 
-  // Pulsante GIU (destra) - sfondo nero, triangolo bianco
-  tft.fillRect(btnWidth * 2 + 1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_BLACK);
-  int rightCenter = btnWidth * 2 + btnWidth / 2;
+  // Pulsante GIU (in basso) - sfondo nero, triangolo bianco
+  tft.fillRect(panelX + 1, btnHeight * 2 + 1, BUTTON_PANEL_WIDTH - 2, btnHeight - 2, TFT_BLACK);
+  int centerY3 = btnHeight * 2 + btnHeight / 2;
   tft.fillTriangle(
-    rightCenter - 15, btnY + 10,  // punta alto sx
-    rightCenter, btnY + 28,       // punta basso centro
-    rightCenter + 15, btnY + 10,  // punta alto dx
+    centerX - 15, centerY3 - 10,  // punta alto sx
+    centerX, centerY3 + 12,       // punta basso centro
+    centerX + 15, centerY3 - 10,  // punta alto dx
     TFT_WHITE
   );
 }
 
 void drawList() {
-  // Area lista (sotto header, sopra pulsanti)
-  int listTop = BUTTON_HEIGHT;  // Inizia dopo header (40px)
-  int listHeight = 320 - listTop - BUTTON_HEIGHT;
-  tft.fillRect(0, listTop, 236, listHeight, TFT_BLACK);  // 236 per non coprire scrollbar
+  // Area lista (landscape: sotto header, a sinistra dei pulsanti)
+  int listTop = HEADER_HEIGHT;
+  int listWidth = 320 - BUTTON_PANEL_WIDTH - 6;  // -6 per scrollbar
+  int listHeight = 240 - HEADER_HEIGHT;
+  tft.fillRect(0, listTop, listWidth, listHeight, TFT_BLACK);
 
-  // Usa font built-in numero 2 (piccolo, proporzionale) size 2
-  tft.setTextFont(2);  // Font 2: 16px alto
+  // Usa font built-in numero 2 (piccolo, proporzionale)
+  tft.setTextFont(2);
   tft.setTextSize(1);
-
-  // Offset verticale per creare spazio sopra la prima riga (come una riga vuota)
-  int topPadding = ROW_HEIGHT;
 
   for (int i = 0; i < VISIBLE_ROWS && (scrollOffset + i) < numSchede; i++) {
     int idx = scrollOffset + i;
     Scheda& s = schede[idx];
 
-    int y = listTop + topPadding + i * ROW_HEIGHT;
+    int y = listTop + 4 + i * ROW_HEIGHT;
 
     // Riga selezionata = sfondo bianco, testo nero
     if (idx == selectedIndex) {
-      tft.fillRect(0, y - 1, 234, ROW_HEIGHT, TFT_WHITE);
+      tft.fillRect(0, y - 2, listWidth - 2, ROW_HEIGHT, TFT_WHITE);
       tft.setTextColor(TFT_BLACK, TFT_WHITE);
     } else {
       tft.setTextColor(s.completato ? TFT_DARKGREY : TFT_WHITE, TFT_BLACK);
     }
 
     // Numero + Cliente
-    tft.setCursor(2, y);
+    tft.setCursor(4, y);
     tft.print(s.numero);
     tft.print(" ");
 
     String cliente = String(s.cliente);
-    if (cliente.length() > 22) {
-      cliente = cliente.substring(0, 21) + ".";
+    // Più spazio orizzontale in landscape
+    if (cliente.length() > 28) {
+      cliente = cliente.substring(0, 27) + ".";
     }
     tft.print(cliente);
 
     // Indicatore stato completato
     if (s.completato) {
       tft.setTextColor(TFT_GREEN, idx == selectedIndex ? TFT_WHITE : TFT_BLACK);
-      tft.setCursor(224, y);
+      tft.setCursor(listWidth - 14, y);
       tft.print("V");
     }
   }
@@ -2096,39 +2096,42 @@ void drawList() {
   // Torna al font di default
   tft.setTextFont(1);
 
-  // Scrollbar (occupa tutta l'altezza della lista, a destra)
+  // Scrollbar (a destra della lista, prima dei pulsanti)
+  int scrollX = listWidth;
   if (numSchede > VISIBLE_ROWS) {
     int barHeight = (listHeight * VISIBLE_ROWS) / numSchede;
     if (barHeight < 10) barHeight = 10;
     int scrollRange = listHeight - barHeight;
     int barY = listTop + (scrollOffset * scrollRange) / max(1, numSchede - VISIBLE_ROWS);
-    tft.fillRect(236, listTop, 4, listHeight, TFT_DARKGREY);
-    tft.fillRect(236, barY, 4, barHeight, TFT_WHITE);
+    tft.fillRect(scrollX, listTop, 5, listHeight, TFT_DARKGREY);
+    tft.fillRect(scrollX, barY, 5, barHeight, TFT_WHITE);
+  } else {
+    tft.fillRect(scrollX, listTop, 5, listHeight, TFT_DARKGREY);
   }
 }
 
 void drawHeader() {
-  // Header stessa altezza dei pulsanti (BUTTON_HEIGHT = 40)
-  tft.fillRect(0, 0, 240, BUTTON_HEIGHT, TFT_BLACK);
+  // Header in alto (landscape: larghezza fino ai pulsanti)
+  int headerWidth = 320 - BUTTON_PANEL_WIDTH;
+  tft.fillRect(0, 0, headerWidth, HEADER_HEIGHT, TFT_BLACK);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.setTextSize(2);
-  // "EM Maranzan" = 11 caratteri × 12px = 132px
-  // Centro orizzontale: (240 - 132) / 2 = 54
-  // Centro verticale: (40 - 16) / 2 = 12
-  tft.setCursor(54, 12);
+  // Centro orizzontale nell'area header
+  tft.setCursor((headerWidth - 132) / 2, (HEADER_HEIGHT - 16) / 2);
   tft.print("EM Maranzan");
 
   // Linea separatore
-  tft.drawFastHLine(0, BUTTON_HEIGHT - 1, 240, TFT_DARKGREY);
+  tft.drawFastHLine(0, HEADER_HEIGHT - 1, headerWidth, TFT_DARKGREY);
 }
 
 void showMessage(const char* msg, uint16_t color) {
-  // Mostra messaggio temporaneo sopra i pulsanti (non copre scrollbar a destra)
-  int msgY = 320 - BUTTON_HEIGHT - 20;
-  tft.fillRect(0, msgY, 232, 18, TFT_BLACK);  // 232 invece di 240 per non coprire scrollbar
+  // Mostra messaggio temporaneo in basso (landscape: a sinistra dei pulsanti)
+  int msgY = 240 - 20;
+  int msgWidth = 320 - BUTTON_PANEL_WIDTH - 6;
+  tft.fillRect(0, msgY, msgWidth, 20, TFT_BLACK);
   tft.setTextColor(color, TFT_BLACK);
   tft.setTextSize(1);
-  tft.setCursor(5, msgY + 4);
+  tft.setCursor(5, msgY + 6);
   tft.print(msg);
 }
 
@@ -2153,10 +2156,11 @@ int cursorToStringPos(int cursorPos) {
 
 // Disegna UI modalità inserimento manuale
 void drawManualInput() {
-  // Pulisci area centrale (sotto header, sopra pulsanti)
-  int areaTop = BUTTON_HEIGHT;  // Usa stessa altezza header
-  int areaHeight = 320 - areaTop - BUTTON_HEIGHT;
-  tft.fillRect(0, areaTop, 240, areaHeight, TFT_BLACK);
+  // Pulisci area centrale (landscape: a sinistra dei pulsanti)
+  int areaWidth = 320 - BUTTON_PANEL_WIDTH;
+  int areaTop = HEADER_HEIGHT;
+  int areaHeight = 240 - areaTop;
+  tft.fillRect(0, areaTop, areaWidth, areaHeight, TFT_BLACK);
 
   // Numero grande centrato
   tft.setTextSize(4);  // Font grande
@@ -2164,8 +2168,8 @@ void drawManualInput() {
   // Calcola larghezza totale: 7 caratteri × 24px = 168px
   int charWidth = 24;
   int totalWidth = 7 * charWidth;
-  int startX = (240 - totalWidth) / 2;
-  int numY = areaTop + (areaHeight / 2) - 30;
+  int startX = (areaWidth - totalWidth) / 2;
+  int numY = areaTop + (areaHeight / 2) - 40;
 
   // Disegna ogni carattere
   for (int i = 0; i < 7; i++) {
@@ -2188,12 +2192,13 @@ void drawManualInput() {
   // Istruzioni
   tft.setTextSize(1);
   tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
-  int instrY = numY + 50;
-  tft.setCursor(45, instrY);
+  int instrY = numY + 55;
+  int instrX = (areaWidth - 150) / 2;
+  tft.setCursor(instrX, instrY);
   tft.print("Frecce: cambia cifra");
-  tft.setCursor(45, instrY + 15);
+  tft.setCursor(instrX, instrY + 15);
   tft.print("OK: prossima / stampa");
-  tft.setCursor(45, instrY + 30);
+  tft.setCursor(instrX, instrY + 30);
   tft.print("OK 2s: annulla");
 }
 
@@ -2579,70 +2584,71 @@ void setup() {
   debugPrintln("=================================\n");
 
   // Pulsanti
-  pinMode(BTN_LEFT, INPUT_PULLUP);
+  pinMode(BTN_UP, INPUT_PULLUP);
   pinMode(BTN_CENTER, INPUT_PULLUP);
-  pinMode(BTN_RIGHT, INPUT_PULLUP);
+  pinMode(BTN_DOWN, INPUT_PULLUP);
 
-  // Display
+  // Display (landscape: rotazione -90°)
   pinMode(TFT_BL, OUTPUT);
   digitalWrite(TFT_BL, HIGH);
   tft.init();
-  tft.setRotation(0);
+  tft.setRotation(3);  // Landscape con pulsanti a destra
   tft.fillScreen(TFT_BLACK);
 
-  // Messaggio avvio con versione
+  // Messaggio avvio con versione (landscape 320x240)
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.setTextSize(2);
-  tft.setCursor(10, 100);
+  tft.setCursor(20, 100);
   tft.print("Avvio v");
   tft.print(FIRMWARE_VERSION);
   tft.println("...");
 
   // === Menu pulsanti avvio (OTA / WIFI / SER) per 2 secondi ===
-  int btnY = 320 - BUTTON_HEIGHT;
-  int btnWidth = 80;
+  // Pulsanti a destra in verticale (landscape)
+  int panelX = 320 - BUTTON_PANEL_WIDTH;
+  int btnHeight = 80;
 
-  // Sfondo pulsanti (bordo grigio)
-  tft.fillRect(0, btnY, 240, BUTTON_HEIGHT, TFT_DARKGREY);
+  // Sfondo pannello
+  tft.fillRect(panelX, 0, BUTTON_PANEL_WIDTH, 240, TFT_DARKGREY);
 
-  // Pulsante OTA (sinistra)
-  tft.fillRect(1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_BLACK);
+  // Pulsante OTA (in alto = BTN_UP)
+  tft.fillRect(panelX + 1, 1, BUTTON_PANEL_WIDTH - 2, btnHeight - 2, TFT_BLACK);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.setTextSize(2);
-  tft.setCursor(22, btnY + 12);
+  tft.setCursor(panelX + 8, btnHeight / 2 - 8);
   tft.print("OTA");
 
-  // Pulsante WIFI (centro)
-  tft.fillRect(btnWidth + 1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_BLACK);
-  tft.setCursor(btnWidth + 12, btnY + 12);
+  // Pulsante WIFI (centro = BTN_CENTER)
+  tft.fillRect(panelX + 1, btnHeight + 1, BUTTON_PANEL_WIDTH - 2, btnHeight - 2, TFT_BLACK);
+  tft.setCursor(panelX + 2, btnHeight + btnHeight / 2 - 8);
   tft.print("WIFI");
 
-  // Pulsante SER (destra)
-  tft.fillRect(btnWidth * 2 + 1, btnY + 1, btnWidth - 2, BUTTON_HEIGHT - 2, TFT_BLACK);
-  tft.setCursor(btnWidth * 2 + 22, btnY + 12);
+  // Pulsante SER (in basso = BTN_DOWN)
+  tft.fillRect(panelX + 1, btnHeight * 2 + 1, BUTTON_PANEL_WIDTH - 2, btnHeight - 2, TFT_BLACK);
+  tft.setCursor(panelX + 8, btnHeight * 2 + btnHeight / 2 - 8);
   tft.print("SER");
 
   // Attendi 2 secondi controllando i pulsanti
   int bootMenuSelection = -1;  // -1 = nessuna selezione
   unsigned long bootMenuStart = millis();
   while (millis() - bootMenuStart < 2000) {
-    if (digitalRead(BTN_LEFT) == LOW) {
-      bootMenuSelection = 0;  // OTA
+    if (digitalRead(BTN_UP) == LOW) {
+      bootMenuSelection = 0;  // OTA (in alto)
       break;
     }
     if (digitalRead(BTN_CENTER) == LOW) {
-      bootMenuSelection = 1;  // WIFI
+      bootMenuSelection = 1;  // WIFI (centro)
       break;
     }
-    if (digitalRead(BTN_RIGHT) == LOW) {
-      bootMenuSelection = 2;  // SER (debug)
+    if (digitalRead(BTN_DOWN) == LOW) {
+      bootMenuSelection = 2;  // SER (in basso)
       break;
     }
     delay(50);
   }
 
   // Pulisci area pulsanti
-  tft.fillRect(0, btnY, 240, BUTTON_HEIGHT, TFT_BLACK);
+  tft.fillRect(panelX, 0, BUTTON_PANEL_WIDTH, 240, TFT_BLACK);
 
   // Stampante
   debugPrintln("[INIT] Stampante...");
@@ -2698,7 +2704,7 @@ void setup() {
     debugPrintln("[INIT] OTA selezionato - modalità OTA Update");
 
     // Prima connetti WiFi
-    tft.setCursor(10, 130);
+    tft.setCursor(20, 130);
     tft.setTextSize(1);
     tft.print("WiFi per OTA...");
 
@@ -2711,14 +2717,12 @@ void setup() {
       tft.fillScreen(TFT_BLACK);
       tft.setTextColor(TFT_RED, TFT_BLACK);
       tft.setTextSize(2);
-      tft.setCursor(20, 100);
-      tft.println("WiFi non");
-      tft.setCursor(20, 125);
-      tft.println("disponibile!");
+      tft.setCursor(80, 80);
+      tft.println("WiFi non disponibile!");
       tft.setTextSize(1);
-      tft.setCursor(20, 170);
+      tft.setCursor(100, 130);
       tft.println("OTA annullato.");
-      tft.setCursor(20, 190);
+      tft.setCursor(80, 150);
       tft.println("Avvio normale in 3s...");
       delay(3000);
     }
@@ -2726,7 +2730,7 @@ void setup() {
 
   // WiFi - tenta connessione a rotazione
   debugPrintln("[INIT] WiFi...");
-  tft.setCursor(10, 130);
+  tft.setCursor(20, 130);
   tft.setTextSize(1);
   tft.print("WiFi...");
 
@@ -2753,7 +2757,7 @@ void setup() {
 
   // Download CSV
   if (wifiOK) {
-    tft.setCursor(10, 145);
+    tft.setCursor(20, 150);
     tft.print("Download CSV...");
     debugPrintln("[INIT] Download CSV...");
 
@@ -2846,21 +2850,21 @@ void setup() {
 
 // ===== LOOP =====
 void loop() {
-  static bool lastLeft = HIGH;
+  static bool lastUp = HIGH;
   static bool lastCenter = HIGH;
-  static bool lastRight = HIGH;
+  static bool lastDown = HIGH;
   static unsigned long btnCenterPressed = 0;
   static bool centerLongPressHandled = false;
 
-  bool currLeft = digitalRead(BTN_LEFT);
+  bool currUp = digitalRead(BTN_UP);
   bool currCenter = digitalRead(BTN_CENTER);
-  bool currRight = digitalRead(BTN_RIGHT);
+  bool currDown = digitalRead(BTN_DOWN);
 
   bool needRedraw = false;
   unsigned long now = millis();
 
   // === Gestione screen sleep ===
-  bool anyButtonPressed = (currLeft == LOW || currCenter == LOW || currRight == LOW);
+  bool anyButtonPressed = (currUp == LOW || currCenter == LOW || currDown == LOW);
 
   if (anyButtonPressed) {
     lastButtonActivity = now;
@@ -2872,13 +2876,13 @@ void loop() {
       digitalWrite(TFT_BL, HIGH);
       debugPrintln("[SCREEN] Riattivato");
       // Aspetta che tutti i pulsanti vengano rilasciati prima di continuare
-      while (digitalRead(BTN_LEFT) == LOW || digitalRead(BTN_CENTER) == LOW || digitalRead(BTN_RIGHT) == LOW) {
+      while (digitalRead(BTN_UP) == LOW || digitalRead(BTN_CENTER) == LOW || digitalRead(BTN_DOWN) == LOW) {
         delay(10);
       }
       // Reset stati pulsanti per evitare azioni indesiderate
-      lastLeft = HIGH;
+      lastUp = HIGH;
       lastCenter = HIGH;
-      lastRight = HIGH;
+      lastDown = HIGH;
       delay(100);  // Delay più lungo per stabilizzazione
       return;
     }
@@ -2932,9 +2936,9 @@ void loop() {
     if (now - lastManualActivity >= MANUAL_TIMEOUT_MS) {
       debugPrintln("[MANUAL] Timeout inattività");
       exitManualInputMode();
-      lastLeft = currLeft;
+      lastUp = currUp;
       lastCenter = currCenter;
-      lastRight = currRight;
+      lastDown = currDown;
       return;
     }
 
@@ -2957,21 +2961,21 @@ void loop() {
       advanceManualCursor();
     }
 
-    // === SU (LEFT button): incrementa cifra ===
-    if (currLeft == LOW && lastLeft == HIGH) {
+    // === SU (UP button): incrementa cifra ===
+    if (currUp == LOW && lastUp == HIGH) {
       lastManualActivity = now;  // Reset timer
       changeManualDigit(1);
     }
 
-    // === GIU (RIGHT button): decrementa cifra ===
-    if (currRight == LOW && lastRight == HIGH) {
+    // === GIU (DOWN button): decrementa cifra ===
+    if (currDown == LOW && lastDown == HIGH) {
       lastManualActivity = now;  // Reset timer
       changeManualDigit(-1);
     }
 
-    lastLeft = currLeft;
+    lastUp = currUp;
     lastCenter = currCenter;
-    lastRight = currRight;
+    lastDown = currDown;
     delay(30);
     return;
   }
@@ -2989,16 +2993,16 @@ void loop() {
       // Long press: entra in modalità inserimento manuale
       centerLongPressHandled = true;
       enterManualInputMode();
-      lastLeft = currLeft;
+      lastUp = currUp;
       lastCenter = currCenter;
-      lastRight = currRight;
+      lastDown = currDown;
       return;
     }
   }
 
-  // === SU (LEFT button) ===
-  if (currLeft == LOW) {
-    if (lastLeft == HIGH) {
+  // === SU (UP button) ===
+  if (currUp == LOW) {
+    if (lastUp == HIGH) {
       // Appena premuto: muovi di 1
       if (selectedIndex > 0) {
         selectedIndex--;
@@ -3007,9 +3011,9 @@ void loop() {
         }
         needRedraw = true;
       }
-      btnLeftPressed = now;
+      btnUpPressed = now;
       lastPageSkip = now;
-    } else if (now - btnLeftPressed >= LONG_PRESS_MS && now - lastPageSkip >= LONG_PRESS_MS) {
+    } else if (now - btnUpPressed >= LONG_PRESS_MS && now - lastPageSkip >= LONG_PRESS_MS) {
       // Long press: muovi di 10
       int newIdx = selectedIndex - 10;
       if (newIdx < 0) newIdx = 0;
@@ -3022,9 +3026,9 @@ void loop() {
     }
   }
 
-  // === GIU (RIGHT button) ===
-  if (currRight == LOW) {
-    if (lastRight == HIGH) {
+  // === GIU (DOWN button) ===
+  if (currDown == LOW) {
+    if (lastDown == HIGH) {
       // Appena premuto: muovi di 1
       if (selectedIndex < numSchede - 1) {
         selectedIndex++;
@@ -3033,9 +3037,9 @@ void loop() {
         }
         needRedraw = true;
       }
-      btnRightPressed = now;
+      btnDownPressed = now;
       lastPageSkip = now;
-    } else if (now - btnRightPressed >= LONG_PRESS_MS && now - lastPageSkip >= LONG_PRESS_MS) {
+    } else if (now - btnDownPressed >= LONG_PRESS_MS && now - lastPageSkip >= LONG_PRESS_MS) {
       // Long press: muovi di 10
       int newIdx = selectedIndex + 10;
       if (newIdx >= numSchede) newIdx = numSchede - 1;
@@ -3068,9 +3072,9 @@ void loop() {
     drawList();
   }
 
-  lastLeft = currLeft;
+  lastUp = currUp;
   lastCenter = currCenter;
-  lastRight = currRight;
+  lastDown = currDown;
 
   delay(30);
 }

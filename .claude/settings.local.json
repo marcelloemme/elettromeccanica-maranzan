@@ -26,7 +26,17 @@
       "Bash(Stato\"\n\nCSS \\(app.css\\):\n- Riorganizzate larghezze colonne: 15% | 15% | 15% | 40% | 15%\n- Testo headers responsive con .text-desktop/.text-mobile\n- Stesse larghezze su desktop e mobile\n\nJS \\(riparazioni-archivio.js\\):\n- Aggiunta colonna td-data-com con data completamento\n- Se data completamento vuota: mostra \"-\"\n- Data ins: formato GG/MM/AAAA \\(desktop\\) o GG/MM \\(mobile\\)\n- Data com: formato GG/MM/AAAA \\(desktop\\) o GG/MM \\(mobile\\)\n- Stato: testo completo \\(desktop\\) o emoji 🔴🟢 \\(mobile\\)\n\nService Worker:\n- Bump v45 → v46\n- CSS v27 → v28\n- riparazioni-archivio.js v2 → v3\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git revert:*)",
       "WebFetch(domain:docs.google.com)",
-      "WebFetch(domain:doc-14-44-sheets.googleusercontent.com)"
+      "WebFetch(domain:doc-14-44-sheets.googleusercontent.com)",
+      "Bash(gh run list:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:circuitdigest.com)",
+      "Bash(~/.platformio/penv/bin/pio run:*)",
+      "Bash(grep:*)",
+      "Bash(git -C /Users/marcello/Documents/elettromeccanica-maranzan.com add hardware/t4-printer/src/main.cpp hardware/EM_Maranzan_printer.bin)",
+      "Bash(git -C /Users/marcello/Documents/elettromeccanica-maranzan.com push)",
+      "Bash(pio run:*)"
     ],
     "deny": [],
     "ask": []
