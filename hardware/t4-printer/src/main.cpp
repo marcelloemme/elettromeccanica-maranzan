@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.6.3"
+#define FIRMWARE_VERSION "1.6.4"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -107,7 +107,7 @@ int numSchede = 0;
 // UI state (landscape 320x240, pulsanti a destra)
 int selectedIndex = 0;
 int scrollOffset = 0;
-#define VISIBLE_ROWS 9
+#define VISIBLE_ROWS 10
 #define ROW_HEIGHT 21
 #define BUTTON_PANEL_WIDTH 50   // Larghezza pannello pulsanti a destra
 #define HEADER_HEIGHT 30        // Altezza header in alto
