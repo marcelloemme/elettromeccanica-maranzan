@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.6.2"
+#define FIRMWARE_VERSION "1.6.3"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -108,9 +108,10 @@ int numSchede = 0;
 int selectedIndex = 0;
 int scrollOffset = 0;
 #define VISIBLE_ROWS 9
-#define ROW_HEIGHT 22
+#define ROW_HEIGHT 21
 #define BUTTON_PANEL_WIDTH 50   // Larghezza pannello pulsanti a destra
 #define HEADER_HEIGHT 30        // Altezza header in alto
+#define SCROLLBAR_WIDTH 5       // Larghezza scrollbar a sinistra
 
 // Long press timing
 unsigned long btnUpPressed = 0;
@@ -2050,10 +2051,9 @@ void drawButtons() {
 
 void drawList() {
   // Area lista (landscape: sotto header, a sinistra dei pulsanti)
-  // Scrollbar a sinistra (5px), poi lista, poi pulsanti a destra
+  // Scrollbar a sinistra, poi lista, poi pulsanti a destra
   int listTop = HEADER_HEIGHT;
-  int scrollBarWidth = 5;
-  int listX = scrollBarWidth + 2;  // Dopo scrollbar + gap
+  int listX = SCROLLBAR_WIDTH + 2;  // Dopo scrollbar + gap
   int listWidth = 320 - BUTTON_PANEL_WIDTH - listX;
   int listHeight = 240 - HEADER_HEIGHT;
 
@@ -2108,10 +2108,10 @@ void drawList() {
     if (barHeight < 10) barHeight = 10;
     int scrollRange = listHeight - barHeight;
     int barY = listTop + (scrollOffset * scrollRange) / max(1, numSchede - VISIBLE_ROWS);
-    tft.fillRect(0, listTop, scrollBarWidth, listHeight, TFT_DARKGREY);
-    tft.fillRect(0, barY, scrollBarWidth, barHeight, TFT_WHITE);
+    tft.fillRect(0, listTop, SCROLLBAR_WIDTH, listHeight, TFT_DARKGREY);
+    tft.fillRect(0, barY, SCROLLBAR_WIDTH, barHeight, TFT_WHITE);
   } else {
-    tft.fillRect(0, listTop, scrollBarWidth, listHeight, TFT_DARKGREY);
+    tft.fillRect(0, listTop, SCROLLBAR_WIDTH, listHeight, TFT_DARKGREY);
   }
 }
 
@@ -2130,13 +2130,14 @@ void drawHeader() {
 }
 
 void showMessage(const char* msg, uint16_t color) {
-  // Mostra messaggio temporaneo in basso (landscape: a sinistra dei pulsanti)
+  // Mostra messaggio temporaneo in basso (dopo scrollbar, prima dei pulsanti)
+  int msgX = SCROLLBAR_WIDTH + 2;  // Dopo scrollbar + gap
   int msgY = 240 - 20;
-  int msgWidth = 320 - BUTTON_PANEL_WIDTH - 6;
-  tft.fillRect(0, msgY, msgWidth, 20, TFT_BLACK);
+  int msgWidth = 320 - BUTTON_PANEL_WIDTH - msgX;
+  tft.fillRect(msgX, msgY, msgWidth, 20, TFT_BLACK);
   tft.setTextColor(color, TFT_BLACK);
   tft.setTextSize(1);
-  tft.setCursor(5, msgY + 6);
+  tft.setCursor(msgX + 3, msgY + 6);
   tft.print(msg);
 }
 
