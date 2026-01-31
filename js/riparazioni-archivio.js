@@ -722,3 +722,16 @@ function aggiornaFiltroDate() {
   // Renderizza tabella con nuovo filtro
   renderTabella();
 }
+
+// Listener per refresh da dashboard iframe
+window.addEventListener('message', async (event) => {
+  // Accetta solo messaggi dal nostro dominio
+  if (event.origin !== window.location.origin) return;
+
+  if (event.data && event.data.type === 'REFRESH_ARCHIVIO') {
+    console.log('[Archivio] Ricevuto refresh da dashboard');
+    cacheManager.invalidate('riparazioni');
+    await caricaRiparazioni();
+    renderTabella();
+  }
+});

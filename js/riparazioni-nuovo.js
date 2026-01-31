@@ -374,6 +374,11 @@ async function inviaRiparazione(dati) {
       // Invalida cache clienti per aggiornare autocomplete
       cacheManager.invalidate('clienti');
 
+      // Notifica parent se siamo in iframe (dashboard)
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'RIPARAZIONE_CREATA', numero: result.numero }, '*');
+      }
+
       popupConferma.classList.add('hidden');
       popupSuccessoMsg.textContent = `Riparazione ${result.numero} creata con successo!`;
       popupSuccesso.classList.remove('hidden');
@@ -398,8 +403,27 @@ popupAnnulla.addEventListener('click', () => {
 
 // Popup OK (successo) - ricarica pagina per nuovo inserimento
 popupOk.addEventListener('click', () => {
-  window.location.reload();
+  if (window.parent !== window) {
+    // In iframe (dashboard): resetta form e ricarica numero
+    resetFormNuovo();
+    mostraProssimoNumero();
+    popupSuccesso.classList.add('hidden');
+  } else {
+    // Standalone: comportamento originale
+    window.location.reload();
+  }
 });
+
+// Reset form per nuovo inserimento (usato in dashboard iframe)
+function resetFormNuovo() {
+  form.reset();
+  dataConsegnaInput.value = new Date().toISOString().split('T')[0];
+  attrezziContainer.innerHTML = '';
+  attrezziCount = 0;
+  addAttrezzo();
+  popupConfermaBtn.disabled = false;
+  popupConfermaBtn.textContent = 'Conferma';
+}
 
 // Bottone annulla - torna all'archivio senza conferma
 btnAnnulla.addEventListener('click', () => {

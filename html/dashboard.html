@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Riparazioni - EM Maranzan</title>
+  <!-- No indexing for this page -->
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="googlebot" content="noindex, nofollow, noarchive">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #ffffff;
+      --fg: #222222;
+      --border: #dddddd;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --fg: #ffffff;
+        --border: #2a2b2d;
+      }
+    }
+
+    body {
+      font-family: Helvetica, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      overflow: hidden;
+    }
+
+    .dashboard-container {
+      display: flex;
+      height: 100vh;
+      width: 100%;
+    }
+
+    .dashboard-container iframe {
+      flex: 1;
+      border: none;
+      height: 100%;
+    }
+
+    .dashboard-divider {
+      width: 1px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    /* Warning per schermi piccoli */
+    .dashboard-warning {
+      display: none;
+      height: 100vh;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .dashboard-warning h1 {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .dashboard-warning p {
+      font-size: 16px;
+      opacity: 0.7;
+      max-width: 400px;
+    }
+
+    .dashboard-warning a {
+      color: var(--fg);
+      text-decoration: underline;
+    }
+
+    @media (max-width: 1023px) {
+      .dashboard-container {
+        display: none;
+      }
+      .dashboard-warning {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Warning per schermi piccoli -->
+  <div class="dashboard-warning">
+    <h1>Dashboard non disponibile</h1>
+    <p>La dashboard richiede uno schermo di almeno 1024px di larghezza.</p>
+    <p>
+      <a href="/html/riparazioni-archivio.html">Vai all'Archivio</a> |
+      <a href="/html/riparazioni-nuovo.html">Nuova Riparazione</a>
+    </p>
+  </div>
+
+  <!-- Dashboard con iframe -->
+  <div class="dashboard-container">
+    <iframe id="iframe-archivio" src="/html/riparazioni-archivio.html"></iframe>
+    <div class="dashboard-divider"></div>
+    <iframe id="iframe-nuovo" src="/html/riparazioni-nuovo.html"></iframe>
+  </div>
+
+  <script>
+    // Relay messaggi tra iframe
+    window.addEventListener('message', (event) => {
+      // Verifica che il messaggio arrivi dal nostro dominio
+      if (event.origin !== window.location.origin) return;
+
+      const { type, numero } = event.data || {};
+
+      if (type === 'RIPARAZIONE_CREATA') {
+        console.log('[Dashboard] Riparazione creata:', numero);
+        // Notifica iframe archivio di refreshare
+        const iframeArchivio = document.getElementById('iframe-archivio');
+        if (iframeArchivio && iframeArchivio.contentWindow) {
+          iframeArchivio.contentWindow.postMessage({ type: 'REFRESH_ARCHIVIO' }, '*');
+        }
+      }
+    });
+  </script>
+</body>
+</html>
