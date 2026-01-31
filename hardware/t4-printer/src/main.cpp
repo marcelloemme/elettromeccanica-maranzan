@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.6.6"
+#define FIRMWARE_VERSION "1.6.7"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -2068,8 +2068,8 @@ void drawList() {
     int idx = scrollOffset + i;
     Scheda& s = schede[idx];
 
-    // Altezza alternata 20/21px (media 20.5px)
-    int y = listTop + 4 + (i * 41) / 2;  // 41/2 = 20.5 in media
+    // Altezza alternata 20/21px (media 20.5px), +1px padding sopra prima riga
+    int y = listTop + 5 + (i * 41) / 2;  // 41/2 = 20.5 in media, +5 invece di +4 per prima riga
     int rowH = (i % 2 == 0) ? 20 : 21;
 
     // Riga selezionata = sfondo bianco, testo nero
