@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
   <title>Nuova Riparazione - EM Maranzan</title>
-  <link rel="stylesheet" href="/css/app.css?v=70" />
+  <link rel="stylesheet" href="/css/app.css?v=71" />
   <!-- PWA / Manifest & iOS meta -->
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
@@ -27,19 +27,17 @@
       <h1>Nuova Riparazione</h1>
     </header>
 
-    <form id="form-nuova" class="form-container">
+    <form id="form-nuova" class="form-container form-compact">
       <!-- Cliente e Data Consegna sulla stessa riga -->
       <div class="form-row-split">
         <!-- Cliente con autocomplete -->
         <div class="form-group form-group-left">
-          <label for="cliente">Cliente/Azienda</label>
-          <input type="text" id="cliente" autocomplete="off" required />
+          <input type="text" id="cliente" placeholder="Cliente/Azienda" autocomplete="off" required />
           <div id="autocomplete-list" class="autocomplete-list"></div>
         </div>
 
         <!-- Data Consegna -->
         <div class="form-group form-group-right">
-          <label for="data-consegna">Data consegna</label>
           <input type="date" id="data-consegna" required />
         </div>
       </div>
@@ -48,15 +46,13 @@
       <div class="form-row-equal">
         <!-- Indirizzo -->
         <div class="form-group form-group-equal">
-          <label for="indirizzo">Indirizzo</label>
-          <input type="text" id="indirizzo" autocomplete="off" />
+          <input type="text" id="indirizzo" placeholder="Indirizzo" autocomplete="off" />
           <div id="autocomplete-list-indirizzo" class="autocomplete-list"></div>
         </div>
 
         <!-- Telefono -->
         <div class="form-group form-group-equal">
-          <label for="telefono">Telefono</label>
-          <input type="tel" id="telefono" />
+          <input type="tel" id="telefono" placeholder="Telefono" />
         </div>
       </div>
 
@@ -70,7 +66,6 @@
 
       <!-- Attrezzi -->
       <div class="form-group">
-        <label>Attrezzi</label>
         <div id="attrezzi-container">
           <!-- Gli attrezzi verranno aggiunti qui dinamicamente -->
         </div>
@@ -109,7 +104,7 @@
   </div>
 
   <script src="/js/cache-manager.js"></script>
-  <script src="/js/riparazioni-nuovo.js?v=6"></script>
+  <script src="/js/riparazioni-nuovo.js?v=7"></script>
 
   <script>
     // Swipe da sinistra per tornare all'archivio riparazioni

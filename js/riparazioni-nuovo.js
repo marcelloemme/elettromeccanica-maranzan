@@ -271,10 +271,14 @@ function addAttrezzo() {
   const div = document.createElement('div');
   div.className = 'attrezzo-item';
   div.dataset.index = attrezziCount;
+  // Mostra X solo se non è il primo attrezzo
+  const removeBtn = attrezziCount > 1
+    ? `<button type="button" class="btn-remove" onclick="removeAttrezzo(${attrezziCount})">×</button>`
+    : '';
   div.innerHTML = `
     <div class="attrezzo-header">
       <span class="attrezzo-label">Attrezzo ${attrezziCount}</span>
-      <button type="button" class="btn-remove" onclick="removeAttrezzo(${attrezziCount})">×</button>
+      ${removeBtn}
     </div>
     <div class="attrezzo-row-top">
       <input type="text" placeholder="Marca/Modello" data-field="marca" required />

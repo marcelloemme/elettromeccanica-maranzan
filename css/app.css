@@ -848,6 +848,21 @@ body.touch-app {
   border-color: var(--fg);
 }
 
+/* Form compatto (riparazioni-nuovo) - input più piccoli come in archivio */
+.form-compact .form-group input,
+.form-compact .form-group textarea,
+.form-compact .form-group select {
+  padding: 0.5rem 0.75rem;
+}
+
+.form-compact .form-group {
+  gap: 0.25rem;
+}
+
+.form-compact .attrezzo-item input {
+  padding: 0.5rem 0.75rem;
+}
+
 .checkbox-label {
   display: flex;
   align-items: center;
