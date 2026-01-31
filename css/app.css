@@ -849,6 +849,11 @@ body.touch-app {
 }
 
 /* Form compatto (riparazioni-nuovo) - input più piccoli come in archivio */
+.form-compact {
+  gap: 0.5rem;
+  padding-bottom: calc(70px + 1rem + env(safe-area-inset-bottom, 0));
+}
+
 .form-compact .form-group input,
 .form-compact .form-group textarea,
 .form-compact .form-group select {
@@ -861,6 +866,22 @@ body.touch-app {
 
 .form-compact .attrezzo-item input {
   padding: 0.5rem 0.75rem;
+}
+
+/* Pulsanti sticky in basso per form compatto */
+.form-compact .form-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg);
+  padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom, 0));
+  margin-top: 0;
+  z-index: 50;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  border-top: 1px solid var(--border);
 }
 
 .checkbox-label {
