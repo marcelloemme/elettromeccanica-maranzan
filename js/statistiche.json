@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-01-31T16:22:48.088Z",
+  "generatedAt": "2026-01-31T18:55:46.444Z",
   "recapAttuale": {
     "totaleInCorso": 103,
     "oltre90gg": null,
@@ -26,11 +26,11 @@
     "testoNotifica": "Al momento hai 103 riparazioni attive. Le tre più vecchie sono:\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025;\n- 25/0017 - BOLZAN del 05/11/2025;\n- 25/0020 - SORIN del 06/11/2025."
   },
   "recapSettimanale": {
-    "settimana": "Settimana scorsa (19.01-25.01)",
-    "inserite": 26,
-    "completate": 23,
-    "percInserite": 52.4,
-    "percCompletate": 17.8,
+    "settimana": "Questa settimana (26.01-01.02)",
+    "inserite": 24,
+    "completate": 19,
+    "percInserite": 40.7,
+    "percCompletate": -2.7,
     "mediaInserite": "17.1",
     "mediaCompletate": "19.5"
   },
