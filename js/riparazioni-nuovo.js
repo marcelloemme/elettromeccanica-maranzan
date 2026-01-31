@@ -429,3 +429,8 @@ function resetFormNuovo() {
 btnAnnulla.addEventListener('click', () => {
   window.location.href = '/html/riparazioni-archivio.html';
 });
+
+// Se siamo in iframe (dashboard), nascondi pulsante annulla
+if (window.parent !== window) {
+  btnAnnulla.style.display = 'none';
+}

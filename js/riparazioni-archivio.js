@@ -735,3 +735,11 @@ window.addEventListener('message', async (event) => {
     renderTabella();
   }
 });
+
+// Se siamo in iframe (dashboard), nascondi elementi di navigazione
+if (window.parent !== window) {
+  const burgerMenu = document.getElementById('burger-menu');
+  const btnNuovo = document.getElementById('btn-nuovo');
+  if (burgerMenu) burgerMenu.style.display = 'none';
+  if (btnNuovo) btnNuovo.style.display = 'none';
+}
