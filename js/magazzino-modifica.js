@@ -1015,20 +1015,17 @@
   }
 
   function updateHelpDisplay() {
-    const header = document.querySelector('.mag-header');
     if (helpVisible) {
       helpOverlay.classList.add('visible');
       helpContainer.classList.add('visible');
       helpLines.classList.add('visible');
       btnHelp.classList.add('help-active');
-      header.classList.add('help-mode');
       drawHelpLines();
     } else {
       helpOverlay.classList.remove('visible');
       helpContainer.classList.remove('visible');
       helpLines.classList.remove('visible');
       btnHelp.classList.remove('help-active');
-      header.classList.remove('help-mode');
     }
   }
 

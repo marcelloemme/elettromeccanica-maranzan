@@ -601,9 +601,10 @@
       border-color: #ffc107;
       color: #333;
     }
-    /* La toolbar deve stare sopra l'overlay quando help è attivo */
-    .mag-header.help-mode {
+    /* Solo il pulsante help sopra l'overlay */
+    #btn-help.help-active {
       z-index: 510;
+      position: relative;
     }
 
   </style>
@@ -771,6 +772,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="/js/cache-manager.js?v=24"></script>
-  <script src="/js/magazzino-modifica.js?v=10"></script>
+  <script src="/js/magazzino-modifica.js?v=11"></script>
 </body>
 </html>
