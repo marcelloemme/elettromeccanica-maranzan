@@ -25,20 +25,23 @@
 
 <footer class="footer">
   <div class="contenitore">
-    <p>© 1980–2025</p>
+    <p>© 1980–<span id="anno-corrente"></span></p>
   </div>
 </footer>
 
   <script>
+  // Anno corrente dinamico nel copyright
+  document.getElementById('anno-corrente').textContent = new Date().getFullYear();
+
   function copiaPIVA() {
-  navigator.clipboard.writeText("01328390933").then(() => {
-    const conferma = document.getElementById("conferma-piva");
-    conferma.style.display = "inline"; // ⬅️ Usa "inline" invece di "block"
-    setTimeout(() => {
-      conferma.style.display = "none";
-    }, 2000);
-  });
-}
+    navigator.clipboard.writeText("01328390933").then(() => {
+      const conferma = document.getElementById("conferma-piva");
+      conferma.style.display = "inline";
+      setTimeout(() => {
+        conferma.style.display = "none";
+      }, 2000);
+    });
+  }
 </script>
 </body>
 </html> 
