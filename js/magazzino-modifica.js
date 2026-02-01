@@ -1302,33 +1302,20 @@
     }
 
     const totalShelves = shelfDataList.length;
-    const totalStacks = Math.ceil(totalShelves / labelsPerStack);
 
-    // Funzione per calcolare la posizione nel PDF dato l'indice alfabetico
-    // Logica impilamento: per permettere taglio ordinato con taglierina
-    // Scaffale N va distribuito tra i fogli del suo stack
-    function calculatePdfPosition(alphabeticalIndex) {
-      const stackIndex = Math.floor(alphabeticalIndex / labelsPerStack);
-      const posInStack = alphabeticalIndex % labelsPerStack;
+    // Calcola il numero di pagine necessarie per l'impilamento
+    // Se ho N scaffali, quante pagine servono per distribuirli in stack da 5?
+    // Ogni stack ha 5 pagine con 9 slot ciascuna = 45 slot
+    // Ma se ho meno di 45 scaffali, distribuisco comunque su min(5, ceil(N/9)) pagine
+    const minPagesNeeded = Math.ceil(totalShelves / labelsPerPage);
+    const pagesInFirstStack = Math.min(pagesPerStack, minPagesNeeded);
 
-      // Dentro lo stack: distribuisco per colonne poi righe
-      // posInStack 0-4 → colonna 0 riga 0 dei fogli 0-4
-      // posInStack 5-9 → colonna 1 riga 0 dei fogli 0-4
-      // posInStack 10-14 → colonna 2 riga 0 dei fogli 0-4
-      // posInStack 15-19 → colonna 0 riga 1 dei fogli 0-4
-      // ...
-      const slotInStack = Math.floor(posInStack / pagesPerStack); // 0-8 (quale slot nella griglia 3x3)
-      const pageInStack = posInStack % pagesPerStack; // 0-4 (quale foglio nello stack)
+    // Per stack successivi (se >45 scaffali), servono sempre 5 pagine per stack
+    const fullStacks = Math.floor(totalShelves / labelsPerStack);
+    const remainingShelves = totalShelves % labelsPerStack;
+    const pagesForRemaining = remainingShelves > 0 ? Math.min(pagesPerStack, Math.ceil(remainingShelves / labelsPerPage)) : 0;
 
-      const pageIndex = stackIndex * pagesPerStack + pageInStack;
-      const row = Math.floor(slotInStack / cols);
-      const col = slotInStack % cols;
-
-      return { pageIndex, row, col };
-    }
-
-    // Calcola il numero totale di pagine necessarie
-    const totalPages = Math.ceil(totalShelves / labelsPerPage);
+    const totalPages = fullStacks * pagesPerStack + pagesForRemaining;
 
     // Crea array di pagine, ogni pagina è un array di 9 slot (alcuni possono essere null)
     const pages = [];
@@ -1336,10 +1323,27 @@
       pages.push(new Array(labelsPerPage).fill(null));
     }
 
+    // Funzione per calcolare quante pagine ha lo stack corrente
+    function getPagesInStack(stackIdx) {
+      if (stackIdx < fullStacks) return pagesPerStack;
+      return pagesForRemaining;
+    }
+
     // Posiziona ogni scaffale nella sua posizione calcolata
     for (let i = 0; i < totalShelves; i++) {
-      const { pageIndex, row, col } = calculatePdfPosition(i);
+      const stackIndex = Math.floor(i / labelsPerStack);
+      const posInStack = i % labelsPerStack;
+      const pagesThisStack = getPagesInStack(stackIndex);
+
+      // Distribuisco: prima riempio slot 0 di tutte le pagine, poi slot 1, ecc.
+      const slotInStack = Math.floor(posInStack / pagesThisStack);
+      const pageInStack = posInStack % pagesThisStack;
+
+      const pageIndex = stackIndex * pagesPerStack + pageInStack;
+      const row = Math.floor(slotInStack / cols);
+      const col = slotInStack % cols;
       const slotIndex = row * cols + col;
+
       if (pages[pageIndex]) {
         pages[pageIndex][slotIndex] = shelfDataList[i];
       }
