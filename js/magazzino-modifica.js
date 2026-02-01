@@ -15,8 +15,12 @@
   const btnDelete = document.getElementById('btn-delete');
   const btnMenu = document.getElementById('btn-menu');
   const btnPrint = document.getElementById('btn-print');
+  const btnHelp = document.getElementById('btn-help');
   const app = document.getElementById('app');
   const toast = document.getElementById('toast');
+  const helpOverlay = document.getElementById('help-overlay');
+  const helpContainer = document.getElementById('help-container');
+  const helpLines = document.getElementById('help-lines');
 
   // Popups
   const popupSave = document.getElementById('popup-save');
@@ -44,6 +48,7 @@
   let hasPrintedModified = false;   // Traccia se utente ha stampato dopo modifiche
   let searchResults = [];
   let currentSearchIndex = 0;
+  let helpVisible = true; // Default attivo all'apertura
 
   // ---------- Utils ----------
 
@@ -1002,6 +1007,69 @@
     }
   }
 
+  // ---------- Help System ----------
+
+  function toggleHelp() {
+    helpVisible = !helpVisible;
+    updateHelpDisplay();
+  }
+
+  function updateHelpDisplay() {
+    if (helpVisible) {
+      helpOverlay.classList.add('visible');
+      helpContainer.classList.add('visible');
+      helpLines.classList.add('visible');
+      btnHelp.classList.add('help-active');
+      drawHelpLines();
+    } else {
+      helpOverlay.classList.remove('visible');
+      helpContainer.classList.remove('visible');
+      helpLines.classList.remove('visible');
+      btnHelp.classList.remove('help-active');
+    }
+  }
+
+  function drawHelpLines() {
+    // Pulisci linee esistenti
+    helpLines.innerHTML = '';
+
+    const boxes = helpContainer.querySelectorAll('.help-box');
+
+    boxes.forEach(box => {
+      const targetId = box.dataset.for;
+      const targetBtn = document.getElementById(targetId);
+
+      if (!targetBtn) return;
+
+      // Coordinate del pulsante (centro-basso)
+      const btnRect = targetBtn.getBoundingClientRect();
+      const btnX = btnRect.left + btnRect.width / 2;
+      const btnY = btnRect.bottom;
+
+      // Coordinate della box (centro-destra)
+      const boxRect = box.getBoundingClientRect();
+      const boxX = boxRect.right;
+      const boxY = boxRect.top + boxRect.height / 2;
+
+      // Disegna linea a gomito: dal pulsante scende, poi va a sinistra verso la box
+      // Punto intermedio: stessa X del pulsante, stessa Y della box
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const d = `M ${btnX} ${btnY} L ${btnX} ${boxY} L ${boxX} ${boxY}`;
+      path.setAttribute('d', d);
+      path.setAttribute('class', 'help-line');
+
+      // Aggiungi freccia alla fine
+      const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      const arrowSize = 6;
+      const arrowPoints = `${boxX + 2},${boxY} ${boxX + arrowSize + 2},${boxY - arrowSize / 2} ${boxX + arrowSize + 2},${boxY + arrowSize / 2}`;
+      arrow.setAttribute('points', arrowPoints);
+      arrow.setAttribute('fill', '#fff');
+
+      helpLines.appendChild(path);
+      helpLines.appendChild(arrow);
+    });
+  }
+
   // ---------- Save & Cancel ----------
 
   function showSavePopup() {
@@ -1615,6 +1683,15 @@
 
   // ---------- Event Listeners ----------
 
+  btnHelp.addEventListener('click', toggleHelp);
+
+  // Ridisegna linee se la finestra viene ridimensionata
+  window.addEventListener('resize', () => {
+    if (helpVisible) {
+      drawHelpLines();
+    }
+  });
+
   btnEdit.addEventListener('click', () => setMode('edit'));
   btnMove.addEventListener('click', () => setMode('move'));
   btnDelete.addEventListener('click', () => setMode('delete'));
@@ -1747,6 +1824,9 @@
       renderShelves();
       loadingOverlay.classList.add('hidden');
 
+      // Mostra help dopo che la pagina è caricata
+      setTimeout(() => updateHelpDisplay(), 100);
+
       // Background refresh
       loadFromAPI().then(() => {
         renderShelves();
@@ -1758,5 +1838,8 @@
     await loadFromAPI();
     renderShelves();
     loadingOverlay.classList.add('hidden');
+
+    // Mostra help dopo che la pagina è caricata
+    setTimeout(() => updateHelpDisplay(), 100);
   })();
 })();
