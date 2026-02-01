@@ -1277,18 +1277,17 @@
     // A4: 210 x 297 mm
     // Grid: 3 columns x 3 rows = 9 labels per page
     // Each label: 70mm x 99mm
-    // Padding: 9mm top/left/right, but 4mm bottom for last row (scaffali lunghi potrebbero sforare)
-
     const labelWidth = 70;
     const labelHeight = 99;
     const paddingNormal = 9;
-    const paddingBottomReduced = 4; // Per ultima riga
+    const paddingBottomReduced = 4;
     const usableWidth = 52; // 70 - 9 - 9
     const cols = 3;
     const rows = 3;
     const labelsPerPage = cols * rows;
+    const pagesPerStack = 5; // Fogli tagliabili insieme con taglierina
+    const labelsPerStack = labelsPerPage * pagesPerStack; // 45
 
-    // Cross mark size (75% of original 4mm)
     const crossSize = 3;
 
     // Collect shelf data and sort alphabetically
@@ -1302,85 +1301,104 @@
       return;
     }
 
-    // Separate long shelves (>7 items) from normal ones
-    const longShelves = shelfDataList.filter(s => s.items.length > 7);
-    const normalShelves = shelfDataList.filter(s => s.items.length <= 7);
-
-    // Reorder: long shelves go to positions 0-5 (first two rows), normal shelves fill the rest
-    const orderedShelves = [];
-    let longIdx = 0;
-    let normalIdx = 0;
-
-    // For each page, fill positions 0-5 with long shelves first, then normal
-    // Position 6-8 (last row) only gets normal shelves
     const totalShelves = shelfDataList.length;
+    const totalStacks = Math.ceil(totalShelves / labelsPerStack);
+
+    // Funzione per calcolare la posizione nel PDF dato l'indice alfabetico
+    // Logica impilamento: per permettere taglio ordinato con taglierina
+    // Scaffale N va distribuito tra i fogli del suo stack
+    function calculatePdfPosition(alphabeticalIndex) {
+      const stackIndex = Math.floor(alphabeticalIndex / labelsPerStack);
+      const posInStack = alphabeticalIndex % labelsPerStack;
+
+      // Dentro lo stack: distribuisco per colonne poi righe
+      // posInStack 0-4 → colonna 0 riga 0 dei fogli 0-4
+      // posInStack 5-9 → colonna 1 riga 0 dei fogli 0-4
+      // posInStack 10-14 → colonna 2 riga 0 dei fogli 0-4
+      // posInStack 15-19 → colonna 0 riga 1 dei fogli 0-4
+      // ...
+      const slotInStack = Math.floor(posInStack / pagesPerStack); // 0-8 (quale slot nella griglia 3x3)
+      const pageInStack = posInStack % pagesPerStack; // 0-4 (quale foglio nello stack)
+
+      const pageIndex = stackIndex * pagesPerStack + pageInStack;
+      const row = Math.floor(slotInStack / cols);
+      const col = slotInStack % cols;
+
+      return { pageIndex, row, col };
+    }
+
+    // Calcola il numero totale di pagine necessarie
     const totalPages = Math.ceil(totalShelves / labelsPerPage);
 
-    for (let page = 0; page < totalPages; page++) {
-      const pageStart = page * labelsPerPage;
-      const pageEnd = Math.min(pageStart + labelsPerPage, totalShelves);
-      const shelvesThisPage = pageEnd - pageStart;
+    // Crea array di pagine, ogni pagina è un array di 9 slot (alcuni possono essere null)
+    const pages = [];
+    for (let i = 0; i < totalPages; i++) {
+      pages.push(new Array(labelsPerPage).fill(null));
+    }
 
-      // Positions 0-5: prefer long shelves
-      for (let pos = 0; pos < Math.min(6, shelvesThisPage); pos++) {
-        if (longIdx < longShelves.length) {
-          orderedShelves.push(longShelves[longIdx++]);
-        } else if (normalIdx < normalShelves.length) {
-          orderedShelves.push(normalShelves[normalIdx++]);
-        }
+    // Posiziona ogni scaffale nella sua posizione calcolata
+    for (let i = 0; i < totalShelves; i++) {
+      const { pageIndex, row, col } = calculatePdfPosition(i);
+      const slotIndex = row * cols + col;
+      if (pages[pageIndex]) {
+        pages[pageIndex][slotIndex] = shelfDataList[i];
       }
+    }
 
-      // Positions 6-8: only normal shelves
-      for (let pos = 6; pos < shelvesThisPage; pos++) {
-        if (normalIdx < normalShelves.length) {
-          orderedShelves.push(normalShelves[normalIdx++]);
-        } else if (longIdx < longShelves.length) {
-          // Fallback: if no normal shelves left, use long (shouldn't happen often)
-          orderedShelves.push(longShelves[longIdx++]);
+    // Per ogni pagina, gestisci scaffali lunghi (>7 pezzi) in posizione 6-7-8
+    // Se un lungo è in riga 3 (pos 6-8), scambialo con uno in riga 1-2 (pos 0-5)
+    for (const page of pages) {
+      for (let pos = 6; pos < 9; pos++) {
+        const shelf = page[pos];
+        if (shelf && shelf.items.length > 7) {
+          // Cerca uno slot in pos 0-5 con scaffale corto (o vuoto)
+          for (let swapPos = 0; swapPos < 6; swapPos++) {
+            const swapShelf = page[swapPos];
+            if (!swapShelf || swapShelf.items.length <= 7) {
+              // Scambia
+              page[swapPos] = shelf;
+              page[pos] = swapShelf;
+              break;
+            }
+          }
         }
       }
     }
 
-    // Generate pages
-    const finalTotalPages = Math.ceil(orderedShelves.length / labelsPerPage);
-
-    for (let page = 0; page < finalTotalPages; page++) {
-      if (page > 0) {
+    // Genera le pagine del PDF
+    for (let pageIdx = 0; pageIdx < pages.length; pageIdx++) {
+      if (pageIdx > 0) {
         doc.addPage();
       }
 
-      // Draw cross marks at internal vertices (4 marks)
+      // Crocette di taglio
       doc.setDrawColor(0);
       doc.setLineWidth(0.2);
-
       const crossPositions = [
         { x: labelWidth, y: labelHeight },
         { x: labelWidth * 2, y: labelHeight },
         { x: labelWidth, y: labelHeight * 2 },
         { x: labelWidth * 2, y: labelHeight * 2 }
       ];
-
       for (const pos of crossPositions) {
         doc.line(pos.x - crossSize, pos.y, pos.x + crossSize, pos.y);
         doc.line(pos.x, pos.y - crossSize, pos.x, pos.y + crossSize);
       }
 
-      // Draw labels for this page
-      const startIdx = page * labelsPerPage;
-      const endIdx = Math.min(startIdx + labelsPerPage, orderedShelves.length);
+      // Disegna cartellini
+      const page = pages[pageIdx];
+      for (let slotIdx = 0; slotIdx < labelsPerPage; slotIdx++) {
+        const shelfData = page[slotIdx];
+        if (!shelfData) continue;
 
-      for (let i = startIdx; i < endIdx; i++) {
-        const shelfData = orderedShelves[i];
-        const localIdx = i - startIdx;
-        const col = localIdx % cols;
-        const row = Math.floor(localIdx / cols);
+        const col = slotIdx % cols;
+        const row = Math.floor(slotIdx / cols);
 
         const labelX = col * labelWidth;
         const labelY = row * labelHeight;
         const contentX = labelX + paddingNormal;
         const contentY = labelY + paddingNormal;
 
-        // Scaffali con >7 pezzi hanno padding inferiore ridotto per più spazio verticale
         const isLongShelf = shelfData.items.length > 7;
         const bottomPadding = isLongShelf ? paddingBottomReduced : paddingNormal;
         const usableHeight = labelHeight - paddingNormal - bottomPadding;
@@ -1389,30 +1407,33 @@
       }
     }
 
-    // Aggiungi rapportino finale se ci sono modifiche
+    // Rapportino modifiche
     if (hasChanges()) {
-      // Calcola quanti slot sono rimasti nell'ultima pagina
-      const totalLabels = orderedShelves.length;
-      const usedSlotsOnLastPage = totalLabels % labelsPerPage;
-      const freeSlotsOnLastPage = usedSlotsOnLastPage === 0 ? 0 : labelsPerPage - usedSlotsOnLastPage;
+      const isLargePrint = totalShelves > 15;
 
-      // Il rapportino occupa 3 slot (una riga intera, 210x99mm)
-      // Se ci sono almeno 3 slot liberi, usa quelli; altrimenti nuova pagina
-      let reportY;
-      if (freeSlotsOnLastPage >= 3) {
-        // Calcola la riga dove mettere il rapportino (slot successivo, inizio riga)
-        const nextRow = Math.ceil(usedSlotsOnLastPage / cols);
-        reportY = nextRow * labelHeight;
-      } else {
-        // Nuova pagina
+      if (isLargePrint) {
+        // >15 scaffali: rapportino su foglio A4 separato, full page
         doc.addPage();
-        reportY = 0;
-      }
+        drawReportLabelFullPage(doc, now, timestamp);
+      } else {
+        // ≤15 scaffali: rapportino negli slot liberi dell'ultimo foglio
+        const lastPage = pages[pages.length - 1];
+        const usedSlots = lastPage.filter(s => s !== null).length;
+        const freeSlots = labelsPerPage - usedSlots;
 
-      drawReportLabel(doc, now, timestamp, reportY);
+        let reportY;
+        if (freeSlots >= 3) {
+          const nextRow = Math.ceil(usedSlots / cols);
+          reportY = nextRow * labelHeight;
+        } else {
+          doc.addPage();
+          reportY = 0;
+        }
+        drawReportLabel(doc, now, timestamp, reportY);
+      }
     }
 
-    // Download PDF con nome AAAAMMGG_HHMM_cartellini-scaffali.pdf
+    // Download PDF
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
@@ -1422,11 +1443,10 @@
 
     doc.save(filename);
 
-    // Segna che l'utente ha stampato
     hasPrintedModified = true;
     updatePrintButton();
 
-    showToast(`PDF generato con ${orderedShelves.length} cartellini`, 'success');
+    showToast(`PDF generato con ${totalShelves} cartellini`, 'success');
   }
 
   function drawReportLabel(doc, now, timestamp, startY) {
@@ -1575,6 +1595,145 @@
     doc.setFontSize(5);
     doc.setTextColor(128, 128, 128);
     doc.text(timestamp, x + usableWidth, startY + reportHeight - padding, { align: 'right' });
+  }
+
+  function drawReportLabelFullPage(doc, now, timestamp) {
+    // Rapportino full page A4 (297x210mm) con padding 9mm
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const padding = 9;
+    const usableWidth = pageWidth - padding * 2; // 192mm
+    const usableHeight = pageHeight - padding * 2; // 279mm
+
+    const x = padding;
+    const y = padding;
+
+    // Header con titolo e data/ora sulla stessa barra
+    const headerHeight = 10;
+    doc.setFillColor(85, 85, 85);
+    doc.rect(x, y, usableWidth, headerHeight, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('RAPPORTINO MODIFICHE MAGAZZINO', x + 4, y + 7);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    const dateStr = now.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    doc.text(`${dateStr} - ${timeStr}`, x + usableWidth - 4, y + 7, { align: 'right' });
+
+    const lineHeight = 5;
+    const sectionGap = 8;
+
+    let currentY = y + headerHeight + sectionGap;
+
+    // === SEZIONE MODIFICATI ===
+    if (changes.modified.length > 0) {
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.text(`MODIFICATI (${changes.modified.length}):`, x, currentY);
+      currentY += lineHeight + 2;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+
+      for (const mod of changes.modified) {
+        const original = DATA.find(d => d.codice === mod.codice);
+        const oldCodice = mod.codice;
+        const oldDesc = original ? original.descrizione : '';
+        const newCodice = mod.newCodice || oldCodice;
+        const newDesc = mod.newDescrizione !== undefined ? mod.newDescrizione : oldDesc;
+
+        let text = `${oldCodice}`;
+        if (oldDesc) text += ` - ${oldDesc}`;
+        text += '  →  ';
+        text += `${newCodice}`;
+        if (newDesc) text += ` - ${newDesc}`;
+
+        let displayText = text;
+        while (doc.getTextWidth('• ' + displayText) > usableWidth && displayText.length > 20) {
+          displayText = displayText.slice(0, -1);
+        }
+        if (displayText !== text) displayText += '...';
+
+        doc.text('• ' + displayText, x, currentY);
+        currentY += lineHeight;
+
+        if (currentY > y + usableHeight - 80) {
+          doc.text('• ... e altri', x, currentY);
+          currentY += lineHeight;
+          break;
+        }
+      }
+      currentY += sectionGap;
+    }
+
+    // === SEZIONE TRIPARTITA: ELIMINATI | AGGIUNTI | SPOSTATI ===
+    const columnWidth = usableWidth / 3;
+    const columnsStartY = currentY;
+    const maxColumnHeight = y + usableHeight - columnsStartY - 10;
+
+    const drawColumnFull = (title, items, formatFn, colIndex) => {
+      const colX = x + colIndex * columnWidth;
+      let colY = columnsStartY;
+      const maxColWidth = columnWidth - 6;
+
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.text(`${title} (${items.length}):`, colX, colY);
+      colY += lineHeight + 2;
+
+      if (items.length === 0) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.text('• nessuno', colX, colY);
+        return;
+      }
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+
+      for (const item of items) {
+        const text = formatFn(item);
+
+        let displayText = text;
+        while (doc.getTextWidth('• ' + displayText) > maxColWidth && displayText.length > 10) {
+          displayText = displayText.slice(0, -1);
+        }
+        if (displayText !== text) displayText += '...';
+
+        doc.text('• ' + displayText, colX, colY);
+        colY += lineHeight;
+
+        if (colY > columnsStartY + maxColumnHeight) {
+          doc.text('• ...', colX, colY);
+          break;
+        }
+      }
+    };
+
+    drawColumnFull('ELIMINATI', changes.deleted, item =>
+      `${item.codice} - ${item.descrizione} (${item.scaffale})`, 0
+    );
+
+    drawColumnFull('AGGIUNTI', changes.added, item =>
+      `${item.codice} - ${item.descrizione} (${item.scaffale})`, 1
+    );
+
+    const validMoves = pendingMoves.filter(m => m.toScaffale);
+    drawColumnFull('SPOSTATI', validMoves, move =>
+      `${move.codice} - ${move.descrizione} - ${move.fromScaffale} → ${move.toScaffale}`, 2
+    );
+
+    // Footer con timestamp
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6);
+    doc.setTextColor(128, 128, 128);
+    doc.text(timestamp, x + usableWidth, y + usableHeight, { align: 'right' });
   }
 
   function drawLabel(doc, shelfData, x, y, width, height, timestamp) {
