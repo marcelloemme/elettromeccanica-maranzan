@@ -868,6 +868,11 @@ body.touch-app {
   padding: 0.5rem 0.75rem;
 }
 
+/* Spazio extra prima della sezione attrezzi */
+.form-compact .form-group-attrezzi {
+  margin-top: 0.5rem;
+}
+
 /* Pulsanti sticky in basso per form compatto */
 .form-compact .form-actions {
   position: fixed;
@@ -881,7 +886,6 @@ body.touch-app {
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
-  border-top: 1px solid var(--border);
 }
 
 .checkbox-label {
@@ -1051,33 +1055,47 @@ button:active {
   display: inline;
 }
 
-/* Fixed form-actions in detail page - sopra ai nav-buttons */
-.detail-container .form-actions {
+/* Sticky actions container per detail page */
+.sticky-actions {
   position: fixed;
-  bottom: calc(52px + 2rem + 0.5rem); /* Altezza nav-buttons + padding + gap */
+  bottom: 0;
   left: 0;
   right: 0;
   background: var(--bg);
-  padding: 0.5rem 1rem;
-  margin-top: 0;
+  padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom, 0));
   z-index: 50;
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sticky-actions .form-actions {
+  margin-top: 0;
+}
+
+/* Frecce navigazione sopra i pulsanti */
+.nav-arrows {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-arrows .btn-arrow {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  font-size: 18px;
 }
 
 @media (max-width: 768px) {
-  .detail-container .form-actions {
-    bottom: calc(52px + 0.5rem + 0.5rem + env(safe-area-inset-bottom, 0));
-  }
-
   /* Testo abbreviato pulsanti su mobile */
-  #btn-completa .btn-text-full,
+  #btn-archivio .btn-text-full,
   #btn-modifica .btn-text-full {
     display: none;
   }
 
-  #btn-completa .btn-text-short,
+  #btn-archivio .btn-text-short,
   #btn-modifica .btn-text-short {
     display: inline;
   }
@@ -1632,49 +1650,9 @@ button:active {
   opacity: 0.8;
 }
 
-/* Navigation buttons - fixed in fondo sotto al pulsante Modifica */
-.nav-buttons {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--bg);
-  padding: 0.5rem 1rem 2rem 1rem;
-  z-index: 49;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-@media (max-width: 768px) {
-  .nav-buttons {
-    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0));
-  }
-}
-
 /* Aggiungi padding al contenuto per non essere coperto dai pulsanti fixed */
 .detail-container {
-  padding-bottom: calc(52px + 52px + 2rem + 1rem + 1rem); /* 2 pulsanti + padding + gap */
-}
-
-@media (max-width: 768px) {
-  .detail-container {
-    padding-bottom: calc(52px + 52px + 0.5rem + 0.5rem + 0.5rem + env(safe-area-inset-bottom, 0));
-  }
-}
-
-.nav-btn {
-  padding: 0.5rem 0.75rem;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  height: 44px;
+  padding-bottom: calc(120px + env(safe-area-inset-bottom, 0));
 }
 
 /* ===== STATISTICHE ===== */

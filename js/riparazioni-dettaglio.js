@@ -12,7 +12,6 @@ const detailAttrezzi = document.getElementById('detail-attrezzi');
 const detailStato = document.getElementById('detail-stato');
 const detailStatoLabel = document.getElementById('detail-stato-label');
 
-const btnCompleta = document.getElementById('btn-completa');
 const btnModifica = document.getElementById('btn-modifica');
 const btnPrev = document.getElementById('btn-prev');
 const btnNext = document.getElementById('btn-next');
@@ -193,8 +192,6 @@ function renderDettaglio() {
     // Se completato con data, mostra "Data com." al posto di Stato
     detailStatoLabel.textContent = 'Data com.';
     detailStato.textContent = formatData(dataCompletamento);
-    // Nascondi pulsante "Completa scheda" se già completato
-    btnCompleta.style.display = 'none';
   } else {
     // Altrimenti mostra badge stato
     detailStatoLabel.textContent = 'Stato';
@@ -202,8 +199,6 @@ function renderDettaglio() {
       '<span class="badge completato-si">Completato</span>' :
       '<span class="badge completato-no">In corso</span>';
     detailStato.innerHTML = stato;
-    // Mostra pulsante "Completa scheda" se non completato
-    btnCompleta.style.display = r.Completato ? 'none' : 'block';
   }
 }
 
@@ -231,7 +226,6 @@ function aggiornaNavigazione() {
 
 // Setup event listeners
 function setupEventListeners() {
-  btnCompleta.addEventListener('click', apriCompleta);
   btnModifica.addEventListener('click', apriModifica);
   btnArchivio.addEventListener('click', () => window.location.href = `/html/riparazioni-archivio.html?scrollTo=${encodeURIComponent(riparazioneCorrente.Numero)}`);
   btnPrev.addEventListener('click', navigaPrev);
