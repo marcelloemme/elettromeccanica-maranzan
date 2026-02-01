@@ -6,12 +6,17 @@
   <title>Elettromeccanica Maranzan</title>
   <link rel="stylesheet" href="css/app.css" />
   <style>
+    .menu-item-with-badge {
+      position: relative;
+    }
     .badge-novita {
+      position: absolute;
+      left: 100%;
+      margin-left: 0.5em;
       color: #e53935;
       font-size: 0.6em;
       font-weight: 600;
-      margin-left: 0.5em;
-      vertical-align: middle;
+      white-space: nowrap;
     }
   </style>
   <!-- PWA / Manifest & iOS meta -->
@@ -44,9 +49,8 @@
 
       <!-- Dashboard (solo desktop) -->
       <div class="menu-section">
-        <a href="/html/dashboard.html" class="menu-item main-item">
-          Dashboard
-          <span class="badge-novita" id="badge-novita">Novità!</span>
+        <a href="/html/dashboard.html" class="menu-item main-item menu-item-with-badge">
+          Dashboard<span class="badge-novita" id="badge-novita">Novità!</span>
         </a>
       </div>
     </nav>
