@@ -12,33 +12,47 @@
   <meta name="googlebot" content="noindex, nofollow, noarchive">
   <style>
     /* Desktop-only enforcement */
+    :root {
+      --bg: #ffffff;
+      --fg: #222222;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --fg: #ffffff;
+      }
+    }
     .desktop-only-warning {
       display: none;
-      position: fixed;
-      inset: 0;
-      background: #1a1a2e;
-      color: #fff;
-      z-index: 9999;
-      flex-direction: column;
+      height: 100vh;
       align-items: center;
       justify-content: center;
       text-align: center;
       padding: 2rem;
+      flex-direction: column;
+      gap: 1rem;
+      background: var(--bg);
+      color: var(--fg);
     }
     .desktop-only-warning h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
+      font-size: 24px;
+      font-weight: 600;
     }
     .desktop-only-warning p {
-      font-size: 1.2rem;
-      opacity: 0.8;
+      font-size: 16px;
+      opacity: 0.7;
       max-width: 400px;
+    }
+    .desktop-only-warning a {
+      color: var(--fg);
+      text-decoration: underline;
     }
     @media (max-width: 1439px) {
       .desktop-only-warning {
         display: flex !important;
       }
-      .magazzino-app {
+      .magazzino-app,
+      .loading-overlay {
         display: none !important;
       }
     }
@@ -496,7 +510,11 @@
   <!-- Desktop-only warning -->
   <div class="desktop-only-warning">
     <h1>Schermo troppo piccolo</h1>
-    <p>Questa pagina richiede uno schermo desktop con larghezza minima di 1440px. Per favore aprila su un computer.</p>
+    <p>Questa pagina richiede uno schermo di almeno 1440px di larghezza.</p>
+    <p>
+      <a href="/private.html">Torna indietro</a> |
+      <a href="/html/magazzino.html">Consulta il magazzino</a>
+    </p>
   </div>
 
   <!-- Loading overlay -->
