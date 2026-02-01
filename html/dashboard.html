@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard Riparazioni - EM Maranzan</title>
+  <title>Dashboard - EM Maranzan</title>
   <!-- No indexing for this page -->
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="googlebot" content="noindex, nofollow, noarchive">
@@ -42,9 +42,16 @@
     }
 
     .dashboard-container iframe {
-      flex: 1;
       border: none;
       height: 100%;
+    }
+
+    .dashboard-container iframe.iframe-40 {
+      flex: 4;
+    }
+
+    .dashboard-container iframe.iframe-20 {
+      flex: 2;
     }
 
     .dashboard-divider {
@@ -97,16 +104,19 @@
     <h1>Dashboard non disponibile</h1>
     <p>La dashboard richiede uno schermo di almeno 1024px di larghezza.</p>
     <p>
-      <a href="/html/riparazioni-archivio.html">Vai all'Archivio</a> |
-      <a href="/html/riparazioni-nuovo.html">Nuova Riparazione</a>
+      <a href="/html/riparazioni-archivio.html">Archivio</a> |
+      <a href="/html/riparazioni-nuovo.html">Nuova Riparazione</a> |
+      <a href="/html/magazzino.html">Magazzino</a>
     </p>
   </div>
 
   <!-- Dashboard con iframe -->
   <div class="dashboard-container">
-    <iframe id="iframe-archivio" src="/html/riparazioni-archivio.html"></iframe>
+    <iframe id="iframe-archivio" class="iframe-40" src="/html/riparazioni-archivio.html"></iframe>
     <div class="dashboard-divider"></div>
-    <iframe id="iframe-nuovo" src="/html/riparazioni-nuovo.html"></iframe>
+    <iframe id="iframe-nuovo" class="iframe-40" src="/html/riparazioni-nuovo.html"></iframe>
+    <div class="dashboard-divider"></div>
+    <iframe id="iframe-magazzino" class="iframe-20" src="/html/magazzino.html"></iframe>
   </div>
 
   <script>

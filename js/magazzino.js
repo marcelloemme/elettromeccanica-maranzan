@@ -389,4 +389,23 @@
 
     updateResults();
   })();
+
+  // Se siamo in iframe (dashboard), nascondi keypad e burger, aggiungi titolo
+  if (window.parent !== window) {
+    // Nascondi keypad
+    if (keypad) keypad.style.display = 'none';
+    // Nascondi burger menu
+    if (burgerMenu) burgerMenu.style.display = 'none';
+    // Aggiungi titolo "Magazzino"
+    const appEl = document.querySelector('.app');
+    if (appEl) {
+      const header = document.createElement('header');
+      header.className = 'header';
+      header.innerHTML = '<h1>Magazzino</h1>';
+      appEl.insertBefore(header, appEl.firstChild);
+    }
+    // Riduci padding-bottom dell'area risultati (non serve spazio per keypad)
+    const resultsArea = document.getElementById('results-area');
+    if (resultsArea) resultsArea.style.paddingBottom = '0';
+  }
 })();
