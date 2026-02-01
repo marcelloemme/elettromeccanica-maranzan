@@ -13,7 +13,7 @@ Codice,descrizione,scaffale
 122H10-6,gr. ing.,D07
 123442-2,leva inversione,E02
 123443-0,gr. ing. DHP482,B01
-123502-0,ing. cpl HP330DWE,A04
+123502-0,ing. x HP330DWE,A04
 123503-8,gr. ing. x DF330D,Z09
 123504-6,gr. ing. x DF030D,F04
 123868-9,ing.,E06
@@ -641,92 +641,92 @@ Codice,descrizione,scaffale
 316883-1,base x 4306,V15
 317380-0,cilindro x BHR200,T05
 317439-3,cuffia protez. x 5705R,R03
-317461-0,carter,D01
-317565-8,piastra,U07
-317635-3,scatola ing.,R11
-317814-3,scatola ing.,N11
+317461-0,cuffia protez. x 5704R,D01
+317565-8,base x 4341FCT,U07
+317635-3,scat. ing. x DA3010F,R11
+317814-3,scat. ing. x 9554NB,N11
 318143-7,coprilama x 5903,F12
-318151-8,piedino,X05
-318303-1,coperchio,I04
-318304-9,scatola cuscinetto,I03
-318335-8,scatola ing.,K05
+318151-8,piedino BO4555,X05
+318303-1,cop. scat. cusc. x BO5030,I04
+318304-9,scat. cusc. x BO5030,I03
+318335-8,scat. ing. x GA4530,K05
 319310-7,scatola ing.,Y10
-321118-7,albero,Q03
-321170-5,alber eccentrico,L03
-321260-4,spina,C07
-321261-2,bottone olio,G06
-321292-1,albero,G07
-321369-2,battente,R05
-321685-2,pistone,F04
-321723-0,albero,G04
-321725-6,albero eccentrico,G06
-321726-4,albero eccentrico,N04
-321733-7,coxchio frontale,G05
-321855-3,albero eccentrico,F04
-321859-5,ferma punta x HK1800,C03
-321954-1,albero eccentrico,R04
-321995-7,albero,L02
-321997-3,bussola,M09
-322168-5,porta punte,G02
+321118-7,albero x 6905B,Q03
+321170-5,albero ecc. x HR2210/20,L03
+321260-4,spinotto x 5012B,C07
+321261-2,bottone olio x 5011B/12B,G06
+321292-1,albero x HP1300S,G07
+321369-2,battente x HR3850B,R05
+321685-2,pistone x HR2510/HK1800,F04
+321723-0,albero x 6012DW/HDW,G04
+321725-6,albero ecc. x HR3510/20,G06
+321726-4,albero ecc. x HR3850/b,N04
+321733-7,cop. front. x 8035NB,G05
+321855-3,albero ecc. x M/HK1800,F04
+321859-5,fermapunta x M/HK1800,C03
+321954-1,albero ecc. x HM0810,R04
+321995-7,albero x 6093/200/400,L02
+321997-3,bussola x 6074DW,M09
+322168-5,portapunte 30,G02
 322217-8,alberino x HR3520B,B08
 322218-6,alberino x HR3850B,A07
-322319-0,incudine,B07
-322325-5,coxchio frontale,L08
-322327-1,coxchio frontale,L08
-322434-0,manicotto,M04
-322435-8,incudine,N08
-322517-6,chiavetta,A02
-322537-0,bussola,N02
-322652-0,frizione,O09
-322653-8,con di pressione,O09
-322691-0,albero ing.,U05
+322319-0,incudine x 6901VDW,B07
+322325-5,coper. front. x HR3850,L08
+322327-1,coper. front. x HR3520,L08
+322434-0,manicotto x 6903VDW,M04
+322435-8,incudine x 6903VDW,N08
+322517-6,chiavetta 7,A02
+322537-0,bussola x 6911DW,N02
+322652-0,frizione x HR2400,O09
+322653-8,cono press. x HR2400,O09
+322691-0,albero ing. x 4304/05,U05
 322718-6,bussola x 6940D,S06
-322743-7,ing.,Q01
+322743-7,anello cambio x HR2410,Q01
 322754-2,incudine x 6950,Q03
-322806-9,battente,R05
-322826-3,asta trasmissione,P02
-322880-7,albero x 6222,P08
-322908-1,chiavetta,O01
-322958-6,albero,N10
-323679-3,anello camb.,P08
-323767-6,spinotto,X02
-323773-1,supporto porta punte,Q06
-323817-7,anello,P10
-323818-5,battente,T02
-323822-4,anello,Y10
-323846-0,custodia anello,T01
-323875-3,bussola,F14
-323876-1,anello,P07
-323892-3,incudine,V11
-323910-7,battente,P14
-323921-2,albero,V12
-323973-3,perno x HR5001C,X04
-323988-0,camma frizione,S04
-324013-0,incudine,P02
-324014-8,porta punte,Y01
-324015-6,battente,T04
-324031-8,piedino,E16
-324131-4,guida,R05
-324185-1,supporto porta punte,F14
-324216-6,anello,V03
-324218-2,anello,V03
-324261-1,manicotto,V12
-324267-9,incudine,T06
-324396-8,battente,V02
-324420-7,manicotto,N12
-324432-0,incudine,G13
-324549-9,flangia,X03
-324620-9,vite,X03
-324621-7,spinotto,K10
-324639-8,vite ad alette,T13
-324711-6,boccola,G07
-325125-2,asta porta lama,I06
-325322-0,albero,N05
-325464-0,battente,N09
-325549-2,spinotto,C06
-325551-5,albero x 8419-B2,V04
-325782-6,bussola,K09
-325783-4,bussola,H03
+322806-9,battente x HR3520B,R05
+322826-3,asta trasmis. x 4304T,P02
+322880-7,alberino x 6221DW/22,P08
+322908-1,chiavetta 8 x HM1100C,O01
+322958-6,albero x 6908DW,N10
+323679-3,anello camb. x 8419B,P08
+323767-6,spinotto  x HR5001C,X02
+323773-1,supp. portapun. x HR5001C,Q06
+323817-7,anello x HR5001C,P10
+323818-5,battente x HR2420,T02
+323822-4,portapunta x HR2420,Y10
+323846-0,custodia anello x HK0500,T01
+323875-3,buss. collare x HM1202C,F14
+323876-1,guida sfera x HM1202C,P07
+323892-3,incudine x 6918DW,V11
+323910-7,battente x HM1202C,P14
+323921-2,alberino x 6940D,V12
+323973-3,perno 4 x HR5001C,X04
+323988-0,camma friz. x BHR200,S04
+324013-0,incudine x 6916DW,P02
+324014-8,portapunte x BHR200,Y01
+324015-6,battente x BHR200,T04
+324031-8,appoggio x BO3700,E16
+324131-4,guida sfera x HM1202C,R05
+324185-1,supp. portap. x HM1202C,F14
+324216-6,anello x HR2020,V03
+324218-2,anello 9 x HR2020,V03
+324261-1,manicotto x HR3000C,V12
+324267-9,incudine x 6950,T06
+324396-8,battente x HR2450,V02
+324420-7,manicot. x 6903VDW,N12
+324432-0,incudine x 6935FD,G13
+324549-9,flangia x HR4001C/10C,X03
+324620-9,vite x UC3020A,X03
+324621-7,spinotto regolazione,K10
+324639-8,vite alette x GD0600,T13
+324711-6,manicotto x TD020D,G07
+325125-2,asta portala. x 4300BA/V,I06
+325322-0,albero x 6906,N05
+325464-0,battente x 8035NB,N09
+325549-2,spinotto x 5014B/16B,C06
+325551-5,albero x 8419B-2,V04
+325782-6,bussola 9A x MT870,K09
+325783-4,bussola 9b x HR2601,H03
 325784-2,pistone,I04
 325785-0,cono dist.,T13
 325789-2,martello,I06
@@ -1204,7 +1204,7 @@ Codice,descrizione,scaffale
 643933-2,tappo,Y06
 643941-3,tappo,Y06
 643955-2,terminale,F10
-643964-1,porta spazzole x BHR200,E10
+643964-1,porta spazz. x BHR200,E10
 643995-0,porta spazzole,T15
 644809-6,terminale,N03
 646658-4,resistenza,Y07
