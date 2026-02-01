@@ -21,6 +21,7 @@
   const helpOverlay = document.getElementById('help-overlay');
   const helpContainer = document.getElementById('help-container');
   const helpLines = document.getElementById('help-lines');
+  const btnHelpClone = document.getElementById('btn-help-clone');
 
   // Popups
   const popupSave = document.getElementById('popup-save');
@@ -1016,24 +1017,21 @@
 
   function updateHelpDisplay() {
     if (helpVisible) {
-      // Salva posizione del pulsante prima di renderlo fixed
+      // Posiziona il clone sopra il pulsante originale
       const rect = btnHelp.getBoundingClientRect();
-      btnHelp.style.top = rect.top + 'px';
-      btnHelp.style.left = rect.left + 'px';
+      btnHelpClone.style.top = rect.top + 'px';
+      btnHelpClone.style.left = rect.left + 'px';
 
       helpOverlay.classList.add('visible');
       helpContainer.classList.add('visible');
       helpLines.classList.add('visible');
-      btnHelp.classList.add('help-active');
+      btnHelpClone.classList.add('visible');
       drawHelpLines();
     } else {
       helpOverlay.classList.remove('visible');
       helpContainer.classList.remove('visible');
       helpLines.classList.remove('visible');
-      btnHelp.classList.remove('help-active');
-      // Rimuovi stili inline
-      btnHelp.style.top = '';
-      btnHelp.style.left = '';
+      btnHelpClone.classList.remove('visible');
     }
   }
 
@@ -1692,10 +1690,14 @@
   // ---------- Event Listeners ----------
 
   btnHelp.addEventListener('click', toggleHelp);
+  btnHelpClone.addEventListener('click', toggleHelp);
 
-  // Ridisegna linee se la finestra viene ridimensionata
+  // Ridisegna linee e riposiziona clone se la finestra viene ridimensionata
   window.addEventListener('resize', () => {
     if (helpVisible) {
+      const rect = btnHelp.getBoundingClientRect();
+      btnHelpClone.style.top = rect.top + 'px';
+      btnHelpClone.style.left = rect.left + 'px';
       drawHelpLines();
     }
   });

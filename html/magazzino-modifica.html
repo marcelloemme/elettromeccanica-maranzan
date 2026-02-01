@@ -601,10 +601,24 @@
       border-color: #ffc107;
       color: #333;
     }
-    /* Pulsante help fisso sopra l'overlay quando attivo */
-    #btn-help.help-active {
-      position: fixed !important;
-      z-index: 510 !important;
+    /* Clone del pulsante help sopra l'overlay */
+    #btn-help-clone {
+      position: fixed;
+      z-index: 510;
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: 1px solid #ffc107;
+      border-radius: 6px;
+      background: #ffc107;
+      cursor: pointer;
+      font-size: 1.25rem;
+      color: #333;
+      align-items: center;
+      justify-content: center;
+    }
+    #btn-help-clone.visible {
+      display: flex;
     }
 
   </style>
@@ -738,6 +752,7 @@
 
   <!-- Help overlay and tooltips -->
   <div class="help-overlay" id="help-overlay"></div>
+  <button id="btn-help-clone" title="Chiudi guida">&#x1F4A1;</button>
   <div class="help-container" id="help-container">
     <div class="help-box" data-for="btn-cancel">
       <div class="help-box-title">❌ Annulla modifiche</div>
@@ -772,6 +787,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="/js/cache-manager.js?v=24"></script>
-  <script src="/js/magazzino-modifica.js?v=12"></script>
+  <script src="/js/magazzino-modifica.js?v=13"></script>
 </body>
 </html>
