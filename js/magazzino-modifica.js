@@ -1619,7 +1619,9 @@
   btnDelete.addEventListener('click', () => setMode('delete'));
 
   btnPrint.addEventListener('click', () => {
-    printShelvesInput.value = '';
+    // Precompila con scaffali modificati se presenti
+    const modifiedShelves = getModifiedShelves();
+    printShelvesInput.value = modifiedShelves.length > 0 ? modifiedShelves.join(', ') : '';
     popupPrint.classList.add('visible');
     printShelvesInput.focus();
   });
