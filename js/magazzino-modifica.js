@@ -24,10 +24,12 @@
   const popupExit = document.getElementById('popup-exit');
   const popupDuplicate = document.getElementById('popup-duplicate');
   const popupPrint = document.getElementById('popup-print');
-  const popupNoPrint = document.getElementById('popup-no-print');
   const popupChanges = document.getElementById('popup-changes');
   const popupDuplicateMsg = document.getElementById('popup-duplicate-msg');
   const printShelvesInput = document.getElementById('print-shelves-input');
+  const confirmPrintCheckbox = document.getElementById('confirm-print-checkbox');
+  const popupSaveConfirm = document.getElementById('popup-save-confirm');
+  const printCountEl = document.getElementById('print-count');
 
   // State
   let DATA = [];                    // Original data from API
@@ -69,9 +71,32 @@
     return changes.added.length > 0 || changes.modified.length > 0 || changes.deleted.length > 0 || validMoves.length > 0;
   }
 
+  function updatePrintButton() {
+    const modifiedShelves = getModifiedShelves();
+    const count = modifiedShelves.length;
+
+    if (count === 0) {
+      // Nessuna modifica: stato normale
+      btnPrint.classList.remove('print-pending', 'print-done');
+      printCountEl.textContent = '';
+    } else if (hasPrintedModified) {
+      // Ha stampato: verde con conteggio
+      btnPrint.classList.remove('print-pending');
+      btnPrint.classList.add('print-done');
+      printCountEl.textContent = `(${count})`;
+    } else {
+      // Non ha stampato: rosso con conteggio
+      btnPrint.classList.remove('print-done');
+      btnPrint.classList.add('print-pending');
+      printCountEl.textContent = `(${count})`;
+    }
+  }
+
   function updateSaveButton() {
     btnSave.disabled = !hasChanges();
+    updatePrintButton();
   }
+
 
   function getModifiedShelves() {
     // Raccoglie tutti gli scaffali che sono stati modificati
@@ -1019,6 +1044,13 @@
     }
 
     popupChanges.innerHTML = html;
+
+    // Reset checkbox e pulsante
+    confirmPrintCheckbox.checked = false;
+    popupSaveConfirm.disabled = true;
+    popupSaveConfirm.classList.remove('popup-btn-confirm');
+    popupSaveConfirm.classList.add('popup-btn-danger');
+
     popupSave.classList.add('visible');
   }
 
@@ -1593,36 +1625,25 @@
   });
 
   btnSave.addEventListener('click', () => {
-    // Se ci sono modifiche e non ha stampato, mostra warning
-    const modifiedShelves = getModifiedShelves();
-    if (modifiedShelves.length > 0 && !hasPrintedModified) {
-      popupNoPrint.classList.add('visible');
-    } else {
-      showSavePopup();
-    }
-  });
-
-  document.getElementById('popup-no-print-back').addEventListener('click', () => {
-    popupNoPrint.classList.remove('visible');
-  });
-
-  document.getElementById('popup-no-print-print').addEventListener('click', () => {
-    // Chiudi popup e apri stampa con scaffali modificati precompilati
-    popupNoPrint.classList.remove('visible');
-    const modifiedShelves = getModifiedShelves();
-    printShelvesInput.value = modifiedShelves.join(', ');
-    popupPrint.classList.add('visible');
-    printShelvesInput.focus();
-  });
-
-  document.getElementById('popup-no-print-save').addEventListener('click', () => {
-    popupNoPrint.classList.remove('visible');
     showSavePopup();
   });
+
   document.getElementById('popup-save-cancel').addEventListener('click', () => {
     popupSave.classList.remove('visible');
   });
-  document.getElementById('popup-save-confirm').addEventListener('click', saveChanges);
+
+  confirmPrintCheckbox.addEventListener('change', () => {
+    popupSaveConfirm.disabled = !confirmPrintCheckbox.checked;
+    if (confirmPrintCheckbox.checked) {
+      popupSaveConfirm.classList.remove('popup-btn-danger');
+      popupSaveConfirm.classList.add('popup-btn-confirm');
+    } else {
+      popupSaveConfirm.classList.remove('popup-btn-confirm');
+      popupSaveConfirm.classList.add('popup-btn-danger');
+    }
+  });
+
+  popupSaveConfirm.addEventListener('click', saveChanges);
 
   btnCancel.addEventListener('click', () => {
     if (hasChanges()) {
