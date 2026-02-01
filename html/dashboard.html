@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard - EM Maranzan</title>
+  <title>Dashboard Riparazioni - EM Maranzan</title>
   <!-- No indexing for this page -->
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="googlebot" content="noindex, nofollow, noarchive">
@@ -42,22 +42,52 @@
     }
 
     .dashboard-container iframe {
+      flex: 1;
       border: none;
       height: 100%;
-    }
-
-    .dashboard-container iframe.iframe-40 {
-      flex: 4;
-    }
-
-    .dashboard-container iframe.iframe-20 {
-      flex: 2;
     }
 
     .dashboard-divider {
       width: 1px;
       background: var(--border);
       flex-shrink: 0;
+      position: relative;
+      cursor: pointer;
+      transition: width 0.2s ease, background 0.2s ease;
+    }
+
+    .dashboard-divider:hover {
+      width: 40px;
+      background: var(--border);
+    }
+
+    .dashboard-divider .back-arrow {
+      position: absolute;
+      top: 2rem;
+      bottom: 2rem;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+
+    .dashboard-divider:hover .back-arrow {
+      opacity: 1;
+    }
+
+    .dashboard-divider .back-arrow svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--fg);
+      opacity: 0.6;
+    }
+
+    .dashboard-divider:hover .back-arrow svg {
+      opacity: 1;
     }
 
     /* Warning per schermi piccoli */
@@ -104,22 +134,37 @@
     <h1>Dashboard non disponibile</h1>
     <p>La dashboard richiede uno schermo di almeno 1024px di larghezza.</p>
     <p>
-      <a href="/html/riparazioni-archivio.html">Archivio</a> |
-      <a href="/html/riparazioni-nuovo.html">Nuova Riparazione</a> |
-      <a href="/html/magazzino.html">Magazzino</a>
+      <a href="/html/riparazioni-archivio.html">Vai all'Archivio</a> |
+      <a href="/html/riparazioni-nuovo.html">Nuova Riparazione</a>
     </p>
   </div>
 
   <!-- Dashboard con iframe -->
   <div class="dashboard-container">
-    <iframe id="iframe-archivio" class="iframe-40" src="/html/riparazioni-archivio.html"></iframe>
-    <div class="dashboard-divider"></div>
-    <iframe id="iframe-nuovo" class="iframe-40" src="/html/riparazioni-nuovo.html"></iframe>
-    <div class="dashboard-divider"></div>
-    <iframe id="iframe-magazzino" class="iframe-20" src="/html/magazzino.html"></iframe>
+    <iframe id="iframe-archivio" src="/html/riparazioni-archivio.html"></iframe>
+    <div class="dashboard-divider" id="divider-back" title="Torna a Private">
+      <div class="back-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </div>
+    </div>
+    <iframe id="iframe-nuovo" src="/html/riparazioni-nuovo.html"></iframe>
   </div>
 
   <script>
+    // Divider click → torna a private
+    document.getElementById('divider-back').addEventListener('click', () => {
+      window.location.href = '/private.html';
+    });
+
+    // ESC key → torna a private
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        window.location.href = '/private.html';
+      }
+    });
+
     // Relay messaggi tra iframe
     window.addEventListener('message', (event) => {
       // Verifica che il messaggio arrivi dal nostro dominio
