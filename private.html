@@ -5,20 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
   <title>Elettromeccanica Maranzan</title>
   <link rel="stylesheet" href="css/app.css" />
-  <style>
-    .menu-item-with-badge {
-      position: relative;
-    }
-    .badge-novita {
-      position: absolute;
-      left: 100%;
-      margin-left: 0.5em;
-      color: #e53935;
-      font-size: 0.6em;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-  </style>
   <!-- PWA / Manifest & iOS meta -->
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
@@ -40,18 +26,11 @@
         <a href="https://docs.google.com/spreadsheets/d/1wFamrwzFNNz5iHenqVpdAHb5Dhvv5xYx5XPimjax9As/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="menu-item sub-item">Magazzino.csv</a>
       </div>
 
-      <!-- Sezione Riparazioni -->
+      <!-- Sezione Riparazioni (punta a dashboard, redirect automatico se schermo piccolo) -->
       <div class="menu-section">
-        <a href="/html/riparazioni-archivio.html" class="menu-item main-item">Riparazioni</a>
+        <a href="/html/dashboard.html" class="menu-item main-item">Riparazioni</a>
         <a href="/html/statistiche.html" class="menu-item sub-item">Statistiche</a>
         <a href="https://docs.google.com/spreadsheets/d/122xQdmQb02UH6evZE382t0s6oRDIoiOhF5cYAAmEvY0/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="menu-item sub-item">Riparazioni.csv</a>
-      </div>
-
-      <!-- Dashboard (solo desktop) -->
-      <div class="menu-section">
-        <a href="/html/dashboard.html" class="menu-item main-item menu-item-with-badge">
-          Dashboard<span class="badge-novita" id="badge-novita">Novità!</span>
-        </a>
       </div>
     </nav>
   </main>
@@ -61,15 +40,6 @@
       navigator.serviceWorker.register('/sw.js', { scope: '/' })
         .catch(console.error);
     }
-
-    // Nascondi badge "Novità!" dopo mercoledì 5 febbraio 2026
-    (function() {
-      const scadenza = new Date('2026-02-05T23:59:59');
-      if (new Date() > scadenza) {
-        const badge = document.getElementById('badge-novita');
-        if (badge) badge.style.display = 'none';
-      }
-    })();
   </script>
 </body>
 </html>

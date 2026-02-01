@@ -61,7 +61,7 @@
       background: var(--border);
     }
 
-    .dashboard-divider .back-arrow {
+    .dashboard-divider .menu-icon {
       position: absolute;
       top: 2rem;
       bottom: 2rem;
@@ -75,18 +75,18 @@
       pointer-events: none;
     }
 
-    .dashboard-divider:hover .back-arrow {
+    .dashboard-divider:hover .menu-icon {
       opacity: 1;
     }
 
-    .dashboard-divider .back-arrow svg {
+    .dashboard-divider .menu-icon svg {
       width: 20px;
       height: 20px;
       stroke: var(--fg);
       opacity: 0.6;
     }
 
-    .dashboard-divider:hover .back-arrow svg {
+    .dashboard-divider:hover .menu-icon svg {
       opacity: 1;
     }
 
@@ -126,6 +126,40 @@
         display: flex;
       }
     }
+
+    /* Popup istruzioni */
+    .popup-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .popup-overlay.hidden {
+      display: none;
+    }
+    .popup-box {
+      background: var(--bg);
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 400px;
+      text-align: center;
+    }
+    .popup-box p {
+      margin-bottom: 1.5rem;
+      font-size: 16px;
+    }
+    .popup-box button {
+      background: var(--fg);
+      color: var(--bg);
+      border: none;
+      padding: 0.75rem 2rem;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -139,13 +173,23 @@
     </p>
   </div>
 
+  <!-- Popup istruzioni (temporaneo fino al 5 febbraio 2026) -->
+  <div class="popup-overlay hidden" id="popup-istruzioni">
+    <div class="popup-box">
+      <p>Posizionati con il mouse sul separatore centrale per uscire.</p>
+      <button id="popup-ok">OK</button>
+    </div>
+  </div>
+
   <!-- Dashboard con iframe -->
   <div class="dashboard-container">
     <iframe id="iframe-archivio" src="/html/riparazioni-archivio.html"></iframe>
     <div class="dashboard-divider" id="divider-back" title="Torna a Private">
-      <div class="back-arrow">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
+      <div class="menu-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
       </div>
     </div>
@@ -153,6 +197,23 @@
   </div>
 
   <script>
+    // Redirect a riparazioni-archivio se schermo troppo stretto per dashboard
+    if (window.innerWidth < 1536) {
+      window.location.replace('/html/riparazioni-archivio.html');
+    }
+
+    // Popup istruzioni (solo fino al 5 febbraio 2026)
+    (function() {
+      const scadenza = new Date('2026-02-05T23:59:59');
+      if (new Date() <= scadenza) {
+        document.getElementById('popup-istruzioni').classList.remove('hidden');
+      }
+    })();
+
+    document.getElementById('popup-ok').addEventListener('click', () => {
+      document.getElementById('popup-istruzioni').classList.add('hidden');
+    });
+
     // Divider click → torna a private
     document.getElementById('divider-back').addEventListener('click', () => {
       window.location.href = '/private.html';
