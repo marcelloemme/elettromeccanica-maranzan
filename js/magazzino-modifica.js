@@ -1350,6 +1350,7 @@
 
     // Segna che l'utente ha stampato
     hasPrintedModified = true;
+    updatePrintButton();
 
     showToast(`PDF generato con ${orderedShelves.length} cartellini`, 'success');
   }
