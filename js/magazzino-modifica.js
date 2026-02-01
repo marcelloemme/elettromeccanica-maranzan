@@ -1016,6 +1016,11 @@
 
   function updateHelpDisplay() {
     if (helpVisible) {
+      // Salva posizione del pulsante prima di renderlo fixed
+      const rect = btnHelp.getBoundingClientRect();
+      btnHelp.style.top = rect.top + 'px';
+      btnHelp.style.left = rect.left + 'px';
+
       helpOverlay.classList.add('visible');
       helpContainer.classList.add('visible');
       helpLines.classList.add('visible');
@@ -1026,6 +1031,9 @@
       helpContainer.classList.remove('visible');
       helpLines.classList.remove('visible');
       btnHelp.classList.remove('help-active');
+      // Rimuovi stili inline
+      btnHelp.style.top = '';
+      btnHelp.style.left = '';
     }
   }
 

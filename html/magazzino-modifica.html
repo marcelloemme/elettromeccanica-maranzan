@@ -601,10 +601,10 @@
       border-color: #ffc107;
       color: #333;
     }
-    /* Solo il pulsante help sopra l'overlay */
+    /* Pulsante help fisso sopra l'overlay quando attivo */
     #btn-help.help-active {
-      z-index: 510;
-      position: relative;
+      position: fixed !important;
+      z-index: 510 !important;
     }
 
   </style>
@@ -772,6 +772,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="/js/cache-manager.js?v=24"></script>
-  <script src="/js/magazzino-modifica.js?v=11"></script>
+  <script src="/js/magazzino-modifica.js?v=12"></script>
 </body>
 </html>
