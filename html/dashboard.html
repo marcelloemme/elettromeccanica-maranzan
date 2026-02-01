@@ -118,7 +118,7 @@
       text-decoration: underline;
     }
 
-    @media (max-width: 1023px) {
+    @media (max-width: 1535px) {
       .dashboard-container {
         display: none;
       }
@@ -163,10 +163,10 @@
   </style>
 </head>
 <body>
-  <!-- Warning per schermi piccoli -->
+  <!-- Warning per schermi piccoli (< 1536px) -->
   <div class="dashboard-warning">
     <h1>Dashboard non disponibile</h1>
-    <p>La dashboard richiede uno schermo di almeno 1024px di larghezza.</p>
+    <p>La dashboard richiede uno schermo di almeno 1536px di larghezza.</p>
     <p>
       <a href="/html/riparazioni-archivio.html">Vai all'Archivio</a> |
       <a href="/html/riparazioni-nuovo.html">Nuova Riparazione</a>
@@ -197,11 +197,6 @@
   </div>
 
   <script>
-    // Redirect a riparazioni-archivio se schermo troppo stretto per dashboard
-    if (window.innerWidth < 1536) {
-      window.location.replace('/html/riparazioni-archivio.html');
-    }
-
     // Popup istruzioni (solo fino al 5 febbraio 2026)
     (function() {
       const scadenza = new Date('2026-02-05T23:59:59');
