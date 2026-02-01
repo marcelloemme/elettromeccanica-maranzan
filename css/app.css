@@ -851,7 +851,7 @@ body.touch-app {
 /* Form compatto (riparazioni-nuovo) - input più piccoli come in archivio */
 .form-compact {
   gap: 0.5rem;
-  padding-bottom: calc(70px + 1rem + env(safe-area-inset-bottom, 0));
+  padding-bottom: calc(70px + 2.5rem + env(safe-area-inset-bottom, 0));
 }
 
 .form-compact .form-group input,
@@ -880,7 +880,7 @@ body.touch-app {
   left: 0;
   right: 0;
   background: var(--bg);
-  padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom, 0));
+  padding: 0.5rem 1rem calc(2rem + env(safe-area-inset-bottom, 0));
   margin-top: 0;
   z-index: 50;
   max-width: 800px;
@@ -1062,7 +1062,7 @@ button:active {
   left: 0;
   right: 0;
   background: var(--bg);
-  padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom, 0));
+  padding: 0.5rem 1rem calc(2rem + env(safe-area-inset-bottom, 0));
   z-index: 50;
   max-width: 800px;
   margin-left: auto;
@@ -1652,7 +1652,7 @@ button:active {
 
 /* Aggiungi padding al contenuto per non essere coperto dai pulsanti fixed */
 .detail-container {
-  padding-bottom: calc(120px + env(safe-area-inset-bottom, 0));
+  padding-bottom: calc(140px + env(safe-area-inset-bottom, 0));
 }
 
 /* ===== STATISTICHE ===== */
