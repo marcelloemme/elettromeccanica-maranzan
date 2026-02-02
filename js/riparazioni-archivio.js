@@ -723,15 +723,21 @@ function aggiornaFiltroDate() {
   renderTabella();
 }
 
-// Listener per refresh da dashboard iframe
-window.addEventListener('message', async (event) => {
+// Listener per nuova riparazione da dashboard iframe
+window.addEventListener('message', (event) => {
   // Accetta solo messaggi dal nostro dominio
   if (event.origin !== window.location.origin) return;
 
-  if (event.data && event.data.type === 'REFRESH_ARCHIVIO') {
-    console.log('[Archivio] Ricevuto refresh da dashboard');
-    cacheManager.invalidate('riparazioni');
-    await caricaRiparazioni();
+  if (event.data && event.data.type === 'RIPARAZIONE_CREATA' && event.data.riparazione) {
+    console.log('[Archivio] Nuova riparazione ricevuta:', event.data.numero);
+
+    // Aggiungi riparazione all'array locale (in testa)
+    tutteRiparazioni.unshift(event.data.riparazione);
+
+    // Aggiorna cache locale
+    cacheManager.set('riparazioni', tutteRiparazioni);
+
+    // Re-renderizza tabella
     renderTabella();
   }
 });

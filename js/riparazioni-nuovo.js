@@ -373,14 +373,36 @@ async function inviaRiparazione(dati) {
     const result = await res.json();
 
     if (result.success) {
-      // Invalida cache riparazioni per aggiornare archivio
-      cacheManager.invalidate('riparazioni');
-      // Invalida cache clienti per aggiornare autocomplete
+      // Costruisci oggetto riparazione completo per cache locale
+      const nuovaRiparazione = {
+        Numero: result.numero,
+        'Data Consegna': dati.dataConsegna,
+        Cliente: dati.cliente,
+        Indirizzo: dati.indirizzo || '',
+        Telefono: dati.telefono,
+        DDT: dati.ddt,
+        Attrezzi: dati.attrezzi,
+        Completato: false,
+        'Data Completamento': null
+      };
+
+      // Aggiorna cache riparazioni localmente (aggiungi in testa)
+      const cachedRiparazioni = cacheManager.get('riparazioni');
+      if (cachedRiparazioni) {
+        cachedRiparazioni.unshift(nuovaRiparazione);
+        cacheManager.set('riparazioni', cachedRiparazioni);
+      }
+
+      // Invalida cache clienti per aggiornare autocomplete (nuovo cliente potrebbe essere stato creato)
       cacheManager.invalidate('clienti');
 
-      // Notifica parent se siamo in iframe (dashboard)
+      // Notifica parent se siamo in iframe (dashboard) - invia dati completi
       if (window.parent !== window) {
-        window.parent.postMessage({ type: 'RIPARAZIONE_CREATA', numero: result.numero }, '*');
+        window.parent.postMessage({
+          type: 'RIPARAZIONE_CREATA',
+          numero: result.numero,
+          riparazione: nuovaRiparazione
+        }, '*');
       }
 
       popupConferma.classList.add('hidden');

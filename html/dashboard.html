@@ -226,14 +226,18 @@
       // Verifica che il messaggio arrivi dal nostro dominio
       if (event.origin !== window.location.origin) return;
 
-      const { type, numero } = event.data || {};
+      const { type, numero, riparazione } = event.data || {};
 
       if (type === 'RIPARAZIONE_CREATA') {
         console.log('[Dashboard] Riparazione creata:', numero);
-        // Notifica iframe archivio di refreshare
+        // Inoltra messaggio completo all'iframe archivio (con dati riparazione)
         const iframeArchivio = document.getElementById('iframe-archivio');
         if (iframeArchivio && iframeArchivio.contentWindow) {
-          iframeArchivio.contentWindow.postMessage({ type: 'REFRESH_ARCHIVIO' }, '*');
+          iframeArchivio.contentWindow.postMessage({
+            type: 'RIPARAZIONE_CREATA',
+            numero: numero,
+            riparazione: riparazione
+          }, '*');
         }
       }
     });
