@@ -307,15 +307,33 @@ window.cambiaPeriodoTempi = (giorni) => {
   renderTempiRiparazione();
 };
 
-// Calcola mediana di un array di numeri
-function calcolaMediana(valori) {
+// Calcola media winsorizzata asimmetrica di un array di numeri
+// - 10% winsorizzato in basso (riparazioni veloci: limitate ma contate)
+// - 5% winsorizzato in alto (riparazioni lente: limitate ma contate)
+function calcolaMediaWinsorizzata(valori) {
   if (valori.length === 0) return 0;
+  if (valori.length === 1) return valori[0];
+
   const ordinati = [...valori].sort((a, b) => a - b);
-  const meta = Math.floor(ordinati.length / 2);
-  if (ordinati.length % 2 === 0) {
-    return Math.round((ordinati[meta - 1] + ordinati[meta]) / 2);
-  }
-  return ordinati[meta];
+  const n = ordinati.length;
+
+  // Calcola indici percentili
+  const idxP10 = Math.floor(n * 0.10); // 10° percentile (floor per i veloci)
+  const idxP95 = Math.ceil(n * 0.95) - 1; // 95° percentile (ceiling per i lenti)
+
+  const valoreP10 = ordinati[idxP10];
+  const valoreP95 = ordinati[idxP95];
+
+  // Winsorizza: sostituisci estremi con valori ai percentili
+  const winsorizzati = ordinati.map(v => {
+    if (v < valoreP10) return valoreP10;
+    if (v > valoreP95) return valoreP95;
+    return v;
+  });
+
+  // Calcola media
+  const somma = winsorizzati.reduce((acc, v) => acc + v, 0);
+  return Math.round(somma / n);
 }
 
 // Aggiorna tempi riparazione
@@ -340,14 +358,14 @@ function aggiornaTempiRiparazione() {
     return;
   }
 
-  // Calcola mediana completate
+  // Calcola media winsorizzata completate
   const giorniCompletate = completateFiltrate.map(r => r.giorni);
-  const medianaCompletate = calcolaMediana(giorniCompletate);
+  const mediaCompletate = calcolaMediaWinsorizzata(giorniCompletate);
 
-  // Calcola mediana incluse attive (tempo minimo attuale)
+  // Calcola media winsorizzata incluse attive (tempo minimo attuale)
   const giorniAttive = (statistiche.riparazioniAttive || []).map(r => r.giorniAperti);
   const tuttiGiorni = [...giorniCompletate, ...giorniAttive];
-  const medianaConAttive = calcolaMediana(tuttiGiorni);
+  const mediaConAttive = calcolaMediaWinsorizzata(tuttiGiorni);
 
   // Percentuali esclusive (non cumulative)
   const entro14 = completateFiltrate.filter(r => r.giorni <= 14).length;
@@ -364,7 +382,7 @@ function aggiornaTempiRiparazione() {
   const isMobile = window.innerWidth <= 768;
   const unitaGiorni = isMobile ? 'gg' : 'giorni';
 
-  tempoMedioEl.innerHTML = `Tempo medio riparazione: <strong>${medianaCompletate} ${unitaGiorni}</strong> (solo completate) · <strong>${medianaConAttive} ${unitaGiorni}</strong> (incluse attive).`;
+  tempoMedioEl.innerHTML = `Tempo medio riparazione: <strong>${mediaCompletate} ${unitaGiorni}</strong> (solo completate) · <strong>${mediaConAttive} ${unitaGiorni}</strong> (incluse attive).`;
   percentualiTempoEl.innerHTML = `<strong>${percEntro14}%</strong> entro 14 ${unitaGiorni}, <strong>${percEntro30}%</strong> entro 1 mese, <strong>${percEntro60}%</strong> entro 2 mesi, <strong>${percOltre60}%</strong> oltre.`;
 }
 
