@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-02-03T08:01:05.008Z",
+  "generatedAt": "2026-02-03T19:27:16.715Z",
   "recapAttuale": {
-    "totaleInCorso": 111,
+    "totaleInCorso": 114,
     "oltre90gg": [
       {
         "numero": "25/0015",
@@ -11,16 +11,16 @@
       }
     ],
     "top3Vecchie": null,
-    "testoNotifica": "Al momento hai 111 riparazioni attive. Le riparazioni aperte da oltre 90 giorni sono:\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025."
+    "testoNotifica": "Al momento hai 114 riparazioni attive. Le riparazioni aperte da oltre 90 giorni sono:\n- 25/0015 - PANIGHEL LUDOVICO del 03/11/2025."
   },
   "recapSettimanale": {
     "settimana": "Settimana scorsa (26.01-01.02)",
     "inserite": 24,
     "completate": 19,
-    "percInserite": 39.1,
-    "percCompletate": 8.6,
-    "mediaInserite": "17.3",
-    "mediaCompletate": "17.5"
+    "percInserite": 36.3,
+    "percCompletate": 4.8,
+    "mediaInserite": "17.6",
+    "mediaCompletate": "18.1"
   },
   "tempiRiparazione": [
     {
@@ -324,6 +324,12 @@
       "giorni": 13
     },
     {
+      "numero": "26/0066",
+      "cliente": "EDILE CASTIONESE SRL",
+      "dataCompletamento": "2026-02-03T00:00:00.000Z",
+      "giorni": 13
+    },
+    {
       "numero": "26/0067",
       "cliente": "BIGAI",
       "dataCompletamento": "2026-01-30T00:00:00.000Z",
@@ -358,6 +364,12 @@
       "cliente": "PILOT SISTILIO SRL",
       "dataCompletamento": "2026-01-27T00:00:00.000Z",
       "giorni": 1
+    },
+    {
+      "numero": "26/0111",
+      "cliente": "IMPRESA ROSSIT",
+      "dataCompletamento": "2026-02-03T00:00:00.000Z",
+      "giorni": 0
     }
   ],
   "riparazioniAttive": [
@@ -642,10 +654,6 @@
       "giorniAperti": 14
     },
     {
-      "numero": "26/0066",
-      "giorniAperti": 13
-    },
-    {
       "numero": "26/0068",
       "giorniAperti": 13
     },
@@ -798,11 +806,27 @@
       "giorniAperti": 1
     },
     {
-      "numero": "26/0111",
+      "numero": "26/0112",
       "giorniAperti": 0
     },
     {
-      "numero": "26/0112",
+      "numero": "26/0113",
+      "giorniAperti": 0
+    },
+    {
+      "numero": "26/0114",
+      "giorniAperti": 0
+    },
+    {
+      "numero": "26/0115",
+      "giorniAperti": 0
+    },
+    {
+      "numero": "26/0116",
+      "giorniAperti": 0
+    },
+    {
+      "numero": "26/0117",
       "giorniAperti": 0
     }
   ],
@@ -840,7 +864,7 @@
     "2026": {
       "create": {
         "1": 102,
-        "2": 10,
+        "2": 15,
         "3": 0,
         "4": 0,
         "5": 0,
@@ -854,7 +878,7 @@
       },
       "completate": {
         "1": 54,
-        "2": 2,
+        "2": 4,
         "3": 0,
         "4": 0,
         "5": 0,
@@ -1013,9 +1037,9 @@
     },
     {
       "data": "2026-02-03",
-      "aggiunte": 2,
-      "completate": 1,
-      "delta": -1
+      "aggiunte": 7,
+      "completate": 3,
+      "delta": -4
     }
   ]
 }
