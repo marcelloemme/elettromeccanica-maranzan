@@ -725,6 +725,7 @@ function aggiornaFiltroDate() {
 
 // Listener per nuova riparazione da dashboard iframe
 window.addEventListener('message', (event) => {
+  console.log('[Archivio] Messaggio ricevuto:', event.data, 'origin:', event.origin);
   // Accetta solo messaggi dal nostro dominio
   if (event.origin !== window.location.origin) return;
 
