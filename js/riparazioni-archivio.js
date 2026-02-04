@@ -725,25 +725,26 @@ function aggiornaFiltroDate() {
 
 // Listener per nuova riparazione da dashboard iframe
 window.addEventListener('message', (event) => {
-  console.log('[Archivio] Messaggio ricevuto:', event.data, 'origin:', event.origin);
   // Accetta solo messaggi dal nostro dominio
   if (event.origin !== window.location.origin) return;
 
   if (event.data && event.data.type === 'RIPARAZIONE_CREATA' && event.data.riparazione) {
-    console.log('[Archivio] Nuova riparazione ricevuta:', event.data.numero);
-    console.log('[Archivio] Dati riparazione:', event.data.riparazione);
-    console.log('[Archivio] Filtri attivi - dataDal:', dataDal, 'dataAl:', dataAl);
-
     // Aggiungi riparazione all'array locale (in testa)
     tutteRiparazioni.unshift(event.data.riparazione);
-    console.log('[Archivio] Array aggiornato, totale:', tutteRiparazioni.length);
 
     // Aggiorna cache locale
     cacheManager.set('riparazioni', tutteRiparazioni);
 
+    // Aggiorna filtro "dataAl" a oggi (caso: dashboard aperta da ieri)
+    const oggi = new Date();
+    oggi.setHours(23, 59, 59, 999);
+    if (!dataAl || dataAl < oggi) {
+      dataAl = oggi;
+      dataAlInput.value = formatDateToInput(oggi);
+    }
+
     // Re-renderizza tabella
     renderTabella();
-    console.log('[Archivio] Tabella renderizzata');
   }
 });
 

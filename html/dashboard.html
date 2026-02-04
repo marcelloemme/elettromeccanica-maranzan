@@ -229,18 +229,14 @@
       const { type, numero, riparazione } = event.data || {};
 
       if (type === 'RIPARAZIONE_CREATA') {
-        console.log('[Dashboard] Riparazione creata:', numero);
         // Inoltra messaggio completo all'iframe archivio (con dati riparazione)
         const iframeArchivio = document.getElementById('iframe-archivio');
-        console.log('[Dashboard] iframe trovato:', !!iframeArchivio, 'contentWindow:', !!(iframeArchivio && iframeArchivio.contentWindow));
         if (iframeArchivio && iframeArchivio.contentWindow) {
-          console.log('[Dashboard] Invio postMessage all\'archivio...');
           iframeArchivio.contentWindow.postMessage({
             type: 'RIPARAZIONE_CREATA',
             numero: numero,
             riparazione: riparazione
           }, window.location.origin);
-          console.log('[Dashboard] postMessage inviato');
         }
       }
     });
