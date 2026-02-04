@@ -731,15 +731,19 @@ window.addEventListener('message', (event) => {
 
   if (event.data && event.data.type === 'RIPARAZIONE_CREATA' && event.data.riparazione) {
     console.log('[Archivio] Nuova riparazione ricevuta:', event.data.numero);
+    console.log('[Archivio] Dati riparazione:', event.data.riparazione);
+    console.log('[Archivio] Filtri attivi - dataDal:', dataDal, 'dataAl:', dataAl);
 
     // Aggiungi riparazione all'array locale (in testa)
     tutteRiparazioni.unshift(event.data.riparazione);
+    console.log('[Archivio] Array aggiornato, totale:', tutteRiparazioni.length);
 
     // Aggiorna cache locale
     cacheManager.set('riparazioni', tutteRiparazioni);
 
     // Re-renderizza tabella
     renderTabella();
+    console.log('[Archivio] Tabella renderizzata');
   }
 });
 
