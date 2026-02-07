@@ -18,7 +18,7 @@
 #include <Update.h>
 
 // Versione firmware corrente
-#define FIRMWARE_VERSION "1.6.8"
+#define FIRMWARE_VERSION "1.6.9"
 
 // Modalità debug print (stampa seriale su carta)
 bool debugPrintMode = false;
@@ -2456,8 +2456,8 @@ void printEtichetta(Scheda& s, int attrezzoIdx, int totAttrezzi) {
   // Newline in stato completamente pulito
   printerSerial.println();
 
-  // Spazio ~2mm (ESC J 15) - per etichette 50x30mm passo 34mm
-  printerSerial.write(0x1B); printerSerial.write('J'); printerSerial.write(15);
+  // Spazio ~2.1mm (ESC J 16) - per etichette 50x30mm passo 34mm
+  printerSerial.write(0x1B); printerSerial.write('J'); printerSerial.write(16);
 
   // === Cliente (normale, max 32 char) + eventuale " - DDT" ===
   String clienteStr = String(s.cliente);
